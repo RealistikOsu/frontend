@@ -8,7 +8,16 @@ function FillScores(rx) {
     var wl = window.location;
     window.history.replaceState('', document.title,
       "/b/" + b + "?mode=" + m + wl.hash);
-    api("scores?sort=score,desc&sort=id,asc", {
+    var Score = "score";
+    switch (rx) {
+        case 0: //vanilla, default to score
+            Score = "score"
+            break;
+        default: //rx + ap, use pp as score makes no sense in them
+            Score = "pp";
+            break;
+    }
+    api(`scores?sort=${Score},desc&sort=id,asc`, {
       mode : m,
       b : b,
       p : 1,
