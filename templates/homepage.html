@@ -1,0 +1,244 @@
+{{/*###
+Handler=/
+TitleBar=Home Page
+KyutGrill=homepage2.jpg
+*/}}
+{{ define "tpl" }}
+{{ $cf := .ClientFlags }}
+{{ $ds := band $cf 1 }}
+{{ $   := . }}
+
+{{/* CSS Zone */}}
+<style>
+	.status {
+		display: flex;
+		font-size: 14px;
+		font-weight: 500;
+		z-index: 3;
+		position: absolute;
+		-webkit-transform: translateY(-100px) translateX(5px);
+		transform: translateY(-100px) translateX(5px);
+		padding: 2px 10px;
+		color: #fff;
+		margin-left: 5px;
+		border-radius: 20px;
+		background: rgba(0,0,0,.6);
+	}
+</style>
+{{/* End CSS */}}
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#eb4034">
+	<meta property="og:title" content="RealistikOsu!">
+	<meta property="og:url" content="https://ussr.pl">
+	<meta property="og:site_name" content="RealistikOsu!">  
+	<meta property="og:description" content="RealistikOsu is a private server for the rhythm game osu! It features ranked Relax and Autopilot among countless other unique features!">
+	<meta property="og:image" content="https://ussr.pl/static/image/newlogo2.png">
+</head>
+
+	<div class="ui container">
+		<div class=""> 
+		<div class="main-block">
+			<div class="woman"></div>
+			<div class="content">
+				<div class="status">
+					<span>
+						<span style="color: #4287f5;" class="counter-text"> {{ .T "%s" (rediget "ripple:registered_users")}} </span> total users
+					</span>
+					<span style="margin-left: 16px;">
+						<span class="counter-text" style="color: #eb4034;"> {{ .T "%s" (rediget "ripple:online_users")}} </span> online users
+					</span>
+				</div>
+				<br>
+				<span class="text-lg">
+					RealistikOsu!
+				</span>
+				<span class="text-sm">
+					<b>Welcome to RealistikOsu!</b>
+	
+	
+					RealistikOsu! is a private osu! server with everything Bancho has to offer, Relax leaderboards and more! We have our own community, Relax leaderboards, Relax profiles, Relax PP system, our own beatmap ranking and a dedicated leadership team. Why hesitate? Join RealistikOsu! now!
+				</span>
+				<div class="buttons">
+					{{ if not .Context.User.ID }}
+						<a href="/register" class="home-btn btn-key" >Register</a>
+					{{end}}
+					<a href="https://dl.ussr.pl/files/osu/ROS.exe" class="home-btn btn-how" style="margin-left: 6px;">Server Switcher</a>
+				</div>
+			</div>
+			<canvas id="HomeGraph" height="20" style="position: absolute;"></canvas>
+				<script>
+					/*
+					//ok i commented it as im tired
+					//yes yes i know i should put this in a js file or in the head tag but this entire frontend is going to be replaced
+					//so in the end its not gonna matter.
+
+					//ok so first we gonna get the online data yes
+					fetch("https://ussr.pl/api2/onlinehistory")
+					.then(res => res.json())
+					.then((out) => {
+						Chart.defaults.global.legend.display = false;
+						var ctx = document.getElementById('HomeGraph').getContext('2d');
+						if (out["status"] == 200) {
+							var Stats = out["stats"];
+							var Labels = out["labels"];
+							//var Labels = "";
+						}
+						else {
+							var Stats = [0, 0]; //2 points so we can fill a graph
+							var Labels = ["a", "a"]; //2 points so we can fill a graph
+						}
+						var GraphData = {
+							labels: Labels,
+							datasets: [{
+								label: "Rank",
+								data: Stats,
+								borderWidth: 2,
+								backgroundColor: 'rgba(235, 63, 51, 0.73)',
+								borderWidth: 0,
+								borderColor: 'transparent',
+								pointBorderWidth: 0,
+								pointRadius: 3.5,
+								pointBackgroundColor: 'transparent',
+								pointHoverBackgroundColor: 'rgba(235, 63, 51, 0.73)',
+								fill: "start"
+							}]
+						}
+						var myChart = new Chart(ctx, {
+							type: 'line',
+							data: GraphData,
+							options: {
+								scales: {
+									yAxes: [{
+										ticks: {
+											beginAtZero: true,
+										}
+									}]
+								},
+								legend: {
+									display: false,
+									labels: {
+										fontSize: 0
+									}
+								},
+							}
+						});
+					})
+					.catch(err => { throw err; console.log("hahayes"); }); 
+					*/
+				</script>
+		</div>
+	{{/* MarginBoi */}}
+	<br> 
+	{{/* Global Statistics */}}
+	<div class="ui stackable column divided grid" id="first-grid">
+		<div class="five wide column">
+			<div class="ui segments" style="height: 100%;">
+				<div class="sixteen wide column" style="margin-bottom: 11px;">
+					<div class="ui blue segment">
+						<div class="ui grid">
+							<div class="four wide column">
+								<i class="user icon status-icon"></i>
+							</div>
+							<div class="twelve wide column">
+								<p class="status-head">{{ rediget "ripple:online_users" }} / {{ rediget "ripple:registered_users" }}</p>
+								<p class="status-footer">{{ .T "Online / Registered" }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			<div class="sixteen wide column" style="margin-bottom: 11px;">
+				<div class="ui orange segment">
+					<div class="ui grid">
+						<div class="four wide column">
+							<i class="user plus icon status-icon"></i>
+						</div>
+						<div class="twelve wide column">
+							{{ range $key, $value := (qb "SELECT username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
+							{{ range $key, $valu := (qb "SELECT id FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
+							<p class="status-head" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+								<a href="/u/{{ $valu }}" style="color: inherit;">{{ $value }}</a>
+							</p>
+							{{ end }}
+							{{ end }}
+							<p class="status-footer">{{ .T "Latest Player" }}</p>
+						</div>
+					</div>
+			  </div>
+			  <div class="sixteen wide column">
+                <div class="ui green segment">
+                    <div class="ui grid">
+                        <div class="four wide column">
+                            <i class="user icon status-icon"></i>
+                        </div>
+                        <div class="twelve wide column">
+                             {{ $value := (qb "SELECT ROUND(SUM(scores.pp)) AS pp FROM scores INNER JOIN users ON scores.userid = users.id WHERE scores.completed = 3 AND scores.play_mode = 0 AND users.privileges > 2") }}
+                        <p class="status-head">{{ $value.pp }}</p>
+                        <p class="status-footer">{{ .T "Total PP" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+	<div class="six wide column">
+		<iframe src="https://discordapp.com/widget?id=447073072827334656&theme=dark" id="ds-widget" allowtransparency="true" frameborder="0" style="width: 100%;height: 100%;"></iframe>
+	</div>
+	<div class="five wide column">
+		<div class="ui segments" style="height: 100%;">
+			<div class="sixteen wide column" style="margin-bottom: 11px;">
+				<div class="ui yellow segment">
+					<div class="ui grid">
+						<div class="four wide column">
+							<i class="thumbs up icon status-icon"></i>
+						</div>
+						<div class="twelve wide column">
+							{{ $d := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores INNER JOIN users ON scores.userid = users.id WHERE scores.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
+							<p class="status-head">{{ $d.pp }}pp</p>
+							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/u/{{ $d.id }}">{{ $d.username }}</a></p>
+							<p class="status-footer">{{ .T "Top Score" }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sixteen wide column" style="margin-bottom: 11px;">
+				<div class="ui pink segment">
+					<div class="ui grid">
+						<div class="four wide column">
+							<i class="thumbs up icon status-icon"></i>
+						</div>
+						<div class="twelve wide column">
+							{{ $rx := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_relax INNER JOIN users ON scores_relax.userid = users.id WHERE scores_relax.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
+							<p class="status-head">{{ $rx.pp }}pp</p>
+							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/u/{{ $rx.id }}">{{ $rx.username }}</a></p>
+							<p class="status-footer">{{ .T "Top Relax Score" }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sixteen wide column">
+				<div class="ui purple segment">
+					<div class="ui grid">
+						<div class="four wide column">
+							<i class="thumbs up icon status-icon"></i>
+						</div>
+						<div class="twelve wide column">
+							{{ $ap := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_ap INNER JOIN users ON scores_ap.userid = users.id WHERE scores_ap.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
+							<p class="status-head">{{ $ap.pp }}pp</p>
+							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/u/{{ $ap.id }}">{{ $ap.username }}</a></p>
+							<p class="status-footer">{{ .T "Top Autopilot Score" }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div> {{/* Global Stats end past this /div */}}
+	</div>
+	</div>
+	
+	{{ end }}
+	
