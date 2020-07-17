@@ -8,7 +8,7 @@ function FillScores(rx) {
     var wl = window.location;
     window.history.replaceState('', document.title,
       "/b/" + b + "?mode=" + m + wl.hash);
-    var Score = "score";
+    var Score = "pp";
     switch (rx) {
         case 0: //vanilla, default to score
             Score = "score"
