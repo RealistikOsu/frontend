@@ -221,17 +221,19 @@
 							</div>
 						</div>
 						<div style="font-size: 2rem;">
-							{{ if and (.badges) (.custom_badge) }}
-									{{ range .badges }}
-										<span class data-tooltip="{{ .name }}" data-inverted="">
-											<i class="{{ faIcon .icon }} small icon"></i>
-										</span>
-									{{ end }}
-									{{ with .custom_badge }}
+							{{ if .badges }}
+								{{ range .badges }}
 									<span class data-tooltip="{{ .name }}" data-inverted="">
 										<i class="{{ faIcon .icon }} small icon"></i>
 									</span>
-									{{ end }}
+								{{ end }}
+							{{ end }}
+							{{ if .custom_badge }}
+								{{ with .custom_badge }}
+								<span class data-tooltip="{{ .name }}" data-inverted="">
+									<i class="{{ faIcon .icon }} small icon"></i>
+								</span>
+								{{ end }}
 							{{ end }}
 						</div>
 					</div>
