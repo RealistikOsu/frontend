@@ -78,7 +78,7 @@
 
 .ui.segment {
     position: relative;
-    background: #212121c2;
+    background: #292929;
     box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
     margin: 1rem 0em;
     padding: 1em 1em;
@@ -425,10 +425,10 @@ a.inherit:hover {
 
 
 .white.background {
-    background-image: url("image/navbar.png") !important;
+    background-color: #0f97ff !important;
 }
 body.ds .white.background {
-    background-image: url("image/navbar.png") !important;
+    background-color: #0f97ff !important;
 }
 
 .user.avatar {
@@ -856,7 +856,7 @@ body {
     padding: 0;
     overflow-x: hidden;
     min-width: 320px;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)) ,url("image/background.png");
+    background: #1e1e1f;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-size: 14px;
     line-height: 1.4285em;
