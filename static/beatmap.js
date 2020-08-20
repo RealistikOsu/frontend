@@ -32,7 +32,7 @@ function FillScores(rx) {
         data.scores = [];
       }
       var i = 0;
-      data.scores.sort(function(a, b) { return b.score - a.score; });
+      data.scores.sort(function(a, b) { return b.${Score} - a.${Score}; });
       data.scores.forEach(function(score) {
         var user = score.user;
         tb.append($("<tr />").append(
