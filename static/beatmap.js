@@ -32,15 +32,15 @@ function FillScores(rx) {
         data.scores = [];
       }
       var i = 0;
-      data.scores.sort(function(a, b) { return b.${Score} - a.${Score}; });
+      data.scores.sort(function(a, b) { return b.Score - a.Score; });
       data.scores.forEach(function(score) {
         var user = score.user;
         tb.append($("<tr />").append(
           $("<td data-sort-value=" + (++i) + " />")
             .text("#" + ((page - 1) * 50 + i)),
           $("<td />").html("<a href='/u/" + user.id +
-                                 "' title='View profile'><i class='" +
-                                 user.country + " flag'></i>" +
+                                 "' title='View profile'><img src='https://ussr.pl/static/flags/" +
+                                 user.country + ".png' class='new-flag'></i>" +
                                  escapeHTML(user.username) + "</a>"),
           $("<td data-sort-value=" + score.score + " />")
             .html(addCommas(score.score)),

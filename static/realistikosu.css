@@ -992,4 +992,5 @@ body {
 /*new osu style flags*/
 .new-flag {
     width: 16px;
+    margin-left: 0.5em;
 }
