@@ -18,14 +18,11 @@
     font-size: 52px;
     font-weight: 500;
     margin-top: 50px;
-    text-shadow: 3px 3px #000000;
 }
 
 .text-sm {
 	margin-top: 20px;
     font-size: 14px;
-    font-style: italic;
-    text-shadow: 2px 2px #000000;
     margin-bottom: 30px;
 }
 
@@ -972,11 +969,6 @@ body {
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
-.NewFlag {
-    max-height: 15px;
-    margin-right: 5px;
-}
-
 .OnlinePlayerGraph {
 	position: absolute;
 	bottom: 0;
@@ -995,4 +987,9 @@ body {
 
 .ui.attached.menu:not(.tabular) {
     border: 0;
+}
+
+/*new osu style flags*/
+.flag {
+    width: 16px;
 }
