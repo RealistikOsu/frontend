@@ -40,7 +40,7 @@ function FillScores(rx) {
             .text("#" + ((page - 1) * 50 + i)),
           $("<td />").html("<a href='/u/" + user.id +
                                  "' title='View profile'><i class='" +
-                                 user.country.toLowerCase() + " flag'></i>" +
+                                 user.country + " flag'></i>" +
                                  escapeHTML(user.username) + "</a>"),
           $("<td data-sort-value=" + score.score + " />")
             .html(addCommas(score.score)),

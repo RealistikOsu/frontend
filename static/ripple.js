@@ -581,8 +581,10 @@ function banchoAPI(endpoint, data, success, failure, post, handleAllFailures) {
   if (typeof failure === "undefined") {
     handleAllFailures = true;
     failure = function(data) {
+      /*
       console.warn("Silently failing.");
       console.warn(data);
+      */
     };
   }
   return _api(hanayoConf.banchoAPI + "/api/v2/", endpoint, data, success, failure, post, handleAllFailures);
