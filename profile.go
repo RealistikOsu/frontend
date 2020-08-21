@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/RealistikOsu/api/common"
+	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 // TODO: replace with simple ResponseInfo containing userid

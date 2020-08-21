@@ -5,7 +5,7 @@ package v1
 import (
 	"time"
 
-	"github.com/RealistikOsu/api/common"
+	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 // MetaRestartGET restarts the API with Zero Downtime™.

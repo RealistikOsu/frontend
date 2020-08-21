@@ -3,7 +3,7 @@ package v1
 import (
 	"database/sql"
 
-	"github.com/RealistikOsu/api/common"
+	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 type singleBadge struct {

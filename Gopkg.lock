@@ -339,7 +339,7 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/RealistikOsu/api"
+  name = "github.com/RealistikOsu/RealistikAPI"
   packages = ["common"]
   revision = "58aa42d8e497abbfbbcd0798e66ca81d8596e8a4"
 

@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/RealistikOsu/api/common"
+	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 var rn = rand.New(rand.NewSource(time.Now().UnixNano()))

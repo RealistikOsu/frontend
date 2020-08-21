@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"gopkg.in/thehowl/go-osuapi.v1"
-	"github.com/RealistikOsu/api/app/v1"
-	"github.com/RealistikOsu/api/common"
+	"github.com/RealistikOsu/RealistikAPI/app/v1"
+	"github.com/RealistikOsu/RealistikAPI/common"
 	"zxq.co/x/getrank"
 )
 
