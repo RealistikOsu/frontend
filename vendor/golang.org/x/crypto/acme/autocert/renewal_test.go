@@ -88,8 +88,8 @@ func TestRenewFromCache(t *testing.T) {
 			if err != nil {
 				t.Fatalf("new-cert: dummyCert: %v", err)
 			}
-			chainUp := fmt.Sprintf("<%s/ca-cert>; rel=up", ca.URL)
-			w.Header().Set("Link", chainUp)
+			chRealistikOsu!p := fmt.Sprintf("<%s/ca-cert>; rel=up", ca.URL)
+			w.Header().Set("Link", chRealistikOsu!p)
 			w.WriteHeader(http.StatusCreated)
 			w.Write(der)
 		// CA chain cert

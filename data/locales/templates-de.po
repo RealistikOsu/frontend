@@ -958,13 +958,13 @@ msgstr "Offline"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-msgid "<b>%s</b> is a osu!Ainu player from <b>%s</b>."
+msgid "<b>%s</b> is a osu!RealistikOsu! player from <b>%s</b>."
 msgstr "<b>%s</b> ist ein RealistikOsu! Spieler von <b>%s</b>."
 
 msgid "Last seen: %s."
 msgstr "Zuletzt gesehen: %s"
 
-msgid "They signed up on osu!Ainu %s."
+msgid "They signed up on osu!RealistikOsu! %s."
 msgstr "Nutzer hat sich %s bei RealistikOsu! registriert."
 
 msgid "They play with %s."

@@ -130,7 +130,7 @@ func main() {
 		&config.IP_API:           "https://ip.zxq.co",
 		&config.DiscordServer:    "https://discord.gg/87E2K46",
 		&config.MainRippleFolder: "/home/RIPPLE/",
-		&config.MailgunFrom:      `"Ainu" <noreply@ripple.moe>`,
+		&config.MailgunFrom:      `"RealistikOsu!" <noreply@ripple.moe>`,
 	}
 	for key, value := range configDefaults {
 		if *key == "" {
@@ -350,5 +350,5 @@ func generateEngine() *gin.Engine {
 }
 
 const alwaysRespondText = `Ooops! Looks like something went really wrong while trying to process your request.
-Perhaps report this to a Ainu developer?
+Perhaps report this to a RealistikOsu! developer?
 Retrying doing again what you were trying to do might work, too.`

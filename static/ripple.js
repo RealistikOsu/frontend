@@ -72,9 +72,9 @@ var singlePageSnippets = {
           tb.append($("<tr />").append(
             $("<td />").text("#" + ((page - 1) * 50 + (++i))),
             $("<td />").html("<a href='/u/" + v.id +
-                                   "' title='View profile'><i class='" +
-                                   v.country.toLowerCase() + " flag'></i>" +
-                                   escapeHTML(v.username) + "</a>"),
+                                    "' title='View profile'><img src='https://ussr.pl/static/flags/" +
+                                    user.country + ".png' class='new-flag'></img>" +
+                                    escapeHTML(v.username) + "</a>"),
             $("<td />").html(
               scoreOrPP(v.chosen_mode.ranked_score, v.chosen_mode.pp)),
             $("<td />").text(v.chosen_mode.accuracy.toFixed(2) + "%"),

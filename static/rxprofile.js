@@ -297,6 +297,7 @@ function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
 	var best = defaultScoreTable.clone(true).addClass("purple");
 	var recent = defaultScoreTable.clone(true).addClass("blue");
+	var first = defaultScoreTable.clone(true).addClass("red");
 	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green' data-mode='" + mode + "' />")
 			.append(
 					$("<thead />").append(
@@ -322,15 +323,18 @@ function initialiseScores(el, mode) {
 			)
 	best.attr("data-type", "best");
 	recent.attr("data-type", "recent");
+	first.attr("data-type", "first");
 	mostPlayedBeatmapsTable.attr("data-type", "most-played");
-	recent.addClass("no bottom margin");
+	first.addClass("no bottom margin");
 	el.append($("<div class='ui segments no bottom margin' />").append(
 		$("<div class='ui segment' />").append("<h2 class='ui header'>	" + T("Best scores") + "</h2>", best),
 		$("<div class='ui segment' />").append("<h2 class='ui header'>" + T("Most played beatmaps") + "</h2>", mostPlayedBeatmapsTable),
-		$("<div class='ui segment' />").append("<h2 class='ui header'>" + T("Recent scores") + "</h2>", recent)
+		$("<div class='ui segment' />").append("<h2 class='ui header'>" + T("Recent scores") + "</h2>", recent),
+		$("<div class='ui segment' />").append("<h2 class='ui header' id='firstplace-text'>" + T("First Places") + "</h2>", first)
 	));
 	loadScoresPage("best", mode);
 	loadScoresPage("recent", mode);
+	loadScoresPage("first", mode);
 	loadMostPlayedBeatmaps(mode);
 };
 function loadMoreClick() {
@@ -352,10 +356,10 @@ function loadMoreMostPlayed() {
 }
 // currentPage for each mode
 var currentPage = {
-	0: {best: 0, recent: 0, mostPlayed: 0},
-	1: {best: 0, recent: 0, mostPlayed: 0},
-	2: {best: 0, recent: 0, mostPlayed: 0},
-	3: {best: 0, recent: 0, mostPlayed: 0},
+	0: {best: 0, recent: 0, mostPlayed: 0, first: 0},
+	1: {best: 0, recent: 0, mostPlayed: 0, first: 0},
+	2: {best: 0, recent: 0, mostPlayed: 0, first: 0},
+	3: {best: 0, recent: 0, mostPlayed: 0, first: 0},
 };
 var scoreStore = {};
 function loadScoresPage(type, mode) {
@@ -377,6 +381,10 @@ function loadScoresPage(type, mode) {
 		if (r.scores == null) {
 			disableLoadMoreButton(type, mode);
 			return;
+		}
+		if (type == "first"){
+			//screw jqery, webjs god
+			document.getElementById("firstplace-text").innerHTML = T("First Places") + ` (${r.total})`;
 		}
 		r.scores.forEach(function(v, idx){
 			scoreStore[v.id] = v;

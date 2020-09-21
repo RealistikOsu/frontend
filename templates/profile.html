@@ -250,8 +250,8 @@
 					</div>
 					<!--Rank Graph-->
 					<div class="ui segment">
-						<h2 class="ui header" style="margin: 0">	Rank Graph</h2>
-						<canvas id="ProfileGraph" height="190"></canvas>
+						<h2 class="ui header" style="margin: 0; margin-bottom:10px">	Rank Graph</h2>
+						<canvas id="ProfileGraph" height="130"></canvas>
 					</div>
 					<!--Put script here cause WHY NOT-->
 					<script>
@@ -282,6 +282,9 @@
 									data: data,
 									options: {
 										//responsive: true,
+										legend: {
+											display: false
+										},
 										scales: {
 											yAxes: [{
 												ticks: {
@@ -289,7 +292,14 @@
 													reverse: true,
 													max: Math.max(...data.datasets[0].data) + 10
 												}
-											}]
+											}],
+											xAxes: [
+												{
+													ticks: {
+														display: false
+													}
+												}
+											]
 										}
 										//responsive: false
 									}

@@ -15,8 +15,8 @@ msgstr ""
 "X-Pootle-Revision: 8354\n"
 
 # Title
-msgid "- Ainu"
-msgstr "- osu!thailand"
+msgid "- RealistikOsu!"
+msgstr "- RealistikOsu!"
 
 # General
 msgid "You're already logged in!"
@@ -148,7 +148,7 @@ msgstr "ยืนยันบัญชีของคุณ"
 msgid "Your account has been created, however it still <b>needs to be verified!</b> Please log in into <b><u>osu! (the game)</u></b> using your account. <b>There is <u>no email confirmation</u> at the moment. All you need to do is connect to RealistikOsu! from the osu! client!</b> If you're having trouble, <a href='/doc/1'>follow this guide</a>."
 msgstr "บัญชีของคุณได้ถูกสร้างแว้วววว!! แต่ช้าก่อน! มันยังไงก็ต้องถูก<b>ยืนยันก่อน</b>! เพราะฉะนั้นเข้าสู่ระบบภายไปในเกมส์ <b><u>osu!</u></b> โดยใช้บัญชีของคุณ <b>ตอนนี้เรา<u>ยังไม่มีตัวยืนยันอีเมล</u>ตอนนี้ เพราะฉะนั้นก็แค่เปิดเกมส์มาแล้วเข้าสู่ระบบได้เลย!</b> หากเข้าไม่ได้ลองทำตาม <a href='/doc/1'>แบบนี้</a> ดูนะ"
 
-msgid "<b class='big text'>Do not let anyone except yourself log into your osu!thailand account!</b><br> Get on our <a href='%s'>Discord server's</a> #help channel instead (after following the steps on this page) so that we can help you out if you have trouble connecting."
+msgid "<b class='big text'>Do not let anyone except yourself log into your RealistikOsu! account!</b><br> Get on our <a href='%s'>Discord server's</a> #help channel instead (after following the steps on this page) so that we can help you out if you have trouble connecting."
 msgstr "<b class='big text'>อย่าให้ใครเข้าเล่นบัญชีคุณนอกจากตัวคุณเอง!</b><br> เข้ามา <a href='%s'>เซิร์ฟเวอร์ดิสคอร์ดของพวกเรา</a> ที่ห้อง #help แทนนะ (หลังจากลองทำตามวิธีในหน้านี้แล้วอะนะ) เผื่อมีปัญหาเราจะช่วยอะไรได้!"
 
 msgid "<a href='/doc/1'>The Guide,</a> tl;dr version"
@@ -167,7 +167,7 @@ msgid "Click on <b>install certificate</b>, then <b>Yes</b>"
 msgstr "กดไปที่ปุ่ม <b>ติดตั้งใบรับรอง</b> จากนั้นก็กด <b>Yes</b> ไป"
 
 msgid "Make sure the switcher says you're playing on <b>RealistikOsu!</b> server, if not click <b>On/Off</b>"
-msgstr "เพื่อจะให้แน่ใจว่าคุณกำลังเล่นเซิร์ฟพวกเราอยู่ มันจะต้องขึ้นว่า <b>คุณกำลังเล่นเซิร์ฟ osu!thailand</b> แต่ถ้ามันไม่ขึ้นละก็กดที่ปุ่ม <b>เปิด/ปิด</b>"
+msgstr "เพื่อจะให้แน่ใจว่าคุณกำลังเล่นเซิร์ฟพวกเราอยู่ มันจะต้องขึ้นว่า <b>คุณกำลังเล่นเซิร์ฟ RealistikOsu!</b> แต่ถ้ามันไม่ขึ้นละก็กดที่ปุ่ม <b>เปิด/ปิด</b>"
 
 msgid "If it says something about read-only mode, go to <code>C:\\Windows\\System32\\Drivers\\etc</code>, open the hosts' file Properties and make sure it's not set to \"Read only\"."
 msgstr "ถ้ามันขึ้นประมาณว่า read-only อะไรซักอย่างก็ไปที่ <code>C:\\Windows\\System32\\Drivers\\etc</code> คลิกขวาที่ไฟล์ '<b>hosts</b>' จากนั้นกดไปที่ คุณสมบัติ (Properties) และเช็คตรงช่อง \"Read only\" ออก"
@@ -180,7 +180,7 @@ msgstr "กำลังรอการยืนยัน"
 
 # register/welcome.html
 msgid "Welcome!"
-msgstr "ยินดีต้อนรับเข้าสู่เซิร์ฟเวอร์ Ainu จย้าาาาา!!!"
+msgstr "ยินดีต้อนรับเข้าสู่เซิร์ฟเวอร์ RealistikOsu! จย้าาาาา!!!"
 
 msgid "Welcome back!"
 msgstr "ยินดีต้อนรับกลับมาน้อ!"
@@ -191,11 +191,11 @@ msgstr "ยินดีด้วยที่ไม่อ่านอะไรเ
 msgid "Multiaccounts are not allowed on RealistikOsu!"
 msgstr "รู้อะไรไหมว่าการสร้างบัญชีหลายๆบัญชีในเว๊ปอะไม่ดีนะ"
 
-msgid "Your new account has been <b>banned</b> and your main account has been <b>restricted</b>. You can appeal in a month by sending an email to <b><a href='https://support.ainu.pw'>support.ainu.pw</a></b>. You better read the rules next time."
+msgid "Your new account has been <b>banned</b> and your main account has been <b>restricted</b>. You can appeal in a month by sending an email to <b><a href='https://support.RealistikOsu!.pw'>support.RealistikOsu!.pw</a></b>. You better read the rules next time."
 msgstr ""
 
 msgid "Welcome to RealistikOsu!"
-msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ osu!thailand"
+msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ RealistikOsu!"
 
 msgid "We're glad to have you here. <b>Your account is now active.</b> You can now play on RealistikOsu! and <a href='/login'>log in</a> on the website!"
 msgstr "รู้สึกดีจังที่คุณมาอยู่ที่นี้ <b>ตอนนี้คุณสามารถมาเล่นเซิร์ฟเวอร์ได้เลยนะ</b> และก็อย่าลืม <a href='/login'>เข้าสู่ระบบ</a>ในเว๊ปด้วยละ!"
@@ -237,7 +237,7 @@ msgid " - in case you believe RealistikOsu! is down"
 msgstr " - ถ้าคุณคิดว่าเซิร์ฟกำลังดับอยู่"
 
 msgid " - in case you want to talk with people about RealistikOsu!"
-msgstr " - ถ้าคุณอยากคุยกับคนอื่นๆที่เล่นเซิร์ฟ osu!thailand อยู่"
+msgstr " - ถ้าคุณอยากคุยกับคนอื่นๆที่เล่นเซิร์ฟ RealistikOsu! อยู่"
 
 msgid " - just in case"
 msgstr " - เอาไว้เฉยๆอะแหละ แฮะๆ"
@@ -274,7 +274,7 @@ msgstr "ถ้าคุณคือ %s บอกเลยว่าสร้า�
 msgid "If you're not %s, but you're using %s's computer, please sign up on RealistikOsu! from your own computer."
 msgstr "ถ้าคุณไม่ใช่ %s ละก็ แต่คุณกำลังใช้คอม %s อยู่ ไปสมัครที่คอมคุณเถอะนะ"
 
-msgid "If you live with %s and you don't have your own computer from which to sign up on RealistikOsu!, then please contact support@ainu.pw, and we'll deal with your specific case."
+msgid "If you live with %s and you don't have your own computer from which to sign up on RealistikOsu!, then please contact support@RealistikOsu!.pw, and we'll deal with your specific case."
 msgstr "ถ้าคุณอยู่กับ %s แต่คุณไม่มีคอมเล่นแต่อยากจะเล่นกับเซิร์ฟเวอร์เรา กรุณาติดต่อเราที่ดิสคอร์ดเดี๋ยวเราไปคุยเอง"
 
 msgid "This warning may pop up also if you're using another computer on the same network of %s. As long as you're not using the same computer, you should be all good."
@@ -413,21 +413,21 @@ msgid "Home Page"
 msgstr "หน้าหลัก"
 
 msgid "Welcome to RealistikOsu!"
-msgstr "ยินดีต้อนรับเข้าสู่ osu!thailand"
+msgstr "ยินดีต้อนรับเข้าสู่ RealistikOsu!"
 
 msgid "RealistikOsu! is a private osu! server, featuring multiplayer, PP, a very active community and a development team going strong implementing new features and squashing bugs. <a href='/about'>You can check out even more features here.</a> It has also a very friendly community, and it's <a href='https://github.com/RealistikOsu'>open source!</a> Just so you know, <b>we currently have %s users online and %s registered users!</b>"
-msgstr "osu!thailand คือเซิร์ฟเวอร์ osu! เถื่อน (ไม่ได้ป่าเถื่อนนะ แต่ไม่รู้ว่าจะใช้คำว่าอะไรละ) ซึ่งมีระบบเล่นหลายคน, PP, และชุมชนที่โคตรจะมีชีวิต (ประมาณว่ามีคนคุย/เล่นกันเยอะอะนะ) และทีมงานสรรหาระบบใหม่ๆเข้าเซิร์ฟเวอร์! <a href='/about'>ลองไปดูว่าอะไรคือเซิร์ฟนี้ก็ได้</a> และคนในเซิร์ฟเวอร์ใจดีด้วยนะ! เรายังเปิด <a href='https://github.com/RealistikOsu'>src</a> ให้ได้ใช้ด้วย! จะได้รู้ว่าเราไม่ได้ทำอะไรแย่ๆ <b>ซึ่งตอนนี้เรามี คนทั้งหมด %s คนที่กำลังออนไลน์อยู่ และ คนที่สมัครเข้าเซิร์ฟแล้ว %s คน!</b>"
+msgstr "RealistikOsu! คือเซิร์ฟเวอร์ osu! เถื่อน (ไม่ได้ป่าเถื่อนนะ แต่ไม่รู้ว่าจะใช้คำว่าอะไรละ) ซึ่งมีระบบเล่นหลายคน, PP, และชุมชนที่โคตรจะมีชีวิต (ประมาณว่ามีคนคุย/เล่นกันเยอะอะนะ) และทีมงานสรรหาระบบใหม่ๆเข้าเซิร์ฟเวอร์! <a href='/about'>ลองไปดูว่าอะไรคือเซิร์ฟนี้ก็ได้</a> และคนในเซิร์ฟเวอร์ใจดีด้วยนะ! เรายังเปิด <a href='https://github.com/RealistikOsu'>src</a> ให้ได้ใช้ด้วย! จะได้รู้ว่าเราไม่ได้ทำอะไรแย่ๆ <b>ซึ่งตอนนี้เรามี คนทั้งหมด %s คนที่กำลังออนไลน์อยู่ และ คนที่สมัครเข้าเซิร์ฟแล้ว %s คน!</b>"
 
 msgid "What are you waiting for? Join RealistikOsu!! It's risk-free: you won't get your account banned on the official server if you play on RealistikOsu!<br>You can also switch anytime between the official osu! server and RealistikOsu!!"
-msgstr "แล้วจะรออะไรอยู่ล่ะ? มาเล่นกัน!! ไม่ต้องกลัวเรื่องการโดนแบน: เพราะคุณจะไม่โดนแบนในเซิร์ฟหลักหรอกถ้าคุณเล่นเซิร์ฟเวอร์เรา!<br>คุณยังสามารถสลับเซิร์ฟเวอร์ระหว่างเซิร์ฟเวอร์แท้และเซิร์ฟเวอร์ osu!thailand ได้ด้วยหละ!"
+msgstr "แล้วจะรออะไรอยู่ล่ะ? มาเล่นกัน!! ไม่ต้องกลัวเรื่องการโดนแบน: เพราะคุณจะไม่โดนแบนในเซิร์ฟหลักหรอกถ้าคุณเล่นเซิร์ฟเวอร์เรา!<br>คุณยังสามารถสลับเซิร์ฟเวอร์ระหว่างเซิร์ฟเวอร์แท้และเซิร์ฟเวอร์ RealistikOsu! ได้ด้วยหละ!"
 
 msgid "Howdy, %s!"
 msgstr "ว่าไง %s!"
 
 msgid "Welcome back to RealistikOsu! We currently have <b>%s online users and %s total registered users.</b> Nice day to farm a few maps, isn't it?"
-msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ osu!thailand ตอนนี้เรามี <b>คนทั้งหมด %s คนที่กำลังออนไลน์อยู่ และ คนที่สมัครเข้าเซิร์ฟแล้ว %s คน</b> เป็นวันที่ดีสำหรับการฟาร์มแมพเลยว่ามั้ย?"
+msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ RealistikOsu! ตอนนี้เรามี <b>คนทั้งหมด %s คนที่กำลังออนไลน์อยู่ และ คนที่สมัครเข้าเซิร์ฟแล้ว %s คน</b> เป็นวันที่ดีสำหรับการฟาร์มแมพเลยว่ามั้ย?"
 
-msgid "Latest news from our <a href='https://blog.ainu.pw'>blog</a>"
+msgid "Latest news from our <a href='https://blog.RealistikOsu!.pw'>blog</a>"
 msgstr "ข่าวสารล่าสุดจากพวกเรา"
 
 # base.html
@@ -438,10 +438,10 @@ msgid "The RealistikOsu! website is currently in maintenance mode. Only certain 
 msgstr "เว๊ปไซต์อยู่ในช่วงปิดปรับปรุง เฉพาะผู้ใช้ที่อนุญาตเท่านั้นที่สามารถใช้เว๊ปไซต์อย่างเต็มรูปแบบได้!"
 
 msgid "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu!'s staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal at <a href='https://discord.gg/CEjWW4K'>our Discord</a>."
-msgstr "บัญชีคุณตอนนี้กำลังถูกระงับ! คุณจะไม่สามารถทำอะไรได้และคุณจะถูกเห็นโดยคุณเองและทีมงาน osu!thailand เท่านั้น! ถ้าคุณรู้สึกว่าเราทำอะไรผิดพลาดไป คุณสามารถลองขอปลดได้ที่ <a href='https://discord.gg/CEjWW4K'>ดิสคอร์ดของพวกเราได้เลย!</a>."
+msgstr "บัญชีคุณตอนนี้กำลังถูกระงับ! คุณจะไม่สามารถทำอะไรได้และคุณจะถูกเห็นโดยคุณเองและทีมงาน RealistikOsu! เท่านั้น! ถ้าคุณรู้สึกว่าเราทำอะไรผิดพลาดไป คุณสามารถลองขอปลดได้ที่ <a href='https://discord.gg/CEjWW4K'>ดิสคอร์ดของพวกเราได้เลย!</a>."
 
-msgid "&copy; 2018-%d Ripple, osu!Ainu, Made with love by Aoba ❤ using Hanayo %s"
-msgstr "&copy; %d osu!thailand, สร้างโดย <a href='https://www.facebook.com/100006238846620'>สัณหปรรณ อนันเต่า</a> %s"
+msgid "&copy; 2018-%d Ripple, osu!RealistikOsu!, Made with love by Aoba ❤ using Hanayo %s"
+msgstr "&copy; %d RealistikOsu!, สร้างโดย <a href='https://www.facebook.com/100006238846620'>สัณหปรรณ อนันเต่า</a> %s"
 
 msgid "Team"
 msgstr "ทีมงาน"
@@ -526,7 +526,7 @@ msgstr "เปิดให้แมพ Ranked"
 msgid "Two Factor Authentication"
 msgstr ""
 
-msgid "Before proceding further on RealistikOsu!, we require you to use your Google Authenticator App to use the code for osu!thailand, so that we can log you in."
+msgid "Before proceding further on RealistikOsu!, we require you to use your Google Authenticator App to use the code for RealistikOsu!, so that we can log you in."
 msgstr ""
 
 msgid "Before proceding any further on RealistikOsu!, we require you to use the message you just received on telegram to log in to your account."
@@ -559,15 +559,15 @@ msgstr ""
 msgid "You've been successfully logged in."
 msgstr ""
 
-msgid "Ooops! Looks like something went really wrong while trying to process your request. Perhaps report this to a osu!thailand developer? Retrying doing what you were trying to do might work, too."
+msgid "Ooops! Looks like something went really wrong while trying to process your request. Perhaps report this to a RealistikOsu! developer? Retrying doing what you were trying to do might work, too."
 msgstr ""
 
 # about.html
 msgid "Welcome to RealistikOsu!"
-msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ osu!thailand"
+msgstr "ยินดีต้อนรับสู่เซิร์ฟเวอร์ RealistikOsu!"
 
 msgid "RealistikOsu! is a private osu! server."
-msgstr "osu!thailand คือเซิร์ฟ osu!"
+msgstr "RealistikOsu! คือเซิร์ฟ osu!"
 
 msgid "There are many like it, but this one is ours."
 msgstr "มีหลายเซิร์ฟที่คล้ายๆกัน แต่เซิร์ฟนี้เซิฟเรา"
@@ -610,7 +610,7 @@ msgid "And a lot more to come!"
 msgstr "และอื่นๆอีกมากมายที่จะมาเร็วๆนี้"
 
 msgid "RealistikOsu! is the result of the hard work of developers, who got tired about the whole osu! server"
-msgstr "osu!thailand คือเซิร์ฟที่ทำมาจากทีมงานผู้พัฒนาที่ทำมาอย่างยากลำบาก ที่ลองผิดลองถูกกับเซิร์ฟเวอร์ osu!"
+msgstr "RealistikOsu! คือเซิร์ฟที่ทำมาจากทีมงานผู้พัฒนาที่ทำมาอย่างยากลำบาก ที่ลองผิดลองถูกกับเซิร์ฟเวอร์ osu!"
 
 # %s is wink emoji
 msgid "Thanks to developers who has help me and make server for us <a href=\"/register\">Signing up</a> on RealistikOsu! won't result in getting your account on osu! restricted, so what are you waiting for?! Come join us! %s"
@@ -733,8 +733,8 @@ msgstr "จากประเทศ <b>%s</b>"
 msgid "Last seen: %s."
 msgstr "เห็นล่าสุดเมื่อ: %s"
 
-msgid "They signed up on osu!Ainu %s."
-msgstr "สมัครใน osu!thailand ตั้งแต่ %s"
+msgid "They signed up on osu!RealistikOsu! %s."
+msgstr "สมัครใน RealistikOsu! ตั้งแต่ %s"
 
 msgid "They play with %s."
 msgstr "เขาเล่นด้วย %s"
@@ -798,7 +798,7 @@ msgstr ""
 
 # support.html
 msgid "Support RealistikOsu!"
-msgstr "สนับสนุนเซิร์ฟ osu!thailand"
+msgstr "สนับสนุนเซิร์ฟ RealistikOsu!"
 
 msgid "You are a donor!"
 msgstr ""
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Think about <b>spicing your profile up with some eggplants</b>? Got you covered! Having donor privileges, you get to be able to change your profile background."
 msgstr ""
 
-msgid "Want to start over one more time? With donor you can! Normally you can only <a href='https://support.ainu.pw' target='_blank'>request an account wipe</a> once, but having donated you'll be able to do it once again."
+msgid "Want to start over one more time? With donor you can! Normally you can only <a href='https://support.RealistikOsu!.pw' target='_blank'>request an account wipe</a> once, but having donated you'll be able to do it once again."
 msgstr ""
 
 msgid "<b>Who knows</b> what we could implement next? You could be able to do even <i>more</i> stuff for donors once we implement it."
@@ -917,13 +917,13 @@ msgstr ""
 msgid "Send %s BTC to this Bitcoin address:"
 msgstr ""
 
-msgid "Afterwards, <b>please send an email to <a href=\"mailto:howl@ainu.pw\">howl@ainu.pw</a></b> containing the transaction hash!"
+msgid "Afterwards, <b>please send an email to <a href=\"mailto:howl@RealistikOsu!.pw\">howl@RealistikOsu!.pw</a></b> containing the transaction hash!"
 msgstr ""
 
 msgid "I've donated, now what?"
 msgstr ""
 
-msgid "You'll have to wait until we verify and process your payment. It can take up to <b>12 hours</b>. If 12 hours have passed and you still haven't received your Donor tag, contact a <b>Dev/Community Manager</b> in our Discord server or send an email to <b><a href=\"mailto:support@ainu.pw\">support@ainu.pw</a></b>. Once we have processed your payment, you'll receive an <b>email</b> to the address you've used to sign up and you'll get <b>all the donor privileges, except the Discord ones</b>. To get the Discord donor privileges, go <a href=\"/settings/discord\">here</a>."
+msgid "You'll have to wait until we verify and process your payment. It can take up to <b>12 hours</b>. If 12 hours have passed and you still haven't received your Donor tag, contact a <b>Dev/Community Manager</b> in our Discord server or send an email to <b><a href=\"mailto:support@RealistikOsu!.pw\">support@RealistikOsu!.pw</a></b>. Once we have processed your payment, you'll receive an <b>email</b> to the address you've used to sign up and you'll get <b>all the donor privileges, except the Discord ones</b>. To get the Discord donor privileges, go <a href=\"/settings/discord\">here</a>."
 msgstr ""
 
 msgid "Please log in to get supporter"
@@ -1144,7 +1144,7 @@ msgstr "สี"
 msgid "Colour is invalid"
 msgstr "สีบ้าอะไรเนี่ย!?"
 
-msgid "You have been automatically logged out of your account because your account has either been banned or locked. Should you believe this is a mistake, you can contact our support team at support@ainu.pw."
+msgid "You have been automatically logged out of your account because your account has either been banned or locked. Should you believe this is a mistake, you can contact our support team at support@RealistikOsu!.pw."
 msgstr ""
 
 msgid "You have been automatically logged out for security reasons. Please <a href='/login?redir=%s'>log back in</a>."
@@ -1166,7 +1166,7 @@ msgid "If you truly have understood what's written above and you have understood
 msgstr "ถ้าคุณเข้าใจว่าเราอธิบายให้คุณฟังแล้ว และคุณเข้าใจว่าการสร้างหลายๆบัญชีทำให้ถูกแบนได้ คุณสามารถกดข้อความนี้เพื่อไปสมัครได้เลย"
 
 msgid "You look new here. Allow us to introduce you to what RealistikOsu! is."
-msgstr "เหมือนคุณพึ่งมาใหม่นะ เรามาแนะนำกันดีกว่าว่า osu!thailand คืออะไร"
+msgstr "เหมือนคุณพึ่งมาใหม่นะ เรามาแนะนำกันดีกว่าว่า RealistikOsu! คืออะไร"
 
 # PAY ATTENTION! This is Log in *with* RealistikOsu!, not *on* RealistikOsu! This is for
 # oauth.
@@ -1211,7 +1211,7 @@ msgstr ""
 msgid "Community Managers deal with bans, silences, name changes and pretty much everything that has to do with the community."
 msgstr ""
 
-msgid "They take care of our Discord server and reply to emails sent to the support services (email and support.ainu.pw). Community Managers have a red name in the in-game chat."
+msgid "They take care of our Discord server and reply to emails sent to the support services (email and support.RealistikOsu!.pw). Community Managers have a red name in the in-game chat."
 msgstr ""
 
 msgid "Developers"
@@ -1277,5 +1277,5 @@ msgstr ""
 msgid "(You get other cool perks too)"
 msgstr ""
 
-msgid "The RealistikOsu! API is the system through which developers can create applications to interact with osu!thailand <b>If you're asked to fill out an API token from this page, be wary and only actually create the token if you really trust the owner of the application.</b>"
+msgid "The RealistikOsu! API is the system through which developers can create applications to interact with RealistikOsu! <b>If you're asked to fill out an API token from this page, be wary and only actually create the token if you really trust the owner of the application.</b>"
 msgstr ""

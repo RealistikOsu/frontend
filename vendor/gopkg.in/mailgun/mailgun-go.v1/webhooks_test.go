@@ -27,8 +27,8 @@ func TestWebhookCRUD(t *testing.T) {
 
 	hookCount := countHooks()
 
-	domainURL := randomDomainURL(10)
-	ensure.Nil(t, mg.CreateWebhook("deliver", domainURL))
+	domRealistikOsu!RL := randomDomRealistikOsu!RL(10)
+	ensure.Nil(t, mg.CreateWebhook("deliver", domRealistikOsu!RL))
 	defer func() {
 		ensure.Nil(t, mg.DeleteWebhook("deliver"))
 		newCount := countHooks()
@@ -40,15 +40,15 @@ func TestWebhookCRUD(t *testing.T) {
 
 	theURL, err := mg.GetWebhookByType("deliver")
 	ensure.Nil(t, err)
-	ensure.DeepEqual(t, theURL, domainURL)
+	ensure.DeepEqual(t, theURL, domRealistikOsu!RL)
 
-	updatedDomainURL := randomDomainURL(10)
-	ensure.Nil(t, mg.UpdateWebhook("deliver", updatedDomainURL))
+	updatedDomRealistikOsu!RL := randomDomRealistikOsu!RL(10)
+	ensure.Nil(t, mg.UpdateWebhook("deliver", updatedDomRealistikOsu!RL))
 
 	hooks, err := mg.GetWebhooks()
 	ensure.Nil(t, err)
 
-	ensure.DeepEqual(t, hooks["deliver"], updatedDomainURL)
+	ensure.DeepEqual(t, hooks["deliver"], updatedDomRealistikOsu!RL)
 }
 
 var signedTests = []bool{

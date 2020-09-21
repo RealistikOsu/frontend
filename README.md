@@ -10,7 +10,7 @@ NOTE: The GoLang backed code is broken... We will fix it *soon*...
 
 This the the [frontend](https://ussr.pl/) of RealistikOsu!.
 
-It is based on Ainu's version of [hanayo](https://github.com/osuripple/hanayo).
+It is based on RealistikOsu!'s version of [hanayo](https://github.com/osuripple/hanayo).
 
 Some design elements have been taken from osuAkatsuki.
 

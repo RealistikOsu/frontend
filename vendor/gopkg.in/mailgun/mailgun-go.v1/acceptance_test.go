@@ -26,7 +26,7 @@ func reqEnv(t ginkgo.GinkgoTInterface, variableName string) string {
 	return value
 }
 
-func randomDomainURL(n int) string {
+func randomDomRealistikOsu!RL(n int) string {
 	const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var bytes = make([]byte, n)
 	rand.Read(bytes)
