@@ -381,8 +381,10 @@ function loadScoresPage(type, mode) {
 			disableLoadMoreButton(type, mode);
 			return;
 		}
-		//screw jqery, webjs god
-		document.getElementById("firstplace-text").innerHTML = T("First Places") + ` (${r.total})`;
+		if (type == "first"){
+			//screw jqery, webjs god
+			document.getElementById("firstplace-text").innerHTML = T("First Places") + ` (${r.total})`;
+		}
 		r.scores.forEach(function(v, idx){
 			scoreStore[v.id] = v;
 			var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
