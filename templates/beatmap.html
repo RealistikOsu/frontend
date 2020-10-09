@@ -19,7 +19,7 @@
 				{{ end }}
 			</div>
 		</div>
-		<audio id="BeatmapAudio" src="https://b.ppy.sh/preview/{{ .Beatmapset.ID }}.mp3" preload="auto"></audio>
+		<audio id="BeatmapAudio" src="https://kacktaube.me/preview/{{ .Beatmapset.ID }}" preload="auto"></audio>
 
 		<div class="ui segments">
 			<div class="ui segment">
@@ -77,6 +77,7 @@
 			//play 
 			var myAudio = document.getElementById("BeatmapAudio");
 			var isPlaying = false;
+			myAudio.volume = 0.2; // So we don't blast off their ears lmfao
 
 			function togglePlay() {
 				if (isPlaying) {
