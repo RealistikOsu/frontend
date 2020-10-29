@@ -19,7 +19,7 @@
 				{{ end }}
 			</div>
 		</div>
-		<audio id="BeatmapAudio" src="https://kacktaube.me/preview/{{ .Beatmapset.ID }}" preload="auto"></audio>
+		<audio id="BeatmapAudio" src="http://api.ussr.pl/beatmaps/preview/{{ .Beatmapset.ID }}" preload="auto"></audio>
 
 		<div class="ui segments">
 			<div class="ui segment">
@@ -46,9 +46,9 @@
 						<div class="full-centered column">
 							<div class="ui vertical buttons">
 								<a href="osu://dl/{{ .Beatmapset.ID }}" class="ui pink labeled icon button"><i class="download icon"></i>{{ $.T "osu!direct" }}</a>
-								<a href="https://kacktaube.me/d/{{ .Beatmapset.ID }}" class="ui green labeled icon button"><i class="download icon"></i>{{ $.T "Download" }}</a>
+								<a href="/d/{{ .Beatmapset.ID }}" class="ui green labeled icon button"><i class="download icon"></i>{{ $.T "Download" }}</a>
 								{{ if .Beatmapset.HasVideo }}
-									<a href="https://kacktaube.me/d/{{ .Beatmapset.ID }}?novideo" class="ui gray labeled icon button"><i class="download icon"></i>{{ $.T "Download (no video)" }}</a>
+									<a href="/d/{{ .Beatmapset.ID }}?novideo" class="ui gray labeled icon button"><i class="download icon"></i>{{ $.T "Download (no video)" }}</a>
 								{{ end }}
 								<a href="#" class="ui purple labeled icon button" onclick="togglePlay()"><i class="play icon" id="imageplay"></i><span id = "PlayState">{{ $.T "Play" }}</span></a>
 							</div>
