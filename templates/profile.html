@@ -83,7 +83,7 @@
 								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
 									<i class="trophy line small  circular icon"></i> 
 									{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
-										<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>{{ with and $v $v.global_leaderboard_rank }}#{{ . }}{{ else }}{{ $global.T "Unknown" }}{{ end }}</h1>
+									<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>{{ with and $v $v.global_leaderboard_rank }}#{{ . }}{{ else }}{{ $global.T "Unknown" }}{{ end }}</span>
 									{{ end }}
 								</div>
 							</div>
@@ -92,7 +92,14 @@
 						{{ if eq $global.UserID $global.Context.User.ID }}
 						<a href="/settings/avatar">
 						{{ end }}
-						<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem;/*! position: absolute; *//*! margin-left: 50%; */box-shadow: 0px 0px 15px #000000;">
+						<!-- Lasy IF but who cares right? -->
+						{{ with bgetv1 "isOnline?id=%.0f" .id }}
+							{{ if .result }}
+								<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #2cff00;">
+							{{ else }}
+								<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">
+							{{ end }}
+						{{ end }}
 						{{ if eq $global.UserID $global.Context.User.ID }}
 						</a>
 						{{ end }}
@@ -105,6 +112,7 @@
 						<!--Bottom part-->
 						<div style="margin-top: 1rem;margin-bottom: 1rem;">
 							<span id="highlight" style="font-size: 40px;">{{ .username }}</span><br>
+							{{ $oof := . }}
 							{{ if eq $oof.clan.name "" }}
 							<!--HOW DO I INVERT IN GOLANG??-->
 							{{ else }}
