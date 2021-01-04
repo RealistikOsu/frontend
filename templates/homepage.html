@@ -59,11 +59,17 @@ KyutGrill=homepage2.jpg
 					<b>Welcome to RealistikOsu!</b>
 	
 	
-					RealistikOsu! is a private osu! server with everything Bancho has to offer, Relax leaderboards and more! We have our own community, Relax leaderboards, Relax profiles, Relax PP system, our own beatmap ranking and a dedicated leadership team. Why hesitate? Join RealistikOsu! now!
+					RealistikOsu is a custom server for the rhythm game osu!, featuring tons of unique features! 
+					We provide an nice, safe, unique place for everyone to enjoy, providing a wide variety of new 
+					experiences and features. We have anything ranging from custom map ranking and clans to dedicated 
+					leaderboards and PP systems for the mods of Relax and Autopilot and out feature set grows daily! 
+					Why hesitate? Join RealistikOsu now!
 				</span>
 				<div class="buttons">
 					{{ if not .Context.User.ID }}
 						<a href="/register" class="home-btn btn-key" >Register</a>
+					{{ else }}
+						<a href="/u/{{ .Context.User.ID }}" class="home-btn btn-key" >Profile</a>
 					{{end}}
 					<a href="https://dl.ussr.pl/files/osu/ROS.exe" class="home-btn btn-how" style="margin-left: 6px;">Server Switcher</a>
 				</div>
