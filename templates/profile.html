@@ -83,7 +83,12 @@
 								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
 									<i class="trophy line small  circular icon"></i> 
 									{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
-									<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>{{ with and $v $v.global_leaderboard_rank }}#{{ . }}{{ else }}{{ $global.T "Unknown" }}{{ end }}</span>
+									<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>
+										{{ with and $v $v.global_leaderboard_rank }}
+											#{{ . }}
+										{{ else }}
+											{{ $global.T "Unknown" }}
+										{{ end }}</span>
 									{{ end }}
 								</div>
 							</div>
