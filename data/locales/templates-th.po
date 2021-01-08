@@ -1156,7 +1156,7 @@ msgstr "คุณต้องเข้าสู่ระบบก่อนนะ
 msgid "Forbidden"
 msgstr ""
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr ""
 
 msgid "It seems like the original version of this file has been updated, so this file is out of date and may contain inaccurate information. If you want to make sure to be up-to-date, please refer to the <a href=\"%s%s\">English version</a>."

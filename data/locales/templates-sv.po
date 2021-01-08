@@ -1559,7 +1559,7 @@ msgstr "Du måste logga in först."
 msgid "Forbidden"
 msgstr "Förbjudet"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr ""
 
 msgid ""

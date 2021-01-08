@@ -1516,7 +1516,7 @@ msgstr "Sinun pitää ensin kirjautua sisään."
 msgid "Forbidden"
 msgstr "Kielletty"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "Sinun ei pitäisi olla täällä."
 
 msgid ""

@@ -1503,7 +1503,7 @@ msgstr ""
 msgid "Forbidden"
 msgstr ""
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr ""
 
 msgid ""

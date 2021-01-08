@@ -1598,7 +1598,7 @@ msgstr "Devi effettuare l'accesso prima."
 msgid "Forbidden"
 msgstr "Vietato"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "Non dovresti essere da queste parti."
 
 msgid ""

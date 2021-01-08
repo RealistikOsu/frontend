@@ -1609,7 +1609,7 @@ msgstr "Trebuie să vă autentificaţi prima dată."
 msgid "Forbidden"
 msgstr "Interzis"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "N-ar trebui să fi pe aici."
 
 msgid ""

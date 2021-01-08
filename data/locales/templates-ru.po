@@ -1594,7 +1594,7 @@ msgstr "Сначала войдите."
 msgid "Forbidden"
 msgstr "Доступ запрещен."
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "Вы не должны тут находиться."
 
 msgid ""

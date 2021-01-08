@@ -3,15 +3,18 @@ Handler=/settings/profbackground
 TitleBar=Profile background
 KyutGrill=settings2.jpg
 Include=menu.html
-MinPrivileges=6
 AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.js
 */}}
 {{ define "tpl" }}
+{{ $isSupporter := has .Context.User.Privileges 4 }}
 <div class="ui container">
 	<div class="ui stackable grid">
 		{{ template "settingsSidebar" . }}
 		<div class="twelve wide column">
-			<div class="ui center aligned segment">
+			<div class="ui {{ if $isSupporter }}center aligned{{ end }} segment">
+				{{ if not $isSupporter }}
+				{{ template "supporter_only" . }}
+				{{ else }}
 				{{ $d := qb "SELECT type, value FROM profile_backgrounds WHERE uid = ? LIMIT 1" .Context.User.ID }}
 				{{ $type  := or $d.type.Int -1 }}
 				{{ $value := or $d.value.String "" }}
@@ -67,6 +70,7 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
 						</button>
 					</p>
 				</form>
+				{{end}}
 			</div>
 		</div>
 	</div>

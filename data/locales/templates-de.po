@@ -1616,7 +1616,7 @@ msgstr "Du musst dich erst anmelden."
 msgid "Forbidden"
 msgstr "Verboten"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "Du solltest hier nicht sein."
 
 msgid ""

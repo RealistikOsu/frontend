@@ -1598,7 +1598,7 @@ msgstr "Necesitas iniciar sesión primero."
 msgid "Forbidden"
 msgstr "Prohibido"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "No deberías estar po' aquí."
 
 msgid ""

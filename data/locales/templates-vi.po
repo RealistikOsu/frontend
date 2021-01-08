@@ -1484,7 +1484,7 @@ msgstr "Bạn phải đăng nhập trước."
 msgid "Forbidden"
 msgstr "Cấm"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "Bạn không nên ở đây"
 
 msgid ""

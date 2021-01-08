@@ -1461,7 +1461,7 @@ msgstr "먼저 로그인을 하셔야 합니다."
 msgid "Forbidden"
 msgstr "거부됨"
 
-msgid "You should not be 'round here."
+msgid "You do not have sufficient privileges to visit this area!"
 msgstr "여기 계시면 안되죠!"
 
 msgid ""

@@ -19,12 +19,12 @@ KyutGrill=team2.jpg
 			{{ template "userGroup" (.Get "badges/members?id=%d" 2) }}
 		</div>
 		<div class="ui center aligned segment">
-			<h1 class="ui heading">{{ .T "Community Management Team" }}</h1>
+			<h1 class="ui heading">{{ .T "Administrator Team" }}</h1>
 			<p>
-				{{ .T "Community Managers (as the name suggests) deal with the community. This can be anything from organising events to hunting hackers. They are cool people ready to help you." }}<br>
+				{{ .T "Administrator are all-mighty powerful beings that are here to ensure everything runs smoothly. This can be anything from organising events to hunting hackers. They are cool people ready to help you." }}<br>
 				{{ .T "They have power in numerous sectors such as the discord server" | html }}
 			</p>
-			{{ template "userGroup" (.Get "badges/members?id=%d" 4) }}
+			{{ template "userGroup" (.Get "badges/members?id=%d" 1018) }}
 		</div>
 		
 		<div class="ui center aligned segment">
@@ -64,34 +64,28 @@ KyutGrill=team2.jpg
 		<div class="ui segment">
 			<ul class="ui list">
 				<li>
-					{{ .T "<b>Franc[e]sco</b>, for <a href='https://github.com/Francesco149/oppai'>oppai</a>, used as standard pp calculator." | html }}
+					{{ .T "<b>Ripple</b> for providing a solid base for RealistikOsu to work off!" | html }}<br>
+					Without Ripple's generous policy to <a href="https://github.com/osuripple">open source</a>, it is unlikely RealistikOsu would have even been started!
 				</li>
 				<li>
-					{{ .T "<b>cmyui</b>, for the relax PP calculator!" | html }}<br>
-					oppai is licensed under GPL v3. Their implementation can be found <a href="https://github.com/osuAkatsuki/akatsuki-pp">here</a>.
-				</li>
-				<li>
-					{{ .T "<b>Tom94</b>, for <a href='https://github.com/ppy/osu-performance'>osu-performance</a>, used as a reference for our mania pp calculator." | html }}<br>
-					osu-performance is licensed under AGPL v3. Our implementation can be found <a href="https://github.com/RealistikOsu/lets/src/master/pp/wifipiano2.py">here</a>.
-				</li>
-				<li>
-					{{ .T "<b>Sunpy</b>, for <a href='https://github.com/osufx/catch-the-pp'>catch-the-pp</a> used as Catch The Beat pp calculator." | html }}<br>
-					catch-the-pp is licensed under GPL v3. Our implementation can be found <a href="https://github.com/RealistikOsu/lets/tree/master/pp">here</a>.
+					{{ .T "<b>Franc[e]sco</b> and <b>cmyui</b> for the relax PP calculator!" | html }}<br>
+					The relax calculator (originally created by <a href="https://github.com/Francesco149/oppai-ng">Franc[e]sco</a> and modified by cmyui for relax)
+					is licensed under GPL v3. Their implementation can be found <a href="https://github.com/osuAkatsuki/akatsuki-pp">here</a>.
 				</li>
 				<li>
 					{{ .T "<b>jrosdahl</b>, for <a href='https://github.com/jrosdahl/miniircd'>miniircd</a>, used as a base for our IRC server." | html }}<br>
 					miniircd is licensed under GPL v2. Our implementation can be found <a href="https://github.com/RealistikOsu/pep.py/src/master/irc/ircserver.py">here</a>.
 				</li>
 				<li>
-					<b><a href="https://kurikku.pw/">Kotrik</a></b> for creating the beatmap browser used on the frontend.
+					<b><a href="https://hentai.ninja/beatmaps">Kotrik</a></b> for creating the beatmap browser used within our frontend.
 				</li>
-				<li>{{ .T "<b><a id='everyone' class='clickable'>Everyone</a></b> who has supported the RealistikOsu! project by donating or inviting other people." | html }}</li>
+				<li>{{ .T "<b><a id='everyone' class='clickable'>Everyone</a></b> who has followed us through this amazing journey!" | html }}</li>
 			</ul>
 		</div>
 	</div>
 	{{ $ := . }}
 	<div class="ui modal">
-		<div class="header"><h2 class="ui header">{{ .T "They told me these are very cool people." }}</h2></div>
+		<div class="header"><h2 class="ui header">{{ .T "Some of our amazing players!" }}</h2></div>
 		{{ with .Get "users?sort=donor_expire,desc&l=52" }}
 			<div class="content">
 				<div class="ui four column grid">

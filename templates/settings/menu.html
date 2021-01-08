@@ -13,11 +13,12 @@ NoCompile=true
 		{{ navbarItem .Path (.T "Password") "/settings/password" }}
 
 		{{/* Stuff for donators */}}
-		{{ if has .Context.User.Privileges 4 }}
+		{{/* if has .Context.User.Privileges 4 */}}
 		
-			{{ navbarItem .Path (.T "Profile background") "/settings/profbackground" }}
+		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
+		{{ navbarItem .Path (printf "%s %s" (.T "Profile Background") $d) "/settings/profbackground" }}
 
-		{{ end }}
+		{{/* end */}}
 	</div>
 </div>
 {{ end }}
