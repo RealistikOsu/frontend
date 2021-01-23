@@ -22,3 +22,17 @@ NoCompile=true
 	</div>
 </div>
 {{ end }}
+
+{{ define "supporter_only" }}
+<div class="ui icon message black ds">
+    <div class="content">
+        <div class="header">
+            {{ .T "This feature is restricted to RealistikOsu supporters only..." }}
+        </div>
+        <p>
+            {{ .T "<a href='/donate'>Purchase supporter</a> to access this feature along with countless other features!" | html }}
+        </p>
+    </div>
+    <i class="blue lock icon"></i>
+</div>
+{{ end }}
