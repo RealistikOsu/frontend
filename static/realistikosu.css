@@ -38,7 +38,7 @@
     display: flex !important;
     justify-content: center;
     /*colour scheme go brrrrrrr*/
-    background-color: #292929;
+    background-color: #212121;
     margin-top: 110px;
     align-items: flex-end;
 	height: 400px;
@@ -75,7 +75,7 @@
 
 .ui.segment {
     position: relative;
-    background: #292929;
+    background: #212121;
     box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
     margin: 1rem 0em;
     padding: 1em 1em;
@@ -702,8 +702,7 @@ img.locked-achievement:hover {
 	font-size: 25px; color: white;
 }
 .footer-bg {
-    text-shadow: -1px 2px 2px rgba(0,0,0,.33);
-    background: #292929;
+    background: #212121;
     height: 180px;
     margin: 10px 0 -30px!important;
     padding: 25px 0 0;
