@@ -339,7 +339,7 @@ func generateEngine() *gin.Engine {
 	r.Any("/blog/*url", blogRedirect)
 
 	r.GET("/help", func(c *gin.Context) {
-		c.Redirect(301, "https://discord.gg/Qp3WQU8")
+		c.Redirect(301, "https://discord.gg/8ySdzhyMtt")
 	})
 
 	loadSimplePages(r)

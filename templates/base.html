@@ -62,12 +62,12 @@
 				<noscript>Research has proven this website works 10000% better if you have JavaScript enabled.</noscript>
 				{{ if and .Context.User.Username (not (has .Context.User.Privileges 1)) }}
 					<div class="ui warning message">
-						{{ $.T "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu's staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal on the <a href='https://discord.gg/87E2K46'>Discord Server</a>." | html }}
+						{{ $.T "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu's staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal on the <a href='https://discord.gg/8ySdzhyMtt'>Discord Server</a>." | html }}
 					</div>
 				{{ end }}
 				{{ if $frozen.frozen.Bool }}
                     <div class="ui warning message">
-                        {{ $.T "Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href='https://discord.gg/87E2K46'>RealistikCentral Discord Server</a>." | html }}
+                        {{ $.T "Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href='https://discord.gg/8ySdzhyMtt'>RealistikCentral Discord Server</a>." | html }}
                     </div>
                 {{ end }}
 				{{ if .Messages }}
@@ -110,7 +110,6 @@
 								<ul style="list-style-type: none; padding: 0; margin: 0;">
 									<li>
 										<a href="https://dl.ussr.pl/files/osu/ROS.exe">Server Switcher</a>
-										<a href="https://ussr.pl/doc">Documentation</a>
 									</li>
 								</ul>
 							</div> 
@@ -120,7 +119,7 @@
 								<a class="footer-title">Social</a>
 								<ul style="list-style-type: none; padding: 0; margin: 0;">
 									<li>
-										<a href="https://discord.gg/87E2K46" target="_blank">Discord</a>
+										<a href="https://discord.gg/8ySdzhyMtt" target="_blank">Discord</a>
 									</li>
 								</ul>
 							</div>

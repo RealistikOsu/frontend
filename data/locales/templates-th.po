@@ -437,8 +437,8 @@ msgstr "ระบบคะแนนในเซิร์ฟเวอร์กำ
 msgid "The RealistikOsu! website is currently in maintenance mode. Only certain users are allowed to access the full website."
 msgstr "เว๊ปไซต์อยู่ในช่วงปิดปรับปรุง เฉพาะผู้ใช้ที่อนุญาตเท่านั้นที่สามารถใช้เว๊ปไซต์อย่างเต็มรูปแบบได้!"
 
-msgid "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu!'s staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal at <a href='https://discord.gg/CEjWW4K'>our Discord</a>."
-msgstr "บัญชีคุณตอนนี้กำลังถูกระงับ! คุณจะไม่สามารถทำอะไรได้และคุณจะถูกเห็นโดยคุณเองและทีมงาน RealistikOsu! เท่านั้น! ถ้าคุณรู้สึกว่าเราทำอะไรผิดพลาดไป คุณสามารถลองขอปลดได้ที่ <a href='https://discord.gg/CEjWW4K'>ดิสคอร์ดของพวกเราได้เลย!</a>."
+msgid "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu!'s staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal at <a href='https://discord.gg/8ySdzhyMtt'>our Discord</a>."
+msgstr "บัญชีคุณตอนนี้กำลังถูกระงับ! คุณจะไม่สามารถทำอะไรได้และคุณจะถูกเห็นโดยคุณเองและทีมงาน RealistikOsu! เท่านั้น! ถ้าคุณรู้สึกว่าเราทำอะไรผิดพลาดไป คุณสามารถลองขอปลดได้ที่ <a href='https://discord.gg/8ySdzhyMtt'>ดิสคอร์ดของพวกเราได้เลย!</a>."
 
 msgid "&copy; 2018-%d Ripple, osu!RealistikOsu!, Made with love by Aoba ❤ using Hanayo %s"
 msgstr "&copy; %d RealistikOsu!, สร้างโดย <a href='https://www.facebook.com/100006238846620'>สัณหปรรณ อนันเต่า</a> %s"
@@ -1262,7 +1262,7 @@ msgstr ""
 msgid "They told me these are very cool people."
 msgstr ""
 
-msgid "Looking for how you should contact our team? Check out <a href='https://discord.gg/87E2K46'>this page</a>."
+msgid "Looking for how you should contact our team? Check out <a href='https://discord.gg/8ySdzhyMtt'>this page</a>."
 msgstr ""
 
 msgid "And more..."
