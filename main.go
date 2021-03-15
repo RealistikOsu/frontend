@@ -128,7 +128,7 @@ func main() {
 		&config.API:              "http://localhost:40001/api/v1/",
 		&config.APISecret:        "Potatowhat",
 		&config.IP_API:           "https://ip.zxq.co",
-		&config.DiscordServer:    "https://discord.gg/87E2K46",
+		&config.DiscordServer:    "https://discord.gg/8ySdzhyMtt",
 		&config.MainRippleFolder: "/home/RIPPLE/",
 		&config.MailgunFrom:      `"RealistikOsu!" <noreply@ripple.moe>`,
 	}

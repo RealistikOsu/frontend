@@ -281,8 +281,8 @@ function setDefaultScoreTable() {
 			$("<tfoot />").append(
 				$("<tr />").append(
 					$("<th colspan=2 />").append(
-						$("<div class='ui right floated pagination menu' />").append(
-							$("<a class='disabled item load-more-button'>" + T("Load more") + "</a>").click(loadMoreClick)
+						$("<div class='ui floated pagination' />").append(
+							$("<a class='ui button load-more-button inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreClick)
 						)
 					)
 				)
@@ -314,8 +314,8 @@ function initialiseScores(el, mode) {
 					$("<tfoot />").append(
 							$("<tr />").append(
 									$("<th colspan=2 />").append(
-											$("<div class='ui right floated pagination menu' />").append(
-													$("<a class='load-more disabled item'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
+											$("<div class='ui floated pagination' />").append(
+													$("<a class='ui button load-more inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
 											)
 									)
 							)
@@ -391,10 +391,11 @@ function loadScoresPage(type, mode) {
 			var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
 			var scoreRankIcon = "<img src='/static/ranking-icons/ranking-" + scoreRank + "-small.png' class='score rank' alt='" + scoreRank + "'> ";
 			var rowColor = '';
+			// Please at least credit if you steal this :(
 			if (v.completed < 2){
 				var StyleCol = "#6b201f";
 			} else {
-				var StyleCol = "#272727";
+				var StyleCol = "#212121";
 			}
 			
 			if (type === 'recent') {

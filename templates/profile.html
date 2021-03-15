@@ -94,9 +94,6 @@
 							</div>
 						</div>
 						<!--Profile image-->
-						{{ if eq $global.UserID $global.Context.User.ID }}
-						<a href="/settings/avatar">
-						{{ end }}
 						<!-- Lasy IF but who cares right? -->
 						{{ with bgetv1 "isOnline?id=%.0f" .id }}
 							{{ if .result }}
@@ -104,9 +101,6 @@
 							{{ else }}
 								<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">
 							{{ end }}
-						{{ end }}
-						{{ if eq $global.UserID $global.Context.User.ID }}
-						</a>
 						{{ end }}
 						<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
 						At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
@@ -138,6 +132,16 @@
 											<i class="{{ faIcon .icon }} small icon circular"></i>
 										</span>
 									{{ end }}
+								{{ end }}
+							</div>
+							<!--Cool Buttons for cool stuff.-->
+							<div style="margin: 10px">
+								<!--<a href="#" class="ui button blue inverted">Add Friend</a>-->
+								{{ if hasAdmin $global.Context.User.Privileges }}
+								<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted">Edit User</a>
+								{{ end }}
+								{{ if eq $global.UserID $global.Context.User.ID }}
+								<a href="/settings/avatar" class="ui button inverted purple">Change Avatar</a>
 								{{ end }}
 							</div>
 						</div>
