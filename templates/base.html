@@ -80,7 +80,7 @@
 					<i class="asterisk icon red"></i>
 					<div class="content">
 					  <div class="header">You have been frozen!</div>
-					  <p>{{ $.T "Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href="https://discord.gg/8ySdzhyMtt">RealistikOsu Discord Server</a>." | html }}</p>
+					  <p>Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href="https://discord.gg/8ySdzhyMtt">RealistikOsu Discord Server</a>.</p>
 					</div>
 				  </div>
                 {{ end }}
@@ -94,18 +94,30 @@
 				{{ end }}
 				{{ $settings := systemSettings "website_maintenance" "game_maintenance" "website_global_alert" }}
 				{{ with $settings.website_global_alert.String }}
-					<div class="ui warning message">
-						{{ . | html }}
+					<div class="ui icon message black info">
+						<i class="info circle icon blue"></i>
+						<div class="content">
+					  		<div class="header">Something interesting for you about RealistikOsu...</div>
+					  		<p>{{ . | html }}</p>
+						</div>
 					</div>
 				{{ end }}
 				{{ with $settings.game_maintenance.Int }}
-					<div class="ui warning message">
-						{{ $.T "RealistikOsu!'s score submission is currently in maintenance mode. You will not be allowed to submit scores for the time being." }}
+					<div class="ui icon message black warning">
+						<i class="exclamation circle icon orange"></i>
+						<div class="content">
+					  		<div class="header">We are currently working on our score submission server...</div>
+					  		<p>{{ $.T "RealistikOsu!'s score submission is currently in maintenance mode. You will not be allowed to submit scores for the time being." }}</p>
+						</div>
 					</div>
 				{{ end }}
 				{{ with $settings.website_maintenance.Int }}
-					<div class="ui warning message">
-						{{ $.T "The RealistikOsu! website is currently in maintenance mode. Only certain users are allowed to access the full website." }}
+					<div class="ui icon message black warning">
+						<i class="exclamation circle icon orange"></i>
+						<div class="content">
+					  		<div class="header">We are currently working on our website...</div>
+					  		<p>{{ $.T "The RealistikOsu website is currently in maintenance mode. Only staff members are allowed to access the entire website." }}</p>
+						</div>
 					</div>
 				{{ end }}
 				</div>
