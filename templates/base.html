@@ -59,16 +59,30 @@
 
 			<div class="h-container">
 				<div class="ui margined container" id="messages-container">
-				<noscript>Research has proven this website works 10000% better if you have JavaScript enabled.</noscript>
+				<noscript>
+					Please enable JavaScript... The modern web fully relies on it, as keeping it disabled makes you miss
+					out on so much amazing content created every day. Our website, like many others, relies on it to provide
+					you the content. From showing scores to allowing you to see the very people that play here. JavaScript
+					allows us to merge our complex network of software into one, easy to use website. We only use JavaScript
+					where it is necessary. We do not track you. So please, do yourself a service and turn it back on.
+				</noscript>
 				{{ if and .Context.User.Username (not (has .Context.User.Privileges 1)) }}
-					<div class="ui warning message">
-						{{ $.T "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu's staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal on the <a href='https://discord.gg/8ySdzhyMtt'>Discord Server</a>." | html }}
-					</div>
+					<div class="ui icon message black error">
+						<i class="ban icon red"></i>
+						<div class="content">
+						  <div class="header">You have been restricted!</div>
+						  <p>{{ $.T "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu's staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal on the <a href='https://discord.gg/8ySdzhyMtt'>Discord Server</a>." | html }}</p>
+						</div>
+					  </div>
 				{{ end }}
 				{{ if $frozen.frozen.Bool }}
-                    <div class="ui warning message">
-                        {{ $.T "Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href='https://discord.gg/8ySdzhyMtt'>RealistikCentral Discord Server</a>." | html }}
-                    </div>
+				<div class="ui icon message black error">
+					<i class="asterisk icon red"></i>
+					<div class="content">
+					  <div class="header">You have been frozen!</div>
+					  <p>{{ $.T "Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href="https://discord.gg/8ySdzhyMtt">RealistikOsu Discord Server</a>." | html }}</p>
+					</div>
+				  </div>
                 {{ end }}
 				{{ if .Messages }}
 						{{ range $i, $v := .Messages }}

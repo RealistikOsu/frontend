@@ -517,9 +517,26 @@ function closeClosestMessage() {
 };
 
 function showMessage(type, message) {
+  // Please dont steal this... Or at least credit us.
+
+  var icon = "";
+  var header = "";
+
+  switch (type) {
+    case "error":
+      header = "Uh oh... There has been an error!"
+      icon = "red fire"
+    
+    case "success":
+      header = "Action completed successfully!"
+      icon = "green check"
+    
+    case "warning":
+      header = "Warning!"
+      icon = "orange exclamation"
+  }
   var newEl =
-      $('<div class="ui ' + type +
-        ' message hidden"><i class="close icon"></i>' + T(message) + '</div>');
+      $(`<div class="ui icon message black ${type}"> <i class="${icon} icon"></i><div class="content"><div class="header">${header}</div><p>${T(message)}</p></div></div>`);
   newEl.find(".close.icon").click(closeClosestMessage);
   $("#messages-container").append(newEl);
   newEl.slideDown(300);
