@@ -133,7 +133,7 @@ func loginSubmit(c *gin.Context) {
 		sess.Save()
 		c.Redirect(302, "/2fa_gateway?redir="+url.QueryEscape(redir))
 	} else {
-		addMessage(c, successMessage{T(c, "Hey %s! You are now logged in.", template.HTMLEscapeString(data.Username))})
+		addMessage(c, successMessage{T(c, "Welcome back %s! You have been logged into RealistikOsu!", template.HTMLEscapeString(data.Username))})
 		sess.Save()
 		if redir == "" {
 			redir = "/"

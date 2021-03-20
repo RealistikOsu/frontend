@@ -9,7 +9,18 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>{{ if .TitleBar }}{{ .T .TitleBar }} - {{ end }}RealistikOsu!</title>
+		<title>{{ if .TitleBar }}{{ .T .TitleBar }} :: {{ end }}RealistikOsu!</title>
+
+		<script>
+			var hanayoConf = {
+				avatars:   {{ .Conf.AvatarURL }},
+				banchoAPI: {{ .Conf.BanchoAPIPublic }},
+				baseAPI:   {{ .Conf.BaseAPIPublic }},
+				cheesegullAPI: {{ .Conf.CheesegullAPI }},
+				language:  "en",
+			};
+			var currentUserID = {{ .Context.User.ID }};
+		</script>
 
 		<link rel="stylesheet" type="text/css" href="/static/{{ if $ds }}dark/{{ end }}semantic.min.css?{{ unixNano }}">
 		<link rel="stylesheet" type="text/css" href="/static/realistikosu.css?{{ unixNano }}">
@@ -19,6 +30,7 @@
 		<!--LOADING BARZZZ-->
 		<script src="/static/js/pace.min.js"></script>
 		<link href="/static/css/loadingbar.css" rel="stylesheet" />
+		<script src="/static/dist.min.js?{{ unixNano }}"></script>
 		
 		<meta name="theme-color" content="#eb4034">
 		<meta name="msapplication-navbutton-color" content="#eb4034">
@@ -86,10 +98,13 @@
                 {{ end }}
 				{{ if .Messages }}
 						{{ range $i, $v := .Messages }}
+							<script>showMessage("{{ $v.Type }}", "{{ html $v.Content }}")</script>
+							<!--
 							<div class="ui {{ $v.Type }} message">
 								<i class="close icon"></i>
 								{{ html $v.Content }}
 							</div>
+							-->
 						{{ end }}
 				{{ end }}
 				{{ $settings := systemSettings "website_maintenance" "game_maintenance" "website_global_alert" }}
@@ -168,19 +183,8 @@
 					</div>
 				</div>
 			</div>
-		<script>
-			var hanayoConf = {
-				avatars:   {{ .Conf.AvatarURL }},
-				banchoAPI: {{ .Conf.BanchoAPIPublic }},
-				baseAPI:   {{ .Conf.BaseAPIPublic }},
-				cheesegullAPI: {{ .Conf.CheesegullAPI }},
-				language:  "en",
-			};
-			var currentUserID = {{ .Context.User.ID }};
-		</script>
 		{{/* If we got some more scripts to print, print'em */}}
 		<script src="//twemoji.maxcdn.com/2/twemoji.min.js?2.2"></script>
-		<script src="/static/dist.min.js?{{ unixNano }}"></script>
 		<script src="/static/timeago-locale/jquery.timeago.en.js"></script>
 		{{ if .Scripts }}
 			{{ range .Scripts }}
