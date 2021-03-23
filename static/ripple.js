@@ -339,21 +339,27 @@ var singlePageSnippets = {
       api("beatmaps/rank_requests/status", {}, updateRankRequestPage);
     }, 10000);
     var re = /^https?:\/\/osu.ppy.sh\/(s|b)\/(\d+)$/gi;
+    var re_ussr = /^https?:\/\/ussr.pl\/(s|b)\/(\d+)$/gi;
     $("#b-form")
       .submit(function(e) {
         e.preventDefault();
         var v = $("#beatmap").val().trim();
         var reData = re.exec(v);
         re.exec(); // apparently this is always null, idk
-        console.log(v, reData);
-        if (reData === null) {
+        var reData2 = re_ussr.exec(v)
+        re_ussr.exec()
+        if (reData === null && reData2 === null) {
           showMessage(
             "error",
             "Please provide a valid link, in the form " +
-                    "of either https://osu.ppy.sh/s/&lt;ID&gt; or https://osu.ppy.sh/b/&lt;ID&gt;.");
+                    "of either https://osu.ppy.sh/s/&lt;ID&gt; or https://ussr.pl/b/&lt;ID&gt;.");
           $(this).removeClass("loading");
           return false;
         }
+
+        // Bruh.
+        if (reData === null)
+          reData = reData2;
         var postData = {};
         if (reData[1] == "s")
           postData.set_id = +reData[2];

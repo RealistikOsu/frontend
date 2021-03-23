@@ -14,10 +14,10 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/9.0.0/nouislider.
 		{{ if .has_donor }}
 			<div class="ui segment">
 				<h1 class="ui center aligned header no bottom margin" style="margin: 0 auto; display: table;">
-					<i class="red heart icon" style="font-size: 90%;"></i> <div class="content">{{ $.T "You are a donor!" }}</div>
+					<i class="red heart icon" style="font-size: 90%;"></i> <div class="content">{{ $.T "You are already a supporter!" }}</div>
 				</h1>
 				<div class="ui centered subtitle" style="font-size:1.2rem;">
-					{{ $.T "Your donor expires <b>%s</b>. No need to feel guilty for not having donated!" (time .expiration) | html }} &lt;3
+					{{ $.T "Your donor expires <b>%s</b>. Thank you for helping us keep RealistikOsu up and alive!" (time .expiration) | html }} &lt;3
 				</div>
 			</div>
 		{{ end }}
@@ -136,7 +136,7 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/9.0.0/nouislider.
 				<h4 class="ui horizontal divider header">
 					{{ $.T "I've donated, now what?" }}
 				</h4>
-				{{ $.T "Upon purchase, you will be required to contact the owner or an admin to ensure you gain your benefits as soon as possible. This may be done via the RealistikCentral discord server or direct messages." | html }}
+				{{ $.T "Upon purchase, you will be required to contact the owner or an admin to ensure you gain your benefits as soon as possible. This may be done via the RealistikOsu discord server or direct messages." | html }}
 			{{ else }}
 				<div class="ui divider"></div>
 				<h1 class="ui center aligned header">{{ $.T "Please log in to be able to get supporter" }}</h1>

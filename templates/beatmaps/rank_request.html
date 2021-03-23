@@ -20,29 +20,25 @@ MinPrivileges=2
 			<h4 style="display: inline; font-weight: normal;">{{ $.T "In the past 24 hours" }}</h4><br>
 			{{ $perc := perc .submitted .queue_size }}
 			<div class="ui container" style="width: 50%; margin-top: 8px; margin-bottom: 8px;">
-				<div class="ui red progress" data-percent="{{ $perc }}" id="progressbar">
+				<div class="ui blue progress" data-percent="{{ $perc }}" id="progressbar">
 					<div class="bar">
 						<div class="progress">{{ $perc }}%</div>
 					</div>
 				</div>
 			</div>
-			<h4 class="ui horizontal divider header">
-				<i class="music icon"></i>
-				{{ $.T "Request a beatmap" }}
-			</h4>
 			{{ if .can_submit }}
 				<form class="ui form" id="b-form">
 					<div class="ui fluid action input">
-						<input tabindex="1" type="text" placeholder="https://osu.ppy.sh/s/xxxx" id="beatmap">
+						<input tabindex="1" type="text" placeholder="https://ussr.pl/b/1918979" id="beatmap">
 						{{ $f }}
-						<button tabindex="2" class="ui right labeled icon red button">
+						<button tabindex="2" class="ui right labeled icon blue button">
 							<i class="right arrow icon"></i>
 							{{ $.T "Submit" }}
 						</button>
 					</div>
 				</form>
 			{{ else }}
-				<h3 class="ui header">{{ $.T "You cannot currently request beatmaps!" }}</h3>
+				<h3 class="ui header">{{ $.T "You have reached your daily limit for requesting beatmaps!" }}</h3>
 				{{ with .next_expiration }}<p>{{ $.T "Please try again " }}<b>{{ timeAddDay . }}</b></p>{{ end }}
 			{{ end }}
 		{{ end }}
