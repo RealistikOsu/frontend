@@ -180,8 +180,7 @@ KyutGrill=homepage2.jpg
                             <i class="user icon status-icon"></i>
                         </div>
                         <div class="twelve wide column">
-                             {{ $value := (qb "SELECT ROUND(SUM(scores.pp)) AS pp FROM scores INNER JOIN users ON scores.userid = users.id WHERE scores.completed = 3 AND scores.play_mode = 0 AND users.privileges > 2") }}
-                        <p class="status-head">{{ $value.pp }}</p>
+                        <p class="status-head">N/A</p>
                         <p class="status-footer">{{ .T "Total PP" }}</p>
                         </div>
                     </div>
@@ -219,7 +218,7 @@ KyutGrill=homepage2.jpg
 						<div class="twelve wide column">
 							{{ $rx := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_relax INNER JOIN users ON scores_relax.userid = users.id WHERE scores_relax.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
 							<p class="status-head">{{ $rx.pp }}pp</p>
-							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/u/{{ $rx.id }}">{{ $rx.username }}</a></p>
+							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/rx/u/{{ $rx.id }}">{{ $rx.username }}</a></p>
 							<p class="status-footer">{{ .T "Top Relax Score" }}</p>
 						</div>
 					</div>
@@ -234,7 +233,7 @@ KyutGrill=homepage2.jpg
 						<div class="twelve wide column">
 							{{ $ap := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_ap INNER JOIN users ON scores_ap.userid = users.id WHERE scores_ap.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
 							<p class="status-head">{{ $ap.pp }}pp</p>
-							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/u/{{ $ap.id }}">{{ $ap.username }}</a></p>
+							<p class="status-head" style="font-size: 10px!important;">{{ .T "Done by " }}<a href="/ap/u/{{ $ap.id }}">{{ $ap.username }}</a></p>
 							<p class="status-footer">{{ .T "Top Autopilot Score" }}</p>
 						</div>
 					</div>
