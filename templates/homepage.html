@@ -30,7 +30,7 @@ KyutGrill=homepage2.jpg
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#eb4034">
+	<meta name="theme-color" content="#0f97ff">
 	<meta property="og:title" content="RealistikOsu!">
 	<meta property="og:url" content="https://ussr.pl">
 	<meta property="og:site_name" content="RealistikOsu!">  
@@ -48,7 +48,7 @@ KyutGrill=homepage2.jpg
 						<span style="color: #4287f5;" class="counter-text"> {{ .T "%s" (rediget "ripple:registered_users")}} </span> total users
 					</span>
 					<span style="margin-left: 16px;">
-						<span class="counter-text" style="color: #eb4034;"> {{ .T "%s" (rediget "ripple:online_users")}} </span> online users
+						<span class="counter-text" style="color: #0f97ff;"> {{ .T "%s" (rediget "ripple:online_users")}} </span> online users
 					</span>
 				</div>
 				<br>
@@ -146,7 +146,7 @@ KyutGrill=homepage2.jpg
 					<div class="ui blue segment">
 						<div class="ui grid">
 							<div class="four wide column">
-								<i class="user icon status-icon"></i>
+								<i class="user blue icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ rediget "ripple:online_users" }} / {{ rediget "ripple:registered_users" }}</p>
@@ -159,7 +159,7 @@ KyutGrill=homepage2.jpg
 				<div class="ui orange segment">
 					<div class="ui grid">
 						<div class="four wide column">
-							<i class="user plus icon status-icon"></i>
+							<i class="user plus orange icon status-icon"></i>
 						</div>
 						<div class="twelve wide column">
 							{{ range $key, $value := (qb "SELECT username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
@@ -174,14 +174,16 @@ KyutGrill=homepage2.jpg
 					</div>
 			  </div>
 			  <div class="sixteen wide column">
-                <div class="ui green segment">
+                <div class="ui lblue segment">
                     <div class="ui grid">
                         <div class="four wide column">
-                            <i class="user icon status-icon"></i>
+                            <i class="angle double up lblue icon status-icon"></i>
                         </div>
                         <div class="twelve wide column">
-                        <p class="status-head">N/A</p>
-                        <p class="status-footer">{{ .T "Total PP" }}</p>
+						{{ range $key, $value := (qb "SELECT COUNT(*) FROM beatmaps WHERE ranked_status_freezed = 1;") }}
+						<p class="status-head">{{ $value }}</p>
+						{{ end }}
+                        <p class="status-footer">{{ .T "Maps Ranked" }}</p>
                         </div>
                     </div>
                 </div>
@@ -198,7 +200,7 @@ KyutGrill=homepage2.jpg
 				<div class="ui yellow segment">
 					<div class="ui grid">
 						<div class="four wide column">
-							<i class="thumbs up icon status-icon"></i>
+							<i class="thumbs up yellow icon status-icon"></i>
 						</div>
 						<div class="twelve wide column">
 							{{ $d := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores INNER JOIN users ON scores.userid = users.id WHERE scores.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
@@ -213,7 +215,7 @@ KyutGrill=homepage2.jpg
 				<div class="ui pink segment">
 					<div class="ui grid">
 						<div class="four wide column">
-							<i class="thumbs up icon status-icon"></i>
+							<i class="thumbs up pink icon status-icon"></i>
 						</div>
 						<div class="twelve wide column">
 							{{ $rx := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_relax INNER JOIN users ON scores_relax.userid = users.id WHERE scores_relax.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
@@ -228,7 +230,7 @@ KyutGrill=homepage2.jpg
 				<div class="ui purple segment">
 					<div class="ui grid">
 						<div class="four wide column">
-							<i class="thumbs up icon status-icon"></i>
+							<i class="thumbs up purple icon status-icon"></i>
 						</div>
 						<div class="twelve wide column">
 							{{ $ap := (qb "SELECT ROUND(pp) AS pp, users.username, users.id FROM scores_ap INNER JOIN users ON scores_ap.userid = users.id WHERE scores_ap.play_mode = 0 AND completed = 3 AND users.privileges > 2 ORDER BY pp DESC LIMIT 1") }}
