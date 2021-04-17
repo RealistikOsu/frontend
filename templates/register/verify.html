@@ -1,27 +1,71 @@
 {{ define "tpl" }}
 <div class="ui container">
-	<div class="ui segment">
-		{{ .T "Your account has been created, however it still <b>needs to be verified!</b> Please log in into <b><u>osu! (the game)</u></b> using your account. <b>There is <u>no email confirmation</u> at the moment. All you need to do is connect to RealistikOsu! from the osu! client!</b> If you're having trouble, <a href='/doc/1'>follow this guide</a>." | html }}
+	<div class ="ui segment">
+		<h2 class="ui header">Almost there...</h2>
+		You are one step away from starting your journey on RealistikOsu! One small step from joining a community 
+		of {{ .T "%s" (rediget "ripple:registered_users")}} dedicated players and competing in the leaderboards.
+		The only thing left to do is to connect to the servers and your profile will become public for the entire 
+		world to see! You will be able to set scores, join clans and play to your heart's content! But how do you 
+		do that, you may ask.
 	</div>
-	<div class="ui centered error  message">
-		{{ .T "<b class='big text'>Do not let anyone except yourself log into your RealistikOsu! account!</b><br> Get on our <a href='%s'>Discord server's</a> #help channel instead (after following the steps on this page) so that we can help you out if you have trouble connecting." (config "DiscordServer") | html }}
-	</div>
-	<div class="ui segment">
-		<h1 class="ui heading">{{ .T "<a href='/doc/1'>The Guide,</a> tl;dr version" | html }}</h1>
-		<ol class="ui list">
-			<li><a href='http://dl.ussr.pl/files/osu/ROS.exe'><b>{{ .T "Download the server switcher" }}</b></a></li>
-			<li>{{ .T "Extract it, disable your antivirus, execute it <b>as administrator</b>" | html }}</li>
-			<li>{{ .T "Click on <b>install certificate</b>, then <b>Yes</b>" | html }}</li>
-			<li>{{ .T "Make sure the switcher says you're playing on <b>RealistikOsu!</b> server, if not click <b>On/Off</b>" | html }}</li>
-			<li>{{ .T "If it says something about read-only mode, go to <code>C:\\Windows\\System32\\Drivers\\etc</code>, open the hosts' file Properties and make sure it's not set to \"Read only\"." | html }}</li>
-		</ol>
-		<p>
-			{{ .T "If you're still having trouble, then again, get on our <a href='https://discord.gg/8ySdzhyMtt'>Discord server's</a> #⋞-rosu-questions-and-support channel." | html }}
-		</p>
-	</div>
-	<div class="ui center aligned segment">
-		<h1 class="ui heading">{{ .T "Waiting for verification" }}</h1>
-		<i class="circle notched huge loading icon"></i>
+	<h4 class="ui horizontal divider header"><i class="play icon"></i>Connection Methods</h4>
+	<div class="ui grid">
+		<div class="eight wide column">
+			<div class="ui segment">
+				<h2 class="ui header">The Shortcut Method <i class="mouse pointer icon"></i></h2>
+				Did you know that osu! nowadays offers a somewhat official private server connection method! The
+				only requirements for this connection method are to have a recent version of the osu client
+				(with the minimum version being <b>stable 20210316</b>). This method only requires the editing of 
+				the osu! shortcut on your desktop, and requires no admin privileges.
+				<ol type="1">
+					<li>
+						Open the osu! shortcut properties. This can be an existing osu! shortcut on your desktop or a 
+						newly created one. You should now see a properties window open up with the "Shortcut" tab 
+						selected by default.
+					</li>
+					<li>
+						Click on the box labeled "Target" and add <code>-devserver ussr.pl</code> to the end of it as 
+						shown in this image.
+						<img src="/static/image/devserver-image.png" alt="Shortcut target image">
+					</li>
+					<li>
+						And that's it! You are now connected to RealistikOsu! You may now log into your account and 
+						enjoy all the features RealistikOsu has to offer.
+					</li>
+				</ol>
+			</div>
+		</div>
+		<div class="eight wide column">
+			<div class="ui segment">
+				<h2 class="ui header">The Server Switcher <i class="toggle on icon"></i></h2>
+				The server switcher method is the traditional RealistikOsu connection method, working by redirecting
+				connections to peppy's servers to our own. The usage of the switcher connection method requires 
+				administrative perivileges on your computer and may occasionally be falsely flagged by antivirus 
+				software. It is recommended to temporarily disable any antivirus software prior to the usage of the
+				switcher. <i>In case you don't trust it, its code is fully public and available here 
+				<a href="https://github.com/RealistikOsu/ROSUSwitcher">on GitHub</a></i>
+				<ol type="1">
+					<li>
+						<a href="https://dl.ussr.pl/files/osu/ROS.exe">Download the RealistikOsu server switcher and 
+						open it.</a>
+					</li>
+					<li>
+						Click on the "Switch to RealistikOsu" button. This will take care of installing all of the 
+						required certificates and modifying the hosts file. The button should change to 
+						"Switch to Bancho". If it doesn't, antivirus software may be active and preventing the switcher 
+						from working.
+						<img src="/static/image/switcher-normal.png" alt="Switcher Image">
+					</li>
+					<li>
+						And that's it! You are now connected to RealistikOsu! You may now log into your account and 
+						enjoy all the features RealistikOsu has to offer.
+					</li>
+				</ol>
+			</div>
+		</div>
+		<div class="ui center aligned segment">
+			<h2 class="ui heading" style="width: 100%;">Waiting for first login... <i class="circle notched loading icon"></i></h2>
+		</div>
 	</div>
 </div>
 {{ end }}
