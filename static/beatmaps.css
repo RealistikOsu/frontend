@@ -135,4 +135,120 @@ i.icon.download:before{
     display:flex;
     align-items:center
 }
-/*# sourceMappingURL=main.fa2a906f.chunk.css.map */
+
+.map * {
+    overflow: visible !important;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.beatmapPlay {
+    display: none;
+    position: absolute;
+    left: calc(90% - 1rem);
+    z-index: 10;
+    top: 10%;
+    background: none;
+    border: none;
+    transition: transform 0.05s;
+    font-size: 2rem;
+}
+
+.tooltiptext {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.map img {
+    transition: transform 0.5s;
+}
+
+.map:hover .beatmapPlay {
+    display: block !important;
+}
+
+.map:hover img {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.map:hover {
+    transform: scale(1.01);
+}
+
+.map img {
+    opacity: 0.6;
+}
+
+.beatmapPlay:hover {
+    color: #fc2;
+}
+
+.bnName, .bnName:hover {
+    color: #FFF;
+}
+
+.musicPlaying {
+    animation: musicPulse 0.5s infinite;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.musicPlaying:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    border-top: 5px solid #0f97ff;
+}
+
+@keyframes musicPulse {
+    0% {
+        box-shadow: 0px 0px 5px #0f97ff;
+    }
+    
+    100% {
+        box-shadow: 0px 0px 15px #0f97ff;
+    }
+}
+
+.download .disk:hover::before {
+    color: #fc2 !important;
+}
