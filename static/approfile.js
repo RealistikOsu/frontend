@@ -12,12 +12,16 @@ $(document).ready(function() {
 	else if (wl.pathname != newPathName)
 		window.history.replaceState('', document.title, newPathName + wl.search + wl.hash);
 	setDefaultScoreTable();
+	if (window.chart == null) {
+		InitialiseChart(window.location.href.split("=")[1])
+	}
 	// when an item in the mode menu is clicked, it means we should change the mode.
 	$("#mode-menu>.item").click(function(e) {
 		e.preventDefault();
 		if ($(this).hasClass("active"))
 			return;
 		var m = $(this).data("mode");
+		updateChartData(m);
 		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
 		$("[data-mode=" + m + "]:not(.item)").removeAttr("hidden");
 		$("#mode-menu>.active.item").removeClass("active");
@@ -40,6 +44,90 @@ $(document).ready(function() {
 	loadOnlineStatus();
 	setInterval(loadOnlineStatus, 10000);
 });
+
+function updateChartData(mode) {
+	fetch(`https://ussr.pl/api2/getuser/${userID}`)
+	.then(res => res.json())
+	.then((out) => {
+		var label;
+		if (mode == 0) {
+			label = out.Autopilot.RankSTD;
+		} else if (mode == 1) {
+			label = out.Autopilot.RankTAI;
+		} else if (mode == 2) {
+			label = out.Autopilot.RankCTB;
+		} else if (mode == 3) {
+			label = out.Autopilot.RankMAN;
+		} 
+
+	    window.chart.data.datasets[0].data = label;
+	    window.chart.update();
+	})
+	.catch(err => { throw err }); 
+}
+
+function InitialiseChart(mode) {
+	fetch(`https://ussr.pl/api2/getuser/${userID}`)
+	.then(res => res.json())
+	.then((out) => {
+		var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
+
+		var label;
+		if (mode == 0) {
+			label = out.Autopilot.RankSTD;
+		} else if (mode == 1) {
+			label = out.Autopilot.RankTAI;
+		} else if (mode == 2) {
+			label = out.Autopilot.RankCTB;
+		} else if (mode == 3) {
+			label = out.Autopilot.RankMAN;
+		} 
+
+		var data = {
+			labels: out.Labels.AutopilotLabel,
+			datasets: [{
+				label: "Rank",
+				data: label,
+				borderWidth: 2,
+				backgroundColor: 'rgba(15, 151, 255, 0.73)',
+				borderWidth: 0,
+				borderColor: 'transparent',
+				pointBorderWidth: 0,
+				pointRadius: 3.5,
+				pointBackgroundColor: 'transparent',
+				pointHoverBackgroundColor: 'rgba(15, 151, 255, 0.73)',
+				fill: "start"
+			}]
+		}
+
+		window.chart = new Chart(graphCtx, {
+			type: 'line',
+			data: data,
+			options: {
+				legend: {
+					display: false
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							reverse: true,
+							max: Math.max(...data.datasets[0].data) + 10
+						}
+					}],
+					xAxes: [
+						{
+							ticks: {
+								display: false
+							}
+						}
+					]
+				}
+			}
+		});
+	})
+	.catch(err => { throw err }); 
+}
 
 function formatOnlineStatusBeatmap(a) {
 	var hasLink = a.beatmap.id > 0;
