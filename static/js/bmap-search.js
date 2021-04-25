@@ -5,16 +5,16 @@ const searchSettings = {
     mode: 0,
     status: 1,
     offset: 0,
-    amount: 20
+    amount:20
 };
 
 let beatmapTimer;
 
-const mirror_api = "https://storage.ripple.moe/api"; // we rlly do need our own
+const mirror_api = "https://api.chimu.moe"; // we rlly do need our own
 
 function buttons() {
-    const modes = document.querySelectorAll(".mode-button");
-    const status = document.querySelectorAll(".status-button");
+    const modes = document.querySelectorAll("#mode-button");
+    const status = document.querySelectorAll("#status-button");
     let typeTimer;
 
     for (let elm of modes) {
@@ -59,7 +59,7 @@ function buttons() {
 };
 
 function toggleBeatmap(id, elm) {
-    for (let map of document.querySelectorAll(".beatmapPlay")) map.innerHTML = "&#x25ba;";
+    for (let map of document.querySelectorAll(".beatmapPlay")) map.innerHTML = '<i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i>';
     for (let map of document.querySelectorAll(".map")) map.classList.remove("musicPlaying");
 
     if (beatmapTimer) clearInterval(beatmapTimer);
@@ -70,11 +70,11 @@ function toggleBeatmap(id, elm) {
                 beatmapAudios[i].audio.currentTime = 0;
                 beatmapAudios[i].audio.play();
 
-                elm.innerHTML = "&#x23f8;";
+                elm.innerHTML = '<i class="fa fa-stop" style="font-size:48px;border-radius: 70%;"></i>';
                 elm.parentElement.classList.add("musicPlaying");
 
+                const audio = beatmapAudios[i].audio;
                 beatmapTimer = setInterval(() => {
-                    const audio = beatmapAudios[i].audio;
                     const played = 100 * audio.currentTime / audio.duration;
 
                     document.querySelector("#progressCSS").innerHTML = `
@@ -82,11 +82,18 @@ function toggleBeatmap(id, elm) {
                             width: ${played.toFixed(2)}%;
                         }
                     `;
+                    if (audio.currentTime == audio.duration) {
+                    	// Beatmap has finished playing.
+                    	audio.currentTime = 0;
+			            beatmapAudios[i].playing = false;
+                    	elm.innerHTML = '<i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i>';
+                		elm.parentElement.classList.remove("musicPlaying");
+                    }
                 }, 1);
             } else {
                 beatmapAudios[i].audio.pause();
 
-                elm.innerHTML = "&#x25ba;";
+                elm.innerHTML = '<i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i>';
                 elm.parentElement.classList.remove("musicPlaying");
             };
 
@@ -151,10 +158,13 @@ async function search(options, offset=0, r=false) {
         color: rgb(5, 5, 5);
     */
 
+    var link = `${mirror_api}/cheesegull/search?offset=${options.offset || 0}&amount=${options.amount || 20}&mode=${options.mode || 0}&query=${querys}`
+    if (options.status != "NaN") {
+    	link += `&status=${options.status || 0}`
+    }
+
     try {
-        var res = await fetch(
-            `${mirror_api}/search?offset=${options.offset || 0}&amount=${options.amount || 20}&mode=${options.mode || 0}&status=${options.status || 0}&query=${querys}`
-        ).then(o => o.json());
+        var res = await fetch(link).then(o => o.json());
     }
     catch {
         showMessage("error", "There has been an error while searching for beatmaps! Please notify a RealistikOsu developer!");
@@ -168,7 +178,10 @@ async function search(options, offset=0, r=false) {
 
     for (let beatmap of res) {
         const diffsHTML = [];
-        const diffs = beatmap.ChildrenBeatmaps.sort((a, b) => b.DifficultyRating-a.DifficultyRating);
+        // Bubble sort to sort diffs.
+        var temp;
+        const diffs = beatmap.ChildrenBeatmaps;
+        diffs.sort(function(a, b){return a.DifficultyRating-b.DifficultyRating});
         const date = new Date(beatmap.LastUpdate).toUTCString
         let mapSection = "";
 
@@ -180,7 +193,7 @@ async function search(options, offset=0, r=false) {
                 playing: false
             });
         };
-
+        
         mapSection += `
             <div class="eight wide column">
                 <div class="map">
@@ -189,9 +202,9 @@ async function search(options, offset=0, r=false) {
                             <img src="https://assets.ppy.sh/beatmaps/${beatmap.SetID}/covers/card.jpg" alt="">
                         </a>
                     </div>
-                    <button class="beatmapPlay" onclick="toggleBeatmap(${beatmap.SetID}, this)">&#x25ba;</button>
+                    <button class="beatmapPlay" onclick="toggleBeatmap(${beatmap.SetID}, this)"><i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i></button>
                     <div class="status">
-                        <a href="https://osu.ppy.sh/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}" target="_blank">${Status[beatmap.RankedStatus]}</a>
+                        <a style="color: white;">${Status[beatmap.RankedStatus]}</a>
                     </div>
                     <div class="name">
                         <a class="bnName" href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">${beatmap.Title}</a>
@@ -204,7 +217,7 @@ async function search(options, offset=0, r=false) {
         for (let source of sources) {
             mapSection += `
                 <a title="Download beatmap (${source.name})" href="${source.mirror+String(beatmap.SetID)}" class="download">
-                    <i class="download disk icon"></i>
+                   <i class="fa fa-download" style="color:white;"></i>
                 </a>
             `;
         };

@@ -15,28 +15,30 @@ KyutGrill=leaderboard2.jpg
             <div class="ui segment">
                 <div class="ui one column stackable center aligned page grid">
                     <div class="column ten wide">
-                        <center>
-                            <h1 class="header">Beatmap Search</h1>
-                        </center>
-                        <br>
-                        <div class="ui input" style="width: 100%;">
-                            <input type="text" id="searchTerms">
+                        <div class="row">
+                            <div class="ui input" style="width: 100%;">
+                                <input style="border-radius: 25px;" type="text" id="searchTerms" placeholder="write here anything you want!">
+                            </div>
                         </div>
-                        <div class="ui segment wow-links">
-                            <a class="mode-button" data-modeosu="-1">Any</a>
-                            <a class="mode-button" data-modeosu="0">osu!std</a>
-                            <a class="mode-button" data-modeosu="1">osu!taiko</a>
-                            <a class="mode-button" data-modeosu="2">osu!catch</a>
-                            <a class="mode-button" data-modeosu="3">osu!mania</a>
+                        <div class="row">
+                            <div class="ui segment wow-links" style="height: 20%;">
+                                <a id="mode-button" data-modeosu="-1" href="#">Any</a>
+                                <a id="mode-button" data-modeosu="0" href="#">osu!std</a>
+                                <a id="mode-button" data-modeosu="1" href="#">osu!taiko</a>
+                                <a id="mode-button" data-modeosu="2" href="#">osu!catch</a>
+                                <a id="mode-button" data-modeosu="3" href="#">osu!mania</a>
+                            </div>
                         </div>
-                        <div class="ui segment wow-links">
-                            <a class="status-button" data-rankstatus="NaN">Any</a>
-                            <a class="status-button" data-rankstatus="1">Ranked</a>
-                            <a class="status-button" data-rankstatus="3">Qualified</a>
-                            <a class="status-button" data-rankstatus="4">Loved</a>
-                            <a class="status-button" data-rankstatus="0">Pending</a>
-                            <a class="status-button" data-rankstatus="-1">WIP</a>
-                            <a class="status-button" data-rankstatus="-2">Graveyard</a>
+                        <div class="row">
+                            <div class="ui segment wow-links" style="height: 20%;">
+                                <a id="status-button" data-rankstatus="NaN" href="#">Any</a>
+                                <a id="status-button" data-rankstatus="1" href="#">Ranked</a>
+                                <a id="status-button" data-rankstatus="3" href="#">Qualified</a>
+                                <a id="status-button" data-rankstatus="4" href="#">Loved</a>
+                                <a id="status-button" data-rankstatus="0" href="#">Pending</a>
+                                <a id="status-button" data-rankstatus="-1" href="#">WIP</a>
+                                <a id="status-button" data-rankstatus="-2" href="#">Graveyard</a>
+                            </div>
                         </div>
                     </div>
                 </div>

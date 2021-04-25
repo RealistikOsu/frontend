@@ -1,11 +1,11 @@
 .map{
+    border-radius: 8px;
     width:100%;
     min-height:145px;
     display:inline-block;
     background:#212121;
     overflow:hidden;
     position:relative;
-    border-radius:0;
     transition:.3s;
     box-shadow:0 0 10px 0 rgba(0,0,0,.75)
 }
@@ -20,6 +20,7 @@ i.icon.download:before{
     color: #fff!important;
 }
 .status{
+    border-radius: 25px;
     font-weight:500;
     z-index:3;
     position:absolute;
@@ -28,7 +29,6 @@ i.icon.download:before{
     padding:2px 10px;
     color:#fff;
     margin-left:5px;
-    border-radius:0;
     background:rgba(0,0,0,.6)
 }
 .name{
@@ -52,6 +52,9 @@ i.icon.download:before{
 .map:hover{
     box-shadow:0 0 10px 0 #fff
 }
+.map-search{
+    border-radius: 25px;
+}
 .map-header{
     cursor:pointer;
     display:block;
@@ -59,8 +62,6 @@ i.icon.download:before{
     box-shadow:0 0 10px 0 rgba(0,0,0,.75)
 }
 .map-header,.map-header img{
-    border-top-left-radius:0;
-    border-top-right-radius:0;
     width:100%;
     height:130px
 }
@@ -74,7 +75,7 @@ i.icon.download:before{
     margin:10px 10px 10px 5px
 }
 .download,.link{
-    color:#000;
+    color:black;
     float:right
 }
 .link{
@@ -103,17 +104,26 @@ i.icon.download:before{
 .fa-extra-mode-fruits:before{
     content:"\E801"
 }
-.wow-links>a:hover{
-    transition: ease-in-out 0.17s;
-    color: #0a8aa1;
-
+.wow-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 .wow-links>a{
-    margin-right:10px;
-    font-size:15px
+    color: #fff !important;
+    margin-right: 12px;
+    opacity: 1;
+    cursor: pointer;
+    transition: 100ms background-color;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 18px;
+    padding: 8px 16px;
+    background-color: transparent;
 }
 .wow-links>a.clicked{
-    color:#0a8aa1
+    background-color: #151313;
 }
 .fa-extra-mode-mania:before{
     content:"\E802"
@@ -247,8 +257,4 @@ i.icon.download:before{
     100% {
         box-shadow: 0px 0px 15px #0f97ff;
     }
-}
-
-.download .disk:hover::before {
-    color: #fc2 !important;
 }
