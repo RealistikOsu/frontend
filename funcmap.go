@@ -153,7 +153,7 @@ var funcMap = template.FuncMap{
 				return ""
 			}
 		}
-		return template.HTML(fmt.Sprintf(`<i class="%s flag"></i>%s`, strings.ToLower(s), c))
+		return template.HTML(fmt.Sprintf(`<img class="new-flag" src="https://ussr.pl/static/flags/%s.png">%s`, strings.ToLower(s), c))
 	},
 	// humanize pretty-prints a float, e.g.
 	//     humanize(1000) == "1,000"
