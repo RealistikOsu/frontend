@@ -80,7 +80,7 @@
 							<div style="background-image: url(&quot;https://cdn.discordapp.com/attachments/458749249623031808/795344496417308692/unknown.png&quot;);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
 								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
 									<i class="trophy line small  circular icon"></i> 
-									{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
+									{{ range $k, $v := (slice .std) }}
 									<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>{{ with and $v $v.global_leaderboard_rank }}#{{ . }}{{ else }}{{ $global.T "Unknown" }}{{ end }}</span>
 									{{ end }}
 								</div>
@@ -144,8 +144,8 @@
 						<a class="1 item" data-rx="1" href="/rx/u/{{ $user.id }}">Relax</a>
 						<a class="1 item active" data-rx="2" href="/ap/u/{{ $user.id }}">Autopilot</a>
 					</div>
-					<div class="ui four item bottom attached menu" id="mode-menu">
-						{{ range $k, $v := modes }}
+					<div class="ui two item bottom attached menu" id="mode-menu">
+						{{ range $k, $v := modes_ap }}
 							<a class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/u/{{ $user.id }}?mode={{ $k }}">{{ $v }}</a>
 						{{ end }}
 					</div>

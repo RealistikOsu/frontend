@@ -13,7 +13,7 @@ $(document).ready(function() {
 		window.history.replaceState('', document.title, newPathName + wl.search + wl.hash);
 	setDefaultScoreTable();
 	if (window.chart == null) {
-		InitialiseChart(window.location.href.split("=")[1])
+		initialiseChart(window.location.href.split("=")[1])
 	}
 	// when an item in the mode menu is clicked, it means we should change the mode.
 	$("#mode-menu>.item").click(function(e) {
@@ -50,38 +50,47 @@ function updateChartData(mode) {
 	.then(res => res.json())
 	.then((out) => {
 		var label;
-		if (mode == 0) {
-			label = out.Vanilla.RankSTD;
-		} else if (mode == 1) {
-			label = out.Vanilla.RankTAI;
-		} else if (mode == 2) {
-			label = out.Vanilla.RankCTB;
-		} else if (mode == 3) {
-			label = out.Vanilla.RankMAN;
-		} 
+		switch (mode) {
+			case 1:
+				label = out.Vanilla.RankTAI;
+				break;
+			case 2:
+				label = out.Vanilla.RankCTB;
+				break;
+			case 3:
+				label = out.Vanilla.RankMAN;
+				break;
+			default:
+				label = out.Vanilla.RankSTD;
+		}
 
 	    window.chart.data.datasets[0].data = label;
+	    window.chart.options.scales.yAxes[0].ticks.max = Math.max(...label) + 10;
 	    window.chart.update();
 	})
 	.catch(err => { throw err }); 
 }
 
-function InitialiseChart(mode) {
+function initialiseChart(mode) {
 	fetch(`https://ussr.pl/api2/getuser/${userID}`)
 	.then(res => res.json())
 	.then((out) => {
 		var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
 
 		var label;
-		if (mode == 0) {
-			label = out.Vanilla.RankSTD;
-		} else if (mode == 1) {
-			label = out.Vanilla.RankTAI;
-		} else if (mode == 2) {
-			label = out.Vanilla.RankCTB;
-		} else if (mode == 3) {
-			label = out.Vanilla.RankMAN;
-		} 
+		switch (mode) {
+			case 1:
+				label = out.Vanilla.RankTAI;
+				break;
+			case 2:
+				label = out.Vanilla.RankCTB;
+				break;
+			case 3:
+				label = out.Vanilla.RankMAN;
+				break;
+			default:
+				label = out.Vanilla.RankSTD;
+		}
 
 		var data = {
 			labels: out.Labels.VanillaLabel,
@@ -213,7 +222,7 @@ function loadOnlineStatus() {
 function loadMostPlayedBeatmaps(mode) {
 	var mostPlayedTable = $("#scores-zone div[data-mode=" + mode + "] table[data-type='most-played']");
 	currentPage[mode].mostPlayed++
-	api('users/most_played', {id: userID, mode: mode, p: currentPage[mode].mostPlayed, l: 5}, function (resp) {
+	api('users/most_played', {id: userID, mode: mode, p: currentPage[mode].mostPlayed, l: 5, rx: 0}, function (resp) {
 		if (resp.beatmaps === null) {
 			return;
 		}

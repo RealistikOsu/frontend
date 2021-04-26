@@ -253,10 +253,27 @@ var funcMap = template.FuncMap{
 	// modes returns an array containing all the modes (in their string representation).
 	"modes": func() []string {
 		return []string{
-			"osu! standard",
+			//"Standard",
+			"osu!",
 			"Taiko",
 			"Catch the Beat",
-			"osu!mania",
+			"Mania",
+		}
+	},
+	// modes returns an array containing all the modes (in their string representation).
+	"modes_rx": func() []string {
+		return []string{
+			//"Standard",
+			"osu!",
+			"Taiko",
+			"Catch the Beat",
+		}
+	},
+	// modes returns an array containing all the modes (in their string representation).
+	"modes_ap": func() []string {
+		return []string{
+			//"Standard",
+			"osu!",
 		}
 	},
 	// _or is like or, but has only false and nil as its "falsey" values
