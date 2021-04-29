@@ -12,10 +12,19 @@ KyutGrill=leaderboard2.jpg
 		var favouriteMode = {{ $favMode }};
 		var rx = {{ .Gin.Query "rx" | atoi | (float 0) }};
 		var page = {{ .Gin.Query "p" | atoint | atLeastOne }};
+		var sort = {{ .Gin.Query "sort" }}.toLowerCase();
+		if (sort == "") {
+			sort = "pp";
+		}
 		var country = {{ .Gin.Query "country" }}.toLowerCase();
 		if (country.length != 2)
 			country = "";
 	</script>
+	<div class="ui two item menu" id="sort-menu">
+			<a class="0 item" data-sort="pp" href="/leaderboard?sort=pp">PP Leaderboard</a>
+			<a class="1 item" data-sort="score" href="/leaderboard?sort=score">Score Leaderboard</a>
+	</div>
+
 	<div class="ui three item menu" id="rx-menu">
 			<a class="0 item" data-rx="0" href="/leaderboard?rx=0">Vanilla</a>
 			<a class="1 item" data-rx="1" href="/leaderboard?rx=1">Relax</a>
