@@ -1011,3 +1011,9 @@ body {
 i.lblue.icon {
     color: #00e7ff;
 }
+
+td [data-tooltip] {
+    position: absolute;
+    display: flex;
+    transform: translateY(-50%);
+}
