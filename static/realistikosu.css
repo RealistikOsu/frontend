@@ -1017,3 +1017,25 @@ td [data-tooltip] {
     display: flex;
     transform: translateY(-50%);
 }
+
+:root {
+    --pulse-color: green;
+}
+
+.pulse-avatar {
+    border-radius: 100%;
+    width: 125px;
+    margin-top: -6rem;
+    -webkit-animation: glow 1s infinite alternate;
+    -moz-animation: glow 1s infinite alternate;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 -10px #aef4af;
+  }
+  to {
+    box-shadow: 0 0 25px var(--pulse-color);
+  }
+}

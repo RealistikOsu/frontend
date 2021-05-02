@@ -87,27 +87,90 @@
 							</div>
 						</div>
 						<!-- Lasy IF but who cares right? -->
-						{{ with bgetv1 "isOnline?id=%.0f" .id }}
-							{{ if .result }}
-								<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #2cff00;">
-							{{ else }}
-								<img alt="avatar" class="" src="{{ config "AvatarURL" }}/{{ $global.UserID }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">
-							{{ end }}
-						{{ end }}
+						<!-- We will use delta api here so well just create div with id and allow js to do a job. -->
+						<div id="avatar-canvas">
+							</div>
 						<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
 						At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
 						I have a very distinct code style.
 						Plus your implementations did not remove the rosu specific theme aspects, meaning they were
-						direct copies without adaptations for your site :P.
+						direct copies without adaptations for your site.
 						-->
 						<!--Bottom part-->
 						<div style="margin-top: 1rem;margin-bottom: 1rem;">
-							<span id="highlight" style="font-size: 40px;">{{ .username }}</span><br>
+							<h1 id="rainbow" class="ui header">
+								<span id="highlight" style="font-size: 40px;font-weight:normal;">{{ .username }}</span>
+							</h1>
 							{{ $oof := . }}
 							{{ if eq $oof.clan.name "" }}
 							<!--HOW DO I INVERT IN GOLANG??-->
 							{{ else }}
 							<span style="font-size: 20px;">{{ $global.T "%s" ($oof.clan.name) }}</span>
+							{{ end }}
+
+							{{ if _or (has .privileges 8) (has .privileges 4) }}
+							<script>
+							var text='{{ .username }}'
+							if (document.all||document.getElementById){
+								var storetext=document.getElementById? document.getElementById("highlight") : document.all.highlight
+							}
+							else
+							document.write(text)
+							var hex=new Array("00","14","28","3C","50","64","78","8C","A0","B4","C8","DC","F0")
+							var r=1
+							var g=1
+							var b=1
+							var seq=1
+							function changetext(){
+								rainbow="#"+hex[r]+hex[g]+hex[b]
+								storetext.style.color=rainbow
+							}
+							function change() {
+								if (seq==6){
+								b--
+								if (b==0)
+								seq=1
+								}
+								if (seq==5){
+								r++
+								if (r==12)
+								seq=6
+								}
+								if (seq==4){
+								g--
+								if (g==0)
+								seq=5
+								}
+								if (seq==3){
+								b++
+								if (b==12)
+								seq=4
+								}
+								if (seq==2){
+								r--
+								if (r==0)
+								seq=3
+								}
+								if (seq==1){
+								g++
+								if (g==12)
+								seq=2
+							}
+							changetext()
+							}
+							function starteffect() {
+								if (document.all||document.getElementById)
+									{{ if (has .privileges 8) }}
+									document.getElementById('rainbow').style.background = "url('https://media3.giphy.com/media/xThuWcaa4U4XZQDgvm/giphy.gif?cid=ecf05e47fb281d4a1641af0df654a11d15408b234a1b2a14&rid=giphy.gif')";
+									{{ else }}
+									document.getElementById('rainbow').style.background = "url('https://cdn.discordapp.com/attachments/820069067208786000/838463615618646022/ezgif.com-gif-maker1.gif')";
+									{{ end }}
+									document.getElementById('rainbow').style["-webkit-background-clip"] = "text";
+									document.getElementById('rainbow').style.backgroundClip = "text";
+									document.getElementById('rainbow').style.color = "transparent";
+							}
+							starteffect()
+							</script>
 							{{ end }}
 							<!--BADGES!!! THIS WILL BE HELL PLEASE HELP.-->
 							<div class="" style="font-size: 2rem;margin-top: 11px;">

@@ -140,7 +140,8 @@ function initialiseChart(mode) {
 
 function formatOnlineStatusBeatmap(a) {
 	var hasLink = a.beatmap.id > 0;
-	return "<i>" + (hasLink ? "<a href='/b/" + escapeHTML(a.beatmap.id) + "'>" : "") + escapeHTML(a.text) + (hasLink ? '</a>' : '' ) + "</i>";
+	//return "<i>" + (hasLink ? "<a href='/b/" + escapeHTML(a.beatmap.id) + "'>" : "") + escapeHTML(a.text) + (hasLink ? '</a>' : '' ) + "</i>";
+	return escapeHTML(a.text)
 }
 
 function loadOnlineStatus() {
@@ -154,68 +155,66 @@ function loadOnlineStatus() {
 			}
 		});
 		if (client !== null) {
-			var icon;
-			var text;
+			var innerHtml, hexColour;
 			switch (client.type) {
-				case 1: {
-					// irc
-					icon = 'blue comment';
-					text = 'Online through IRC';
-				}; break;
 				case 0: {
 					// bancho
 					switch (client.action.id) {
 						case 1: {
-							icon = 'bed';
-							text = 'AFK';
+							// AFK
+							hexColour = "rgb(10, 10, 10)"
+							innerHtml = `<span class data-tooltip="AFK"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break
 						case 2: {
-							icon = 'teal play circle';
-							text = "Playing " + formatOnlineStatusBeatmap(client.action);
+							// Playing
+							hexColour = "rgb(140, 160, 160)"
+							innerHtml = `<span class data-tooltip="Playing ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break
 						case 3: {
-							icon = 'orange paint brush';
-							text = "Editing " + formatOnlineStatusBeatmap(client.action);
+							// Editing
+							hexColour = "rgb(160, 60, 60)"
+							innerHtml = `<span class data-tooltip="Editing ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 4: {
-							icon = 'violet paint brush';
-							text = "Modding " + formatOnlineStatusBeatmap(client.action);
+							// Modding
+							hexColour = "rgb(60, 160, 60)"
+							innerHtml = `<span class data-tooltip="Modding ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 5: {
-							icon = 'olive gamepad';
-							text = "In Multiplayer Match";
+							// In match
+							hexColour = "rgb(164, 108, 28)"
+							innerHtml = `<span class data-tooltip="In Multiplayer Match"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 12: {
-							icon = 'green play circle';
-							text = "Multiplaying " + formatOnlineStatusBeatmap(client.action);
+							// Playing multi
+							hexColour = "rgb(221, 190, 0)"
+							innerHtml = `<span class data-tooltip="Multiplaying ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 11: {
-							icon = 'orange map signs';
-							text = "In Multiplayer Lobby";
+							// In lobby
+							hexColour = "rgb(164, 108, 28)"
+							innerHtml = `<span class data-tooltip="In Multiplayer Lobby"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 6: {
-							icon = 'pink eye';
-							text = "Spectating " + formatOnlineStatusBeatmap(client.action);
+							// Spectating.
+							innerHtml = `<span class data-tooltip="Spectating ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						default: {
-							icon = 'green circle';
-							text = 'Online';
+							// online
+							hexColour = "rgb(10, 29, 75)"
+							innerHtml = `<span class data-tooltip="Online"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						};
 					}
 				}; break;
-				case 2: {
-					// ws
-					icon = 'green cogs';
-					text = 'Online';
-				}; break
 			}
 		} else {
 			// offline
-			icon = 'circle';
-			text = 'Offline'
+			// we wont pulse if they are offline.
+			innerHtml = `<span class data-tooltip="Offline"><img alt="avatar" src="https://a.ussr.pl/${userID}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">`;
 		}
-		$('#online>.icon').attr('class', icon + ' icon');
-		$('#online>span').html(text);
+
+		document.documentElement.style.setProperty('--pulse-color', hexColour);
+		$('#avatar-canvas').html(innerHtml);
 	});
 }
 
