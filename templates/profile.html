@@ -78,7 +78,7 @@
 				<div class="six wide column" id="right">
 					<div style="margin: 0 !important;padding: 0;text-align: center;" class="ui top attached segment auto">
 						<div style="margin: 0;filter: blur(5p);">
-							<div style="background-image: url(&quot;https://cdn.discordapp.com/attachments/458749249623031808/795344496417308692/unknown.png&quot;);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
+							<div style="background-image: url(/static/image/banner_bg.png);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
 								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
 									<i class="trophy line small circular icon"></i> 
 									{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
@@ -168,9 +168,9 @@
 							function starteffect() {
 								if (document.all||document.getElementById)
 									{{ if (has .privileges 8) }}
-									document.getElementById('rainbow').style.background = "url('https://media3.giphy.com/media/xThuWcaa4U4XZQDgvm/giphy.gif?cid=ecf05e47fb281d4a1641af0df654a11d15408b234a1b2a14&rid=giphy.gif')";
+									document.getElementById('rainbow').style.background = "url(/static/image/rainbow.webp)";
 									{{ else }}
-									document.getElementById('rainbow').style.background = "url('https://cdn.discordapp.com/attachments/820069067208786000/838463615618646022/ezgif.com-gif-maker1.gif')";
+									document.getElementById('rainbow').style.background = "url(/static/image/supporter.gif)";
 									{{ end }}
 									document.getElementById('rainbow').style["-webkit-background-clip"] = "text";
 									document.getElementById('rainbow').style.backgroundClip = "text";
