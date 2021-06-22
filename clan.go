@@ -193,7 +193,7 @@ ctx := getContext(c)
 		db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
 
 		var users_list []int
-		db.QueryRow("SELECT user FROM user_clans WHERE id = ?", clan).Scan(&users_list)
+		db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", clan).Scan(&users_list)
 		for _, user_id := range users_list {
 			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
 		}
