@@ -35,6 +35,7 @@ func leaveClan(c *gin.Context) {
 		
 			
 		db.Exec("DELETE FROM user_clans WHERE user = ? AND clan = ?", getContext(c).User.ID, i)
+		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		addMessage(c, successMessage{T(c, "You've left the clan.")})
 		getSession(c).Save()
 		c.Redirect(302, "/c/"+i)
@@ -51,6 +52,7 @@ func leaveClan(c *gin.Context) {
 		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
 		// ควยไม่สร้างแม่งละสัส :c
 		db.Exec("DELETE FROM clans WHERE id = ?", i)
+		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		
 		addMessage(c, successMessage{T(c, "Your clan has been disbanded")})
 		getSession(c).Save()
@@ -247,6 +249,7 @@ func clanInvite(c *gin.Context) {
 		}
 		// เข้าแคลน
 		db.Exec("INSERT INTO `user_clans`(user, clan, perms) VALUES (?, ?, 1);", getContext(c).User.ID, res)
+		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		addMessage(c, successMessage{T(c, "You've joined the clan! Hooray!! \\(^o^)/")})
 		getSession(c).Save()
 		c.Redirect(302, "/c/"+s)
@@ -284,6 +287,7 @@ func clanKick(c *gin.Context) {
 			}
 
 	db.Exec("DELETE FROM user_clans WHERE user = ?", member)
+	rd.Publish("rosu:clan_update", c.PostForm("member"))
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
 	c.Redirect(302, "/settings/clansettings")

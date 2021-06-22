@@ -68,8 +68,7 @@ func ccreateSubmit(c *gin.Context) {
 	lid, _ := res.LastInsertId()
 
 	db.Exec("INSERT INTO `user_clans`(user, clan, perms) VALUES (?, ?, 8);", getContext(c).User.ID, lid)
-
-
+	rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 
 	addMessage(c, successMessage{T(c, "Clan created.")})
 	getSession(c).Save()
