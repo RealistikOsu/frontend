@@ -47,12 +47,25 @@ func leaveClan(c *gin.Context) {
 		// ลบคำเชิญออก
 		db.Exec("DELETE FROM clans_invites WHERE clan = ?", i)
 		// ลบทุกคนออกจากแคลน :c
-		var users_list []int
-		db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", i).Scan(&users_list)
-		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
-		for _, user_id := range users_list {
+		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", i))
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer rows.Close()
+		for j := 1; rows.Next(); j++ {
+			var user_id int
+			err := rows.Scan(&user_id)
+
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			//append(users_list, user_id)
 			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
 		}
+		//db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", i).Scan(&users_list)
+		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
 		// ควยไม่สร้างแม่งละสัส :c
 		db.Exec("DELETE FROM clans WHERE id = ?", i)
 		
@@ -62,7 +75,6 @@ func leaveClan(c *gin.Context) {
 	}
 	
 }
-
 
 func clanPage(c *gin.Context) {
 	var (
@@ -192,12 +204,27 @@ ctx := getContext(c)
 		
 		db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
 
-		var users_list []int
-		db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", clan).Scan(&users_list)
-		for _, user_id := range users_list {
+		//var users_list []int
+		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", clan))
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer rows.Close()
+		for j := 1; rows.Next(); j++ {
+			var user_id int
+			err := rows.Scan(&user_id)
+
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			//append(users_list, user_id)
 			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
 		}
-
+		// for _, user := range users_list {
+		// 	rd.Publish("rosu:clan_update", strconv.Itoa(user))
+		// }
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
