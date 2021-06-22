@@ -303,8 +303,6 @@ func generateEngine() *gin.Engine {
 	r.GET("/2fa_gateway/recover", recover2fa)
 	r.POST("/2fa_gateway/recover", recover2faSubmit)
 
-	r.POST("/irc/generate", ircGenToken)
-
 	r.GET("/settings/password", changePassword)
 	r.GET("/settings/authorized_applications", authorizedApplications)
 	r.POST("/settings/authorized_applications/revoke", revokeAuthorization)

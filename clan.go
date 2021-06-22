@@ -32,8 +32,6 @@ func leaveClan(c *gin.Context) {
 			return
 		}
 		// กูไม่รู้หรอกว่ามันจะได้ผลมั้ย แต่ควยชั่งแม่งเย็ดแม่
-		
-			
 		db.Exec("DELETE FROM user_clans WHERE user = ? AND clan = ?", getContext(c).User.ID, i)
 		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		addMessage(c, successMessage{T(c, "You've left the clan.")})
@@ -49,17 +47,20 @@ func leaveClan(c *gin.Context) {
 		// ลบคำเชิญออก
 		db.Exec("DELETE FROM clans_invites WHERE clan = ?", i)
 		// ลบทุกคนออกจากแคลน :c
+		var users_list []int
+		db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", i).Scan(&users_list)
 		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
+		for _, user_id := range users_list {
+			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+		}
 		// ควยไม่สร้างแม่งละสัส :c
 		db.Exec("DELETE FROM clans WHERE id = ?", i)
-		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		
 		addMessage(c, successMessage{T(c, "Your clan has been disbanded")})
 		getSession(c).Save()
 		c.Redirect(302, "/clans?mode=0")
 	}
 	
-
 }
 
 
@@ -190,6 +191,13 @@ ctx := getContext(c)
 		}
 		
 		db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
+
+		var users_list []int
+		db.QueryRow("SELECT user FROM user_clans WHERE id = ?", clan).Scan(&users_list)
+		for _, user_id := range users_list {
+			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+		}
+
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()

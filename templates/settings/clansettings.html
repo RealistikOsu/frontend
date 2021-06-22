@@ -77,6 +77,12 @@ TitleBar=Clan Settings
                                 {{ $.T "Generate a new invite!" }}
                             </button>
                         </form>
+                        <br><form action="/c/{{ $o }}" method="POST">
+                            {{ ieForm .Gin }}
+                            <button type="submit" class="ui right red button">
+                                {{ $.T "Disband Clan!" }}
+                            </button>
+                        </form>
                         {{ else }}
                             <font size="3">{{ $.T "You shouldn't be here, cheater. :thinking:" }}</font>
                         {{ end }}
