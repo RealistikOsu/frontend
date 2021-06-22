@@ -47,9 +47,12 @@ func leaveClan(c *gin.Context) {
 		// ลบคำเชิญออก
 		db.Exec("DELETE FROM clans_invites WHERE clan = ?", i)
 		// ลบทุกคนออกจากแคลน :c
-		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", i))
+		var users_list []int
+		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = '%s'", i))
 		if err != nil {
 			fmt.Println(err)
+			c.Error(err)
+			return
 		}
 		defer rows.Close()
 		for j := 1; rows.Next(); j++ {
@@ -61,8 +64,11 @@ func leaveClan(c *gin.Context) {
 				continue
 			}
 
-			//append(users_list, user_id)
-			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+			users_list = append(users_list, user_id)
+			//rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+		}
+		for _, user := range users_list {
+			rd.Publish("rosu:clan_update", strconv.Itoa(user))
 		}
 		//db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", i).Scan(&users_list)
 		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
@@ -204,10 +210,12 @@ ctx := getContext(c)
 		
 		db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
 
-		//var users_list []int
+		var users_list []int
 		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", clan))
 		if err != nil {
 			fmt.Println(err)
+			c.Error(err)
+			return
 		}
 		defer rows.Close()
 		for j := 1; rows.Next(); j++ {
@@ -219,12 +227,12 @@ ctx := getContext(c)
 				continue
 			}
 
-			//append(users_list, user_id)
-			rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+			users_list = append(users_list, user_id)
+			//rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
 		}
-		// for _, user := range users_list {
-		// 	rd.Publish("rosu:clan_update", strconv.Itoa(user))
-		// }
+		for _, user := range users_list {
+			rd.Publish("rosu:clan_update", strconv.Itoa(user))
+		}
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
