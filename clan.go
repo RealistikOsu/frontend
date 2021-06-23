@@ -55,7 +55,7 @@ func leaveClan(c *gin.Context) {
 			return
 		}
 		defer rows.Close()
-		for j := 1; rows.Next(); j++ {
+		for rows.Next() {
 			var user_id int
 			err := rows.Scan(&user_id)
 
@@ -67,13 +67,14 @@ func leaveClan(c *gin.Context) {
 			users_list = append(users_list, user_id)
 			//rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
 		}
-		for _, user := range users_list {
-			rd.Publish("rosu:clan_update", strconv.Itoa(user))
-		}
 		//db.QueryRow("SELECT user FROM user_clans WHERE clan = ?", i).Scan(&users_list)
 		db.Exec("DELETE FROM user_clans WHERE clan = ?", i)
 		// ควยไม่สร้างแม่งละสัส :c
 		db.Exec("DELETE FROM clans WHERE id = ?", i)
+
+		for _, user := range users_list {
+			rd.Publish("rosu:clan_update", strconv.Itoa(user))
+		}
 		
 		addMessage(c, successMessage{T(c, "Your clan has been disbanded")})
 		getSession(c).Save()
@@ -158,10 +159,79 @@ func randSeq(n int) string {
 }
 
 func createInvite(c *gin.Context) {
-ctx := getContext(c)
-	if string(c.PostForm("description")) == "" && string(c.PostForm("icon")) == "" && string(c.PostForm("tag")) == "" && string(c.PostForm("bg")) == "" {
+	ctx := getContext(c)
+	if string(c.PostForm("description")) != "" || string(c.PostForm("icon")) != "" || string(c.PostForm("tag")) != "" || string(c.PostForm("bg")) != "" {
+		// เช็คแปปว่ายศสูงพอมั้ย
+		var perms int
+		db.QueryRow("SELECT perms FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1", ctx.User.ID).Scan(&perms)
+		// ลบคำเชิญเก่าออก
+		var clan int
+		db.QueryRow("SELECT clan FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1", ctx.User.ID).Scan(&clan)
+		if clan == 0 {
+			resp403(c)
+			return
+		}
 		
+		tag := ""
+		if c.PostForm("tag") != "" {
+			tag = c.PostForm("tag")
+		}
 		
+		if db.QueryRow("SELECT 1 FROM clans WHERE tag = ? AND id != ?", c.PostForm("tag"), clan).
+		Scan(new(int)) != sql.ErrNoRows {
+			resp403(c)
+			addMessage(c, errorMessage{T(c, "Someone already used that TAG! Please try another!")})
+			return
+		}
+
+		QUERY := "UPDATE clans SET "
+
+		description := c.PostForm("description")
+		icon := c.PostForm("icon")
+		background := c.PostForm("bg")
+		if description != "" {
+			QUERY += fmt.Sprintf("description = '%s'", description)
+		}
+		if icon != "" {
+			QUERY += fmt.Sprintf("icon = '%s'", icon)
+		}
+		if background != "" {
+			QUERY += fmt.Sprintf("background = '%s'", background)
+		}
+		if tag != "" {
+			QUERY += fmt.Sprintf("tag = '%s'", tag)
+		}
+
+		db.Exec(QUERY+" WHERE id = ?", clan)
+		//db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
+
+		if tag != "" {
+			var users_list []int
+			rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", clan))
+			if err != nil {
+				fmt.Println(err)
+				c.Error(err)
+				return
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var user_id int
+				err := rows.Scan(&user_id)
+
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+
+				users_list = append(users_list, user_id)
+				//rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
+			}
+			for _, user := range users_list {
+				rd.Publish("rosu:clan_update", strconv.Itoa(user))
+			}
+		}
+	} else {
+
 		if ctx.User.ID == 0 {
 			resp403(c)
 			return
@@ -184,55 +254,6 @@ ctx := getContext(c)
 		s = randSeq(8)
 
 		db.Exec("INSERT INTO clans_invites(clan, invite) VALUES (?, ?)", clan, s)
-	} else {
-		// เช็คแปปว่ายศสูงพอมั้ย
-		var perms int
-		db.QueryRow("SELECT perms FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1", ctx.User.ID).Scan(&perms)
-		// ลบคำเชิญเก่าออก
-		var clan int
-		db.QueryRow("SELECT clan FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1", ctx.User.ID).Scan(&clan)
-		if clan == 0 {
-			resp403(c)
-			return
-		}
-		
-		tag := "0"
-		if c.PostForm("tag") != "" {
-			tag = c.PostForm("tag")
-		}
-		
-		if db.QueryRow("SELECT 1 FROM clans WHERE tag = ? AND id != ?", c.PostForm("tag"), clan).
-		Scan(new(int)) != sql.ErrNoRows {
-			resp403(c)
-			addMessage(c, errorMessage{T(c, "Someone already used that TAG! Please try another!")})
-			return
-		}
-		
-		db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
-
-		var users_list []int
-		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", clan))
-		if err != nil {
-			fmt.Println(err)
-			c.Error(err)
-			return
-		}
-		defer rows.Close()
-		for j := 1; rows.Next(); j++ {
-			var user_id int
-			err := rows.Scan(&user_id)
-
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			users_list = append(users_list, user_id)
-			//rd.Publish("rosu:clan_update", strconv.Itoa(user_id))
-		}
-		for _, user := range users_list {
-			rd.Publish("rosu:clan_update", strconv.Itoa(user))
-		}
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
