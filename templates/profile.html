@@ -3,11 +3,13 @@
 	{{ if .UserID }}
 		{{ $realistik := eq .UserID 1000 }}
 		{{ $gqm := atoi (.Gin.Query "mode") }}
+		{{ $relax := _or (atoi (.Gin.Query "rx")) (int 0)}}
 		{{ $global := . }}
 		{{ $UserFrozen := qb "SELECT frozen FROM users WHERE id = ?" .UserID }}
 		{{ with (.Get "users/full?id=%d" .UserID) }}
 			{{ $favouritemode := _or $gqm .favourite_mode }}
 			<script>
+				window.preferRelax = {{ $relax }};
 				window.favouriteMode = {{ $favouritemode }};
 				window.userID = {{ .id }};
 				//swap them round on mobile so the order isnt weird for them
@@ -63,8 +65,9 @@
 					{{ end }}
 					<div id="scores-zone">
 						{{ range _range 4 }}
-							<div data-mode="{{ . }}" {{ if ne . (int $favouritemode) }} hidden{{ end }} data-loaded="0">
-							</div>
+							<div data-mode="{{ . }}" data-rx="0" {{ if _or (ne . (int $favouritemode)) (ne 0 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+							<div data-mode="{{ . }}" data-rx="1" {{ if _or (ne . (int $favouritemode)) (ne 1 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+							<div data-mode="{{ . }}" data-rx="2" {{ if _or (ne . (int $favouritemode)) (ne 2 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
 						{{ end }}
 					</div>
 					<div class="ui modal">
@@ -81,13 +84,15 @@
 							<div style="background-image: url(/static/image/banner_bg.png);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
 								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
 									<i class="trophy line small circular icon"></i> 
-									{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
-									<span data-mode="{{ $k }}"{{ if ne $k (int $favouritemode) }} hidden{{ end }}>
-										{{ with and $v $v.global_leaderboard_rank }}
-											#{{ . }}
-										{{ else }}
-											{{ $global.T "Unknown" }}
-										{{ end }}</span>
+									{{ range $kp, $vp := (slice .stats.vn .stats.rx .stats.ap) }}
+										{{ range $k, $v := (slice $vp.std $vp.taiko $vp.ctb $vp.mania) }}
+										<span data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
+											{{ with and $v $v.global_leaderboard_rank }}
+												#{{ . }}
+											{{ else }}
+												{{ $global.T "Unknown" }}
+											{{ end }}</span>
+										{{ end }}
 									{{ end }}
 								</div>
 							</div>
@@ -209,13 +214,13 @@
 						</div>
 					</div>
 					<div class="ui three item bottom attached menu" id="rx-menu" style="margin-bottom: 0;">
-						<a class="0 item active" data-rx="0" href="/u/{{ $user.id }}">Vanilla</a>
-						<a class="1 item" data-rx="1" href="/rx/u/{{ $user.id }}">Relax</a>
-						<a class="1 item" data-rx="2" href="/ap/u/{{ $user.id }}">Autopilot</a>
+						<a class="0 item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
+						<a class="1 item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
+						<a class="1 item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
 					</div>
 					<div class="ui four item bottom attached menu" id="mode-menu">
 						{{ range $k, $v := modes }}
-							<a class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/u/{{ $user.id }}?mode={{ $k }}">{{ $v }}</a>
+							<a class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/u/{{ $user.id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
 						{{ end }}
 					</div>
 					<!--Rank Graph-->
@@ -260,9 +265,10 @@
 							<br>{{ $global.T "Last seen: %s." (time $user.latest_activity) | html }}
 							<br>{{ with playstyle .play_style $global }}{{ $global.T "They play with %s." . }}{{ end }}
 						</div>
-						{{ range $k, $v := (slice .std .taiko .ctb .mania) }}
-						{{ $maxcombo := qb "SELECT FORMAT(scores.max_combo,0) AS combo FROM scores WHERE userid = ? ORDER BY max_combo DESC;" $.UserID}}
-							<div data-mode="{{ $k }}" {{ if ne $k (int $favouritemode) }} hidden{{ end }}>
+						{{ range $rxk, $rxv := (slice .stats.vn .stats.rx .stats.ap) }}
+						{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
+						{{ $maxcombo := qb "SELECT FORMAT(scores.max_combo,0) AS combo FROM scores WHERE userid = ? ORDER BY max_combo DESC;" $.UserID }}
+							<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
 								<table class="ui very basic two column compact table nopad">
 									<tbody>
 										{{ with .global_leaderboard_rank }}
@@ -321,6 +327,7 @@
 									<div class="label">{{ $global.T "Level %s" (level .level) }}</div>
 								</div>
 							</div>
+						{{ end }}
 						{{ end }}
 					</div>
 				</div>

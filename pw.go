@@ -56,7 +56,7 @@ func passwordReset(c *gin.Context) {
 	key := rs.String(50)
 
 	// TODO: WHY THE FUCK DOES THIS USE USERNAME AND NOT ID PLEASE WRITE MIGRATION
-	_, err = db.Exec("INSERT INTO password_recovery(k, u) VALUES (?, ?)", key, username)
+	_, err = db.Exec("INSERT INTO password_recovery(k, u) VALUES (?, ?)", key, common.SafeUsername(username))
 
 	if err != nil {
 		c.Error(err)

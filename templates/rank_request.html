@@ -1,6 +1,6 @@
 {{/*###
-Handler=/beatmaps/rank_request
-TitleBar=Request beatmap ranking
+Handler=/rank_request
+TitleBar=Request Beatmap Ranking
 KyutGrill=request_beatmap_ranking.jpg
 MinPrivileges=2
 */}}
@@ -29,7 +29,7 @@ MinPrivileges=2
 			{{ if .can_submit }}
 				<form class="ui form" id="b-form">
 					<div class="ui fluid action input">
-						<input tabindex="1" type="text" placeholder="https://ussr.pl/b/1918979" id="beatmap">
+						<input tabindex="1" type="text" placeholder="https://ussr.pl/beatmaps/1918979" id="beatmap">
 						{{ $f }}
 						<button tabindex="2" class="ui right labeled icon blue button">
 							<i class="right arrow icon"></i>

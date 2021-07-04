@@ -35,7 +35,7 @@
 				<div class="menu">
 					{{ navbarItem .Path (.T "About") "/about" }}
 					{{ navbarItem .Path (.T "Rules") "/doc/rules" }}
-					{{ navbarItem .Path (.T "Server switcher") "http://dl.ussr.pl/files/osu/ROS.exe" }}
+					{{ navbarItem .Path (.T "Server Switcher (Deprecated)") "http://dl.ussr.pl/files/osu/ROS.exe" }}
 					{{ navbarItem .Path (.T "Our Team") "/team" }}
 				</div>
 			</div>
@@ -43,8 +43,8 @@
 			<div class="ui dropdown item">
 				<span>{{ .T "Beatmaps" }}</span>
 				<div class="menu">
-					{{ navbarItem .Path (.T "Request beatmap ranking") "/beatmaps/rank_request" }}
-					{{ navbarItem .Path (.T "Beatmaps Listing") "/beatmaps" }}		
+					{{ navbarItem .Path (.T "Request Beatmap Ranking") "/rank_request" }}
+					{{ navbarItem .Path (.T "Beatmaps Listing") "/bmaps_listing" }}		
 				</div>
 			</div>
 			<a class="item" href="/donate" >❤️Donate</a>

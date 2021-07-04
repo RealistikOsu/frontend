@@ -24,7 +24,6 @@ import (
 	"zxq.co/ripple/agplwarning"
 	"github.com/RealistikOsu/hanayo/modules/btcaddress"
 	"github.com/RealistikOsu/hanayo/modules/btcconversions"
-	"github.com/RealistikOsu/hanayo/routers/oauth"
 	"github.com/RealistikOsu/hanayo/routers/pagemappings"
 	"github.com/RealistikOsu/hanayo/services"
 	"github.com/RealistikOsu/hanayo/services/cieca"
@@ -139,7 +138,7 @@ func main() {
 	}
 
 	// initialise db
-	db, err = sqlx.Open("mysql", config.DSN+"?parseTime=true")
+	db, err = sqlx.Open("mysql", config.DSN+"?parseTime=true&allowNativePasswords=true")
 	if err != nil {
 		panic(err)
 	}
@@ -171,9 +170,6 @@ func main() {
 		Addr:     config.RedisAddress,
 		Password: config.RedisPassword,
 	})
-
-	// initialise oauth
-	setUpOauth()
 
 	// initialise btcaddress
 	btcaddress.Redis = rd
@@ -270,7 +266,6 @@ func generateEngine() *gin.Engine {
 		sessions.Sessions("session", store),
 		sessionInitializer(),
 		rateLimiter(false),
-		twoFALock,
 	)
 
 	r.Static("/static", "static")
@@ -287,30 +282,33 @@ func generateEngine() *gin.Engine {
 	r.GET("/clans/create", ccreate)
 	r.POST("/clans/create", ccreateSubmit)
 
+	r.GET("/users/:user", func(c *gin.Context) {
+		user := c.Param("user")
+		c.Redirect(301, "/u/"+user)
+	})
+
+	// Redirectors to our old /rx/u /ap/u routes.
+	r.GET("/rx/u/:user", func(c *gin.Context) {
+		user := c.Param("user")
+		c.Redirect(301, "/u/"+user+"?rx=1")
+	})
+	r.GET("/ap/u/:user", func(c *gin.Context) {
+		user := c.Param("user")
+		c.Redirect(301, "/u/"+user+"?rx=2")
+	})
+
 	r.GET("/u/:user", userProfile)
-	r.GET("/rx/u/:user", relaxProfile)
-	r.GET("/ap/u/:user", autoProfile)
 	r.GET("/c/:cid", clanPage)
-	r.GET("/b/:bid", beatmapInfo)
+	r.GET("/beatmaps/:bid", beatmapInfo)
 
 	r.POST("/pwreset", passwordReset)
 	r.GET("/pwreset/continue", passwordResetContinue)
 	r.POST("/pwreset/continue", passwordResetContinueSubmit)
 
-	r.GET("/2fa_gateway", tfaGateway)
-	r.GET("/2fa_gateway/clear", clear2fa)
-	r.GET("/2fa_gateway/verify", verify2fa)
-	r.GET("/2fa_gateway/recover", recover2fa)
-	r.POST("/2fa_gateway/recover", recover2faSubmit)
-
 	r.GET("/settings/password", changePassword)
-	r.GET("/settings/authorized_applications", authorizedApplications)
-	r.POST("/settings/authorized_applications/revoke", revokeAuthorization)
 	r.POST("/settings/password", changePasswordSubmit)
 	r.POST("/settings/userpage/parse", parseBBCode)
 	r.POST("/settings/avatar", avatarSubmit)
-	r.POST("/settings/2fa/disable", disable2fa)
-	r.POST("/settings/2fa/totp", totpSetup)
 	r.GET("/settings/discord/finish", discordFinish)
 	r.POST("/settings/profbackground/:type", profBackground)
 	
@@ -319,22 +317,7 @@ func generateEngine() *gin.Engine {
 	r.GET("/clans/invite/:inv", clanInvite)
 	r.POST("/c/:cid", leaveClan)
 
-	r.POST("/dev/tokens/create", createAPIToken)
-	r.POST("/dev/tokens/delete", deleteAPIToken)
-	r.POST("/dev/tokens/edit", editAPIToken)
-	r.GET("/dev/apps", getOAuthApplications)
-	r.GET("/dev/apps/edit", editOAuthApplication)
-	r.POST("/dev/apps/edit", editOAuthApplicationSubmit)
-	r.POST("/dev/apps/delete", deleteOAuthApplication)
-
-	r.GET("/oauth/authorize", oauth.Authorize)
-	r.POST("/oauth/authorize", oauth.Authorize)
-	r.GET("/oauth/token", oauth.Token)
-	r.POST("/oauth/token", oauth.Token)
-
 	r.GET("/donate/rates", btcconversions.GetRates)
-
-	r.Any("/blog/*url", blogRedirect)
 
 	r.GET("/help", func(c *gin.Context) {
 		c.Redirect(301, "https://discord.gg/8ySdzhyMtt")

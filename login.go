@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"net/url"
-
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"github.com/RealistikOsu/RealistikAPI/common"
@@ -116,30 +114,19 @@ func loginSubmit(c *gin.Context) {
 	sess.Set("userid", data.ID)
 	sess.Set("pw", cmd5(data.Password))
 	sess.Set("logout", rs.String(15))
-
-	tfaEnabled := is2faEnabled(data.ID)
-	if tfaEnabled == 0 {
-		afterLogin(c, data.ID, data.Country, data.Flags)
-	} else {
-		sess.Set("2fa_must_validate", true)
-	}
+	afterLogin(c, data.ID, data.Country, data.Flags)
 
 	redir := c.PostForm("redir")
 	if len(redir) > 0 && redir[0] != '/' {
 		redir = ""
 	}
 
-	if tfaEnabled > 0 {
-		sess.Save()
-		c.Redirect(302, "/2fa_gateway?redir="+url.QueryEscape(redir))
-	} else {
-		addMessage(c, successMessage{T(c, "Welcome back %s! You have been logged into RealistikOsu!", template.HTMLEscapeString(data.Username))})
-		sess.Save()
-		if redir == "" {
-			redir = "/"
-		}
-		c.Redirect(302, redir)
+	addMessage(c, successMessage{T(c, "Welcome back %s! You have been logged into RealistikOsu!", template.HTMLEscapeString(data.Username))})
+	sess.Save()
+	if redir == "" {
+		redir = "/"
 	}
+	c.Redirect(302, redir)
 	return
 }
 

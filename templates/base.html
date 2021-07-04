@@ -100,12 +100,6 @@
 				{{ if .Messages }}
 						{{ range $i, $v := .Messages }}
 							<script>showMessage("{{ $v.Type }}", "{{ html $v.Content }}")</script>
-							<!--
-							<div class="ui {{ $v.Type }} message">
-								<i class="close icon"></i>
-								{{ html $v.Content }}
-							</div>
-							-->
 						{{ end }}
 				{{ end }}
 				{{ $settings := systemSettings "website_maintenance" "game_maintenance" "website_global_alert" }}
