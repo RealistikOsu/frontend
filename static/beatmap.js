@@ -7,7 +7,7 @@ function FillScores(rx) {
   function loadLeaderboard(b, m) {
     var wl = window.location;
     window.history.replaceState('', document.title,
-      "/b/" + b + "?mode=" + m + wl.hash);
+      "/beatmaps/" + b + "?mode=" + m + wl.hash);
     var Score = "pp";
     switch (rx) {
         case 0: //vanilla, default to score

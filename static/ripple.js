@@ -352,7 +352,7 @@ var singlePageSnippets = {
           showMessage(
             "error",
             "Please provide a valid link, in the form " +
-                    "of either https://osu.ppy.sh/s/&lt;ID&gt; or https://ussr.pl/b/&lt;ID&gt;.");
+                    "of either https://osu.ppy.sh/s/&lt;ID&gt; or https://ussr.pl/beatmaps/&lt;ID&gt;.");
           $(this).removeClass("loading");
           return false;
         }

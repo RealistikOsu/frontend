@@ -11,7 +11,7 @@
 			</span>
 			<div class="menu">
 				{{ range .Beatmapset.ChildrenBeatmaps }}
-				<a href="/b/{{ .ID }}" class="item {{ if eq .ID $.Beatmap.ID }}active{{ end }}" data-bid="{{ .ID }}">
+				<a href="/beatmaps/{{ .ID }}" class="item {{ if eq .ID $.Beatmap.ID }}active{{ end }}" data-bid="{{ .ID }}">
 					<i class="attention icon"></i>
 					{{ .DiffName }}
       				(<i class="fitted star icon" style="margin-right:0"></i> {{ printf "%.2f" .DifficultyRating }})
@@ -145,7 +145,7 @@
 		</div>
 		<div class="ui four item menu" id="mode-menu">
 			{{ range $k, $v := modes }}
-				<a class="item" id="mode-{{ $k }}" data-mode="{{ $k }}" href="/b/{{ $.Beatmap.ID }}?mode={{ $k }}">{{ $v }}</a>
+				<a class="item" id="mode-{{ $k }}" data-mode="{{ $k }}" href="/beatmaps/{{ $.Beatmap.ID }}?mode={{ $k }}">{{ $v }}</a>
 			{{ end }}
 		</div>
 

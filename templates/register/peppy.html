@@ -1,5 +1,5 @@
 {{/*###
-TitleBar=Elmo! Stop!
+TitleBar=Peppy! Stop!
 HeadingTitle=Stop!
 KyutGrill=stop_sign.png
 HeadingOnRight=true
@@ -9,7 +9,7 @@ HeadingOnRight=true
 	<div class="ui raised segments">
 		<div class="ui segment">
 			{{ $username := .RequestInfo.Username }}
-			<img src="/static/jack_black.jpg" class="ui small right floated image" alt="Jack black">
+			<img style="width: 160px;" src="https://cdn.discordapp.com/attachments/712968884784726046/861385613814005810/unknown.png" class="ui small right floated image" alt="peppy mad">
 
 			<p>{{ .T "We see that you're trying to sign up while having already signed up as %s! Please note that multiaccounting is punishable, and can lead to a one month restriction!" $username }}</p>
 
@@ -21,7 +21,7 @@ HeadingOnRight=true
 					{{ .T "If you're not %s, but you're using %s's computer, please sign up on RealistikOsu! from your own computer." $username $username }}
 				</li>
 				<li>
-					{{ .T "If you live with %s and you don't have your own computer from which to sign up on RealistikOsu!, then please contact rosusupport@protonmail.com, and we'll deal with your specific case." $username }}
+					{{ .T "If you live with %s and you don't have your own computer from which to sign up on RealistikOsu!, then please contact one of the staff member on our" $username }} <a href="https://discord.gg/8ySdzhyMtt">Discord server</a>{{ .T ",  and we'll deal with your specific case." }}
 				</li>
 			</ul>
 			

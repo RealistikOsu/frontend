@@ -297,6 +297,11 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, "/u/"+user+"?rx=2")
 	})
 
+	r.GET("/b/:bid", func(c *gin.Context) {
+		bid := c.Param("bid")
+		c.Redirect(301, "/beatmaps/"+bid)
+	})
+
 	r.GET("/u/:user", userProfile)
 	r.GET("/c/:cid", clanPage)
 	r.GET("/beatmaps/:bid", beatmapInfo)

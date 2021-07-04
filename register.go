@@ -23,7 +23,7 @@ func register(c *gin.Context) {
 	if c.Query("stopsign") != "1" {
 		u, _ := tryBotnets(c)
 		if u != "" {
-			simple(c, getSimpleByFilename("register/elmo.html"), nil, map[string]interface{}{
+			simple(c, getSimpleByFilename("register/peppy.html"), nil, map[string]interface{}{
 				"Username": u,
 			})
 			return
