@@ -73,12 +73,9 @@ function FillScores(rx) {
     $("#bpm").html(diff.BPM);
 
     // hide mode for non-std maps
-    console.log("favMode", favMode);
-    if (diff.Mode != 0) {
-      currentMode = (currentModeChanged ? currentMode : favMode);
+	if (diff.Mode != 0) {
       $("#mode-menu").hide();
     } else {
-      currentMode = diff.Mode;
       $("#mode-menu").show();
     }
 
@@ -86,6 +83,7 @@ function FillScores(rx) {
     $("#mode-menu .active.item").removeClass("active");
     $("#mode-" + currentMode).addClass("active");
 
+    currentMode = diff.Mode;
     loadLeaderboard(bid, currentMode);
   }
   window.loadLeaderboard = loadLeaderboard;
