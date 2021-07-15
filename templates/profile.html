@@ -69,6 +69,52 @@
 							<div data-mode="{{ . }}" data-rx="1" {{ if _or (ne . (int $favouritemode)) (ne 1 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
 							<div data-mode="{{ . }}" data-rx="2" {{ if _or (ne . (int $favouritemode)) (ne 2 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
 						{{ end }}
+						<div class="ui segment">
+							<h4 class="ui horizontal divider header"><i class="star icon"></i>Achievements</h4>
+							<div class="ui grid">
+								<div class="eight wide column">
+								  	<h2 class="ui header">
+								  		<i class="play icon"></i>
+								  		<div class="content">
+											Playcount
+											<div class="sub header">Playcount based achievements</div>
+										</div>
+									</h2>
+								</div>
+								<div class="eight wide column">
+									<h2 class="ui header">
+								  		<i class="forward icon"></i>
+								  		<div class="content">
+											Mods
+											<div class="sub header">Achievements based on mod exploration</div>
+								  		</div>
+									</h2>
+									<div id="mods-achiev"></div>
+								</div> 
+							</div>
+							<div class="ui grid">
+								<div class="eight wide column">
+									<h2 class="ui header">
+										<i class="music icon"></i>
+										<div class="content">
+										  Combo
+										  <div class="sub header">Consistency based achievements</div>
+									  </div>
+								  </h2>
+								  <div id="combo-achiev"></div>
+							  </div>
+							  <div class="eight wide column">
+								<h2 class="ui header">
+									<i class="star icon"></i>
+									<div class="content">
+									  Star Rating
+									  <div class="sub header">Achievements based on exploring new difficulties</div>
+								  </div>
+							  </h2>
+							  <div id="sr-achiev"></div>
+						  </div>
+							</div>
+						</div>
 					</div>
 					<div class="ui modal">
 						<i class="close icon"></i>
