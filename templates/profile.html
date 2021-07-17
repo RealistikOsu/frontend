@@ -5,7 +5,6 @@
 		{{ $gqm := atoi (.Gin.Query "mode") }}
 		{{ $relax := _or (atoi (.Gin.Query "rx")) (int 0)}}
 		{{ $global := . }}
-		{{ $UserFrozen := qb "SELECT frozen FROM users WHERE id = ?" .UserID }}
 		{{ with (.Get "users/full?id=%d" .UserID) }}
 			{{ $favouritemode := _or $gqm .favourite_mode }}
 			<script>
@@ -41,17 +40,17 @@
 					<div class="ui error centered message">{{ $global.T "User is <b>%s</b>" "restricted" | html }}.</div>
 				{{ else if $disab }}
 					<div class="ui error centered message">{{ $global.T "User is <b>%s</b>" "locked" | html }}.</div>
-				{{ else if $UserFrozen.frozen.Bool }}
+				{{ else if $global.Frozen }}
 					<div class="ui warning centered message">{{ $global.T "User is <b>%s</b>. This means they have to provide a liveplay or else they will be automatically restricted" "frozen" | html }}.</div>
 				{{ end }}
 			{{ end }}
 			{{ $user := . }}
-			<meta name="og:image" content="https://a.ussr.pl/{{$user.id}}"/>
+			<meta name="og:image" content="https://a.ussr.pl/{{ $user.id }}"/>
 			<meta property="og:type" content="website" />
-			<meta property="og:url" content="https://ussr.pl/u/{{$user.id}}" />
-			<meta property="og:title" content={{ $global.T "<b>%s</b>" .username}} />
-			<meta property="og:description" content={{ $global.T "<b>%s</b> is a RealistikOsu! player from <b>%s</b>." .username (country .country true)}} />
-			<meta property="og:image" content="https://ussr.pl/{{$user.id}}" />
+			<meta property="og:url" content="https://ussr.pl/u/{{ $user.id }}" />
+			<meta property="og:title" content={{ $global.T "<b>%s</b>" .username }} />
+			<meta property="og:description" content={{ $global.T "<b>%s</b> is a RealistikOsu! player from <b>%s</b>." .username (country .country true) }} />
+			<meta property="og:image" content="https://ussr.pl/{{ $user.id }}" />
 			<div class="ui stackable column grid">
 				<div class="ten wide column" id="left">
 					{{ with $global.Get "users/userpage?id=%.0f" .id }}
@@ -82,16 +81,27 @@
 					<div style="margin: 0 !important;padding: 0;text-align: center;" class="ui top attached segment auto">
 						<div style="margin: 0;filter: blur(5p);">
 							<div style="background-image: url(/static/image/banner_bg.png);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
-								<div style="/*! text-align: left; */padding: 2px;font-size: 25px;background-color: #0000009c;/*! transform: translateY(-50%); */">
-									<i class="trophy line small circular icon"></i> 
+								<div style="padding: 2px;font-size: 25px;background-color: #0000009c;display: flex;justify-content: center;">
 									{{ range $kp, $vp := (slice .stats.vn .stats.rx .stats.ap) }}
 										{{ range $k, $v := (slice $vp.std $vp.taiko $vp.ctb $vp.mania) }}
-										<span data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
-											{{ with and $v $v.global_leaderboard_rank }}
-												#{{ . }}
-											{{ else }}
-												{{ $global.T "Unknown" }}
-											{{ end }}</span>
+											<span data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
+												{{ if eq (int $v.global_leaderboard_rank) (int 1) }}
+													<i class="trophy line small circular icon yellow"></i>
+												{{ else if eq (int $v.global_leaderboard_rank) (int 2)}}
+													<i class="trophy line small circular icon grey"></i>
+												{{ else if eq (int $v.global_leaderboard_rank) (int 3)}}
+													<i class="trophy line small circular icon brown"></i>
+												{{ else }}
+													<i class="trophy line small circular icon"></i>
+												{{ end }}
+											</span>
+											<span data-rx="{{ $kp }}" style="margin-top:8px;" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
+												{{ with and $v $v.global_leaderboard_rank }}
+													#{{ . }}
+												{{ else }}
+													{{ $global.T "Unknown" }}
+												{{ end }}
+											</span>
 										{{ end }}
 									{{ end }}
 								</div>
@@ -114,10 +124,8 @@
 								<span id="highlight" style="font-size: 40px;font-weight:normal;">{{ .username }}</span>
 							</h1>
 							{{ $oof := . }}
-							{{ if eq $oof.clan.name "" }}
-							<!--HOW DO I INVERT IN GOLANG??-->
-							{{ else }}
-							<span style="font-size: 20px;">{{ $global.T "%s" ($oof.clan.name) }}</span>
+							{{ if ne $oof.clan.name "" }}
+								<span style="font-size: 20px;">{{ $global.T "%s" ($oof.clan.name) }}</span>
 							{{ end }}
 
 							{{ if _or (has .privileges 8) (has .privileges 4) }}
@@ -205,18 +213,18 @@
 							<div style="margin: 10px">
 								<!--<a href="#" class="ui button blue inverted">Add Friend</a>-->
 								{{ if hasAdmin $global.Context.User.Privileges }}
-								<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted">Edit User</a>
+									<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted">Edit User</a>
 								{{ end }}
 								{{ if eq $global.UserID $global.Context.User.ID }}
-								<a href="/settings/avatar" class="ui button inverted purple">Change Avatar</a>
+									<a href="/settings/avatar" class="ui button inverted purple">Change Avatar</a>
 								{{ end }}
 							</div>
 						</div>
 					</div>
 					<div class="ui three item bottom attached menu" id="rx-menu" style="margin-bottom: 0;">
-						<a class="0 item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
-						<a class="1 item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
-						<a class="1 item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
+						<a class="item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
+						<a class="item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
+						<a class="item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
 					</div>
 					<div class="ui four item bottom attached menu" id="mode-menu">
 						{{ range $k, $v := modes }}
@@ -233,32 +241,26 @@
 								
 							{{ $global.T "<b>%s</b> is a" .username | html}} 
 
-							{{ $owner := (has .privileges 3145727) }}
-							{{ $cm := (has .privileges 2883911) }}
-							{{ $admin := (has .privileges 1048575) }}
-							{{ $dev := (has .privileges 1043995) }}
+							{{ $owner := (has .privileges 942669823) }}
+							{{ $cm := (has .privileges 918015) }}
+							{{ $admin := (has .privileges 940572671) }}
+							{{ $dev := _or (has .privileges 992795) (has .privileges 672130875) }}
 							{{ $bat := (has .privileges 267) }}
 							{{ $member := (has .privileges 3) }}
 							
 							{{ if $owner }}
-							{{ $global.T "RealistikOsu! %s" "Owner" }}
-							{{ else }}
-							{{ if $cm }}
-							{{ $global.T "RealistikOsu! %s" "Community Manager" }}
-							{{ else }}
-							{{ if $admin }}
-							{{ $global.T "RealistikOsu! %s" "Admin" }}
-							{{ else }}
-							{{ if $dev }}
-							{{ $global.T "RealistikOsu! %s" "Developer" }}
-							{{ else }}
-							{{ if $bat }}
-							{{ $global.T "RealistikOsu! %s" "BAT" }}
-							{{ else }}
-							{{ if $member }}
-							{{ $global.T "RealistikOsu! %s" "Player" }}
-							{{ else }}
-							{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}
+								{{ $global.T "RealistikOsu! %s" "Owner" }}
+							{{ else if $cm }}
+								{{ $global.T "RealistikOsu! %s" "Community Manager" }}
+							{{ else if $admin }}
+								{{ $global.T "RealistikOsu! %s" "Admin" }}
+							{{ else if $dev }}
+								{{ $global.T "RealistikOsu! %s" "Developer" }}
+							{{ else if $bat }}
+								{{ $global.T "RealistikOsu! %s" "BAT" }}
+							{{ else if $member }}
+								{{ $global.T "RealistikOsu! %s" "Player" }}
+							{{ end }}
 
 							{{ $global.T "from <b>%s</b>." (country .country true) | html }}
 							<br>{{ $global.T "They signed up on RealistikOsu! %s." (time $user.registered_on) | html }}
@@ -266,68 +268,67 @@
 							<br>{{ with playstyle .play_style $global }}{{ $global.T "They play with %s." . }}{{ end }}
 						</div>
 						{{ range $rxk, $rxv := (slice .stats.vn .stats.rx .stats.ap) }}
-						{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
-						{{ $maxcombo := qb "SELECT FORMAT(scores.max_combo,0) AS combo FROM scores WHERE userid = ? ORDER BY max_combo DESC;" $.UserID }}
-							<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
-								<table class="ui very basic two column compact table nopad">
-									<tbody>
-										{{ with .global_leaderboard_rank }}
+							{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
+								<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
+									<table class="ui very basic two column compact table nopad">
+										<tbody>
+											{{ with .global_leaderboard_rank }}
+												<tr>
+													<td><b>{{ $global.T "Global rank" }}</b></td>
+													<td class="right aligned">#{{ . }}</td>
+												</tr>
+											{{ end }}
+											{{ with .country_leaderboard_rank }}
+												<tr>
+													<td><b>{{ $global.T "Country rank" }} &nbsp;{{ country $user.country false }}</b></td>
+													<td class="right aligned">#{{ . }}</td>
+												</tr>
+											{{ end }}
 											<tr>
-												<td><b>{{ $global.T "Global rank" }}</b></td>
-												<td class="right aligned">#{{ . }}</td>
+												<td><b>{{ $global.T "PP" }}</b></td>
+												<td class="right aligned">{{ humanize .pp }}</td>
 											</tr>
-										{{ end }}
-										{{ with .country_leaderboard_rank }}
 											<tr>
-												<td><b>{{ $global.T "Country rank" }} &nbsp;{{ country $user.country false }}</b></td>
-												<td class="right aligned">#{{ . }}</td>
+												<td><b>{{ $global.T "Ranked score" }}</b></td>
+												<td class="right aligned">{{ humanize .ranked_score }}</td>
 											</tr>
-										{{ end }}
-										<tr>
-											<td><b>{{ $global.T "PP" }}</b></td>
-											<td class="right aligned">{{ humanize .pp }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Ranked score" }}</b></td>
-											<td class="right aligned">{{ humanize .ranked_score }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Total score" }}</b></td>
-											<td class="right aligned">{{ humanize .total_score }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Playcount" }}</b></td>
-											<td class="right aligned">{{ humanize .playcount }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Maximum Combo" }}</b></td>
-											<td class="right aligned">{{ $maxcombo.combo }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Followers" }}</b></td>
-											<td class="right aligned">{{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .subscount }} {{ end }} </td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Replays watched" }}</b></td>
-											<td class="right aligned">{{ humanize .replays_watched }}</td>
-										</tr>
-										<tr>
-											<td><b>{{ $global.T "Total hits" }}</b></td>
-											<td class="right aligned">{{ humanize .total_hits }}</td>
-										</tr>									<tr>
-											<td><b>{{ $global.T "Accuracy" }}</b></td>
-											<td class="right aligned">{{ printf "%.2f" .accuracy }}%</td>
-										</tr>
-									</tbody>
-								</table>
-								<div class="ui blue progress little margin top" data-percent="{{ levelPercent .level }}">
-									<div class="bar">
-										<div class="progress">{{ levelPercent .level }}%</div>
+											<tr>
+												<td><b>{{ $global.T "Total score" }}</b></td>
+												<td class="right aligned">{{ humanize .total_score }}</td>
+											</tr>
+											<tr>
+												<td><b>{{ $global.T "Playcount" }}</b></td>
+												<td class="right aligned">{{ humanize .playcount }}</td>
+											</tr>
+											<tr>
+												<td><b>{{ $global.T "Maximum Combo" }}</b></td>
+												<td class="right aligned">{{ .max_combo }}</td>
+											</tr>
+											<tr>
+												<td><b>{{ $global.T "Followers" }}</b></td>
+												<td class="right aligned">{{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .subscount }} {{ end }} </td>
+											</tr>
+											<tr>
+												<td><b>{{ $global.T "Replays watched" }}</b></td>
+												<td class="right aligned">{{ humanize .replays_watched }}</td>
+											</tr>
+											<tr>
+												<td><b>{{ $global.T "Total hits" }}</b></td>
+												<td class="right aligned">{{ humanize .total_hits }}</td>
+											</tr>									<tr>
+												<td><b>{{ $global.T "Accuracy" }}</b></td>
+												<td class="right aligned">{{ printf "%.2f" .accuracy }}%</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="ui blue progress little margin top" data-percent="{{ levelPercent .level }}">
+										<div class="bar">
+											<div class="progress">{{ levelPercent .level }}%</div>
+										</div>
+										<div class="label">{{ $global.T "Level %s" (level .level) }}</div>
 									</div>
-									<div class="label">{{ $global.T "Level %s" (level .level) }}</div>
 								</div>
-							</div>
-						{{ end }}
+							{{ end }}
 						{{ end }}
 					</div>
 				</div>

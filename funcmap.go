@@ -153,7 +153,7 @@ var funcMap = template.FuncMap{
 				return ""
 			}
 		}
-		return template.HTML(fmt.Sprintf(`<img class="new-flag nopad" src="https://ussr.pl/static/flags/%s.png"> %s`, strings.ToLower(s), c))
+		return template.HTML(fmt.Sprintf(`<img class="new-flag nopad" src="https://ussr.pl/static/flags/%s.png"> %s`, strings.ToUpper(s), c))
 	},
 	// humanize pretty-prints a float, e.g.
 	//     humanize(1000) == "1,000"
@@ -395,6 +395,16 @@ var funcMap = template.FuncMap{
 		json.Unmarshal(data, &x)
 		return x
 	},
+	"getv2": func(ept string, qs ...interface{}) map[string]interface{} {
+		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:4323/api2/"+ept, qs...))
+		if err != nil {
+			return nil
+		}
+		x := make(map[string]interface{})
+		data, _ := ioutil.ReadAll(d.Body)
+		json.Unmarshal(data, &x)
+		return x
+	},
 	// styles returns playstyle.Styles
 	"styles": func() []string {
 		return playstyle.Styles[:]
@@ -467,7 +477,11 @@ var funcMap = template.FuncMap{
 		return langInfo{}
 	},
 	"countryList": func(n int64) []string {
-		return rd.ZRevRange("hanayo:country_list", 0, n-1).Val()
+		flags := rd.ZRevRange("hanayo:country_list", 0, n-1).Val()
+		for i, v := range flags {
+			flags[i] = strings.ToUpper(v)
+		}
+		return flags
 	},
 	"documentationFiles": doc.GetDocs,
 	"documentationData": func(slug string, language string) doc.File {

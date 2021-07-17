@@ -36,7 +36,7 @@ $(document).ready(function() {
         $("#rx-menu>.active.item").removeClass("active");
         var needsLoad = $("#scores-zone>[data-mode=" + favouriteMode + "][data-loaded=0][data-rx=" + preferRelax + "]");
         if (needsLoad.length > 0)
-            initialiseScores(needsLoad, favouriteMode);
+	        initialiseScores(needsLoad, favouriteMode);
         $(this).addClass("active");
         window.history.replaceState('', document.title, `${wl.pathname}?mode=${favouriteMode}&rx=${preferRelax}${wl.hash}`)
     });
@@ -52,7 +52,7 @@ $(document).ready(function() {
         $("#mode-menu>.active.item").removeClass("active");
         var needsLoad = $("#scores-zone>[data-mode=" + m + "][data-loaded=0][data-rx=" + preferRelax + "]");
         if (needsLoad.length > 0)
-            initialiseScores(needsLoad, m);
+	        initialiseScores(needsLoad, m);
         $(this).addClass("active");
         window.history.replaceState('', document.title, `${wl.pathname}?mode=${m}&rx=${preferRelax}${wl.hash}`);
     });
@@ -270,9 +270,15 @@ function loadMostPlayedBeatmaps(mode) {
 	var mostPlayedTable = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type='most-played']");
 	currentPage[preferRelax][mode].mostPlayed++
 	api('users/most_played', {id: userID, mode: mode, p: currentPage[preferRelax][mode].mostPlayed, l: 5, rx: preferRelax}, function (resp) {
-		document.getElementById("mostplayed-text").innerHTML = T("Most Played Beatmaps") + ` (${resp.total})`;
 		if (resp.beatmaps === null) {
 			return;
+		}
+
+		if (currentPage[preferRelax][mode].mostPlayed > 1) {
+			var current = parseInt(document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML.slice(0, -6));
+			document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML = `${(current - resp.beatmaps.length)} more!`;
+		} else {
+			document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML = `${resp.total - resp.beatmaps.length} more!`
 		}
 		resp.beatmaps.forEach(function(el, idx) {
 			mostPlayedTable.children('tbody').append(
@@ -408,8 +414,9 @@ function friendClick() {
 }
 
 var defaultScoreTable;
+var firstPlacesTable;
 function setDefaultScoreTable() {
-	defaultScoreTable = $("<table class='ui table score-table' />")
+	defaultScoreTable = $("<table class='ui table score-table' data-mode='" + favouriteMode + "' data-rx='" + preferRelax + "' />")
 		.append(
 			$("<thead />").append(
 				$("<tr />").append(
@@ -431,17 +438,43 @@ function setDefaultScoreTable() {
 					)
 				)
 			)
+		);
+	firstPlacesTable = $("<table class='ui table score-table' data-mode='" + favouriteMode + "' data-rx='" + preferRelax + "' />")
+		.append(
+			$("<thead />").append(
+				$("<tr />").append(
+					$("<th>" + T("General info") + "</th>"),
+					$("<th>"+ T("Score") + "</th>")
+				)
+			)
 		)
-	;
+		.append(
+			$("<tbody />")
+		)
+		.append(
+			$("<tfoot />").append(
+				$("<tr />").append(
+					$("<th colspan=2 />").append(
+						$("<div class='ui floated pagination' />").append(
+							$("<a class='ui button load-more-button inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreClick)
+						).append(
+							$(`<div class="ui label inverted violet" style="background-color: #A291FB !important" id="firstplaces-${favouriteMode}-${preferRelax}">0</div>`)
+						)
+					)
+				)
+			)
+		);
+
 }
 i18next.on('loaded', function(loaded) {
 	setDefaultScoreTable();
 });
 function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
+	setDefaultScoreTable()
 	var best = defaultScoreTable.clone(true).addClass("purple");
 	var recent = defaultScoreTable.clone(true).addClass("blue");
-	var first = defaultScoreTable.clone(true).addClass("red");
+	var first = firstPlacesTable.clone(true).addClass("red");
 	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
 			.append(
 					$("<thead />").append(
@@ -460,6 +493,8 @@ function initialiseScores(el, mode) {
 									$("<th colspan=2 />").append(
 											$("<div class='ui floated pagination' />").append(
 													$("<a class='ui button load-more inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
+											).append(
+												$(`<div class="ui label inverted violet" style="background-color: #A291FB !important" id="mostplayedbmaps-${mode}-${preferRelax}">0</div>`)
 											)
 									)
 							)
@@ -471,10 +506,10 @@ function initialiseScores(el, mode) {
 	mostPlayedBeatmapsTable.attr("data-type", "most-played");
 	first.addClass("no bottom margin");
 	el.append($("<div class='ui segments no bottom margin' />").append(
-		$("<div class='ui segment' />").append("<h2 class='ui header'>	" + T("Best Scores") + "</h2>", best),
-		$("<div class='ui segment' />").append("<h2 class='ui header' id='mostplayed-text'>" + T("Most Played Beatmaps") + "</h2>", mostPlayedBeatmapsTable),
-		$("<div class='ui segment' />").append("<h2 class='ui header'>" + T("Recent Scores") + "</h2>", recent),
-		$("<div class='ui segment' />").append("<h2 class='ui header' id='firstplace-text'>" + T("First Places") + "</h2>", first)
+		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
+		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
+		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
+		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
 	));
 	loadScoresPage("best", mode);
 	loadScoresPage("recent", mode);
@@ -538,10 +573,16 @@ function loadScoresPage(type, mode) {
 		if (r.scores == null) {
 			disableLoadMoreButton(type, mode);
 			return;
-		}
+		} else {
+            disableLoadMoreButton(type, mode, true);
+        }
 		if (type == "first"){
-			//screw jqery, webjs god
-			document.getElementById("firstplace-text").innerHTML = T("First Places") + ` (${r.total})`;
+			if (currentPage[preferRelax][mode].first > 1) {
+				var current = parseInt(document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML.slice(0, -6))
+				document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML = `${current - r.scores.length} more!`;
+			} else {
+				document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML = `${r.total - r.scores.length} more!`;
+			}
 		}
 		r.scores.forEach(function(v, idx){
 			scoreStore[v.id] = v;

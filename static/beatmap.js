@@ -25,7 +25,7 @@ function FillScores(rx) {
       rx: rx
     },
     function(data) {
-      console.log(data);
+      //console.log(data);
       var tb = $(".ui.table tbody");
       tb.find("tr").remove();
       if (data.scores == null) {
@@ -50,7 +50,8 @@ function FillScores(rx) {
           $("<td data-sort-value=" + score.max_combo + " />")
             .text(addCommas(score.max_combo)),
           $("<td data-sort-value=" + score.pp + " />")
-            .html(score.pp.toFixed(2))));
+            .html(score.pp.toFixed(2)),
+          $("<td />").html(`<a href="/web/replays/${score.id}" class="downloadstar"><i class="star icon"></i>Get</a>`)));
       });
     });
   }
@@ -73,12 +74,9 @@ function FillScores(rx) {
     $("#bpm").html(diff.BPM);
 
     // hide mode for non-std maps
-    console.log("favMode", favMode);
-    if (diff.Mode != 0) {
-      currentMode = (currentModeChanged ? currentMode : favMode);
+	if (diff.Mode != 0) {
       $("#mode-menu").hide();
     } else {
-      currentMode = diff.Mode;
       $("#mode-menu").show();
     }
 
@@ -86,6 +84,7 @@ function FillScores(rx) {
     $("#mode-menu .active.item").removeClass("active");
     $("#mode-" + currentMode).addClass("active");
 
+    currentMode = diff.Mode;
     loadLeaderboard(bid, currentMode);
   }
   window.loadLeaderboard = loadLeaderboard;

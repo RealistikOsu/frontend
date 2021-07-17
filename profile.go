@@ -12,6 +12,7 @@ import (
 type profileData struct {
 	baseTemplateData
 	UserID int
+	Frozen bool
 }
 
 func userProfile(c *gin.Context) {
@@ -19,6 +20,7 @@ func userProfile(c *gin.Context) {
 		userID     int
 		username   string
 		privileges uint64
+		frozen     bool
 	)
 
 	ctx := getContext(c)
@@ -26,13 +28,14 @@ func userProfile(c *gin.Context) {
  	if error != nil {
  		c.Error(error)
  	}
-	err := db.QueryRow("SELECT id, username, privileges FROM users WHERE username_safe IN (?) OR id IN (?) AND "+ctx.OnlyUserPublic()+" LIMIT 1", common.SafeUsername(u), u).Scan(&userID, &username, &privileges)
+	err := db.QueryRow("SELECT id, username, privileges, frozen FROM users WHERE username_safe IN (?) OR id IN (?) AND "+ctx.OnlyUserPublic()+" LIMIT 1", common.SafeUsername(u), u).Scan(&userID, &username, &privileges, &frozen)
 	if err != nil || err != sql.ErrNoRows {
 		c.Error(err)
 	}
 	
 	data := new(profileData)
 	data.UserID = userID
+	data.Frozen = frozen
 
 	defer resp(c, 200, "profile.html", data)
 

@@ -52,6 +52,14 @@ func beatmapInfo(c *gin.Context) {
 		data.Messages = append(data.Messages, errorMessage{T(c, "Beatmap could not be found.")})
 		return
 	}
+	for i, _ := range data.Beatmapset.ChildrenBeatmaps {
+		err := db.QueryRow("SELECT playcount, passcount FROM beatmaps WHERE beatmap_md5 = ?", data.Beatmapset.ChildrenBeatmaps[i].FileMD5).Scan(&data.Beatmapset.ChildrenBeatmaps[i].Playcount, &data.Beatmapset.ChildrenBeatmaps[i].Passcount)
+		if err != nil {
+			fmt.Printf("%s", err)
+			data.Beatmapset.ChildrenBeatmaps[i].Playcount = 0
+			data.Beatmapset.ChildrenBeatmaps[i].Passcount = 0
+		}
+	}
 
 	data.KyutGrill = fmt.Sprintf("https://assets.ppy.sh/beatmaps/%d/covers/cover.jpg?%d", data.Beatmapset.ID, data.Beatmapset.LastUpdate.Unix())
 	data.KyutGrillAbsolute = true
