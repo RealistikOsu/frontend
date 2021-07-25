@@ -256,7 +256,7 @@ var funcMap = template.FuncMap{
 			//"Standard",
 			"osu!",
 			"Taiko",
-			"Catch the Beat",
+			"Catch",
 			"Mania",
 		}
 	},
