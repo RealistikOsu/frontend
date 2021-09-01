@@ -566,8 +566,8 @@ function loadScoresPage(type, mode) {
 			// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
 			let song_name_f = v.beatmap.song_name;
 			let fufrieu = song_name_f.split("[");
-			let acc_song_name = song_name_f[0].substring(0, fufrieu[0].length - 1);
-			let diff_name = song_name_f[1].substring(1, fufrieu[1].length - 1);
+			let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
+			let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
 
 			if (diff_name.length > DIFF_MAX_LEN) {
 				// Heck. Gotta reconstruct the bmap name.
