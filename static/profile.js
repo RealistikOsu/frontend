@@ -521,6 +521,7 @@ var currentPage = {
 };
 
 var scoreStore = {};
+const DIFF_MAX_LEN = 32;
 function loadScoresPage(type, mode) {
 	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=" + type + "] tbody");
 	var page = ++currentPage[preferRelax][mode][type];
@@ -561,6 +562,18 @@ function loadScoresPage(type, mode) {
 			if (type === 'recent') {
 				rowColor = v.completed === 3 ? 'positive' : v.completed < 2 ? 'error' : '';
 			}
+
+			// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
+			let song_name_f = v.beatmap.song_name;
+			let fufrieu = song_name_f.split("[");
+			let acc_song_name = song_name_f[0].substring(0, fufrieu[0].length - 1);
+			let diff_name = song_name_f[1].substring(1, fufrieu[1].length - 1);
+
+			if (diff_name.length > DIFF_MAX_LEN) {
+				// Heck. Gotta reconstruct the bmap name.
+				v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
+			}
+
 			table.append($("<tr class='new score-row " + rowColor + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://assets.ppy.sh/beatmaps/" + v.beatmap.beatmapset_id + "/covers/cover.jpg) no-repeat right !important; background-size: cover !important;' />").append(
 				$(
 					"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
