@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/RealistikOsu/hanayo/modules/locale"
+	"github.com/gin-gonic/gin"
 )
 
 // T translates a string into the language specified by the request.
@@ -15,9 +15,10 @@ func (b *baseTemplateData) T(s string, args ...interface{}) string {
 }
 
 func getLang(c *gin.Context) []string {
-	s, _ := c.Cookie("language")
-	if s != "" {
-		return []string{s}
-	}
-	return locale.ParseHeader(c.Request.Header.Get("Accept-Language"))
+	// s, _ := c.Cookie("language")
+	// if s != "" {
+	// 	return []string{s}
+	// }
+	//return locale.ParseHeader(c.Request.Header.Get("Accept-Language"))
+	return []string{"en"}
 }
