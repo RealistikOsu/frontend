@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/hanayo/modules/bbcode"
+	"github.com/RealistikOsu/hanayo/modules/btcaddress"
+	"github.com/RealistikOsu/hanayo/modules/doc"
+	"github.com/RealistikOsu/hanayo/modules/fa-semantic-mappings"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -21,12 +27,7 @@ import (
 	"github.com/thehowl/qsql"
 	"golang.org/x/oauth2"
 	"zxq.co/ripple/go-discord-oauth"
-	"github.com/RealistikOsu/hanayo/modules/bbcode"
-	"github.com/RealistikOsu/hanayo/modules/btcaddress"
-	"github.com/RealistikOsu/hanayo/modules/doc"
-	"github.com/RealistikOsu/hanayo/modules/fa-semantic-mappings"
 	"zxq.co/ripple/playstyle"
-	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 // funcMap contains useful functions for the various templates.
@@ -72,6 +73,13 @@ var funcMap = template.FuncMap{
 			return "active "
 		}
 		return ""
+	},
+	"string": func(s string) string {
+		fmt.Printf(s)
+		if s == "" {
+			return ""
+		}
+		return string(s)
 	},
 	// slice generates a []interface{} with the elements it is given.
 	// useful to iterate over some elements, like this:
@@ -142,6 +150,34 @@ var funcMap = template.FuncMap{
 			i1 &= el
 		}
 		return i1
+	},
+	"apiV2": func(ept string, qs ...interface{}) map[string]interface{} {
+		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:4535/"+ept, qs...))
+		if err != nil {
+			return nil
+		}
+		x := make(map[string]interface{})
+		data, _ := ioutil.ReadAll(d.Body)
+		json.Unmarshal(data, &x)
+		return x
+	},
+	"dcAPI": func(ept string) map[string]interface{} {
+		postBody, _ := json.Marshal(map[string]string{
+			"input": ept,
+		})
+		responseBody := bytes.NewBuffer(postBody)
+		d, err := http.Post(
+			"https://lookupguru.herokuapp.com/lookup",
+			"application/json",
+			responseBody,
+		)
+		if err != nil {
+			return nil
+		}
+		x := make(map[string]interface{})
+		data, _ := ioutil.ReadAll(d.Body)
+		json.Unmarshal(data, &x)
+		return x
 	},
 	// countryReadable converts a country's ISO name to its full name.
 	"countryReadable": countryReadable,
@@ -256,7 +292,7 @@ var funcMap = template.FuncMap{
 			//"Standard",
 			"osu!",
 			"Taiko",
-			"Catch the Beat",
+			"Catch",
 			"Mania",
 		}
 	},
@@ -395,16 +431,6 @@ var funcMap = template.FuncMap{
 		json.Unmarshal(data, &x)
 		return x
 	},
-	"getv2": func(ept string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:4323/api2/"+ept, qs...))
-		if err != nil {
-			return nil
-		}
-		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
-		json.Unmarshal(data, &x)
-		return x
-	},
 	// styles returns playstyle.Styles
 	"styles": func() []string {
 		return playstyle.Styles[:]
@@ -477,11 +503,13 @@ var funcMap = template.FuncMap{
 		return langInfo{}
 	},
 	"countryList": func(n int64) []string {
-		flags := rd.ZRevRange("hanayo:country_list", 0, n-1).Val()
-		for i, v := range flags {
-			flags[i] = strings.ToUpper(v)
+		list := rd.ZRevRange("hanayo:country_list", 0, n-1).Val()
+
+		var list2 []string
+		for _, c := range list {
+			list2 = append(list2, strings.ToUpper(c))
 		}
-		return flags
+		return list2
 	},
 	"documentationFiles": doc.GetDocs,
 	"documentationData": func(slug string, language string) doc.File {
@@ -495,7 +523,7 @@ var funcMap = template.FuncMap{
 	},
 	"htmlescaper": template.HTMLEscaper,
 	"hhmm": func(seconds float64) string {
-		return fmt.Sprintf("%02dh %02dm", int(math.Floor(seconds / 3600)), int(math.Floor(seconds / 60)) % 60)
+		return fmt.Sprintf("%02dh %02dm", int(math.Floor(seconds/3600)), int(math.Floor(seconds/60))%60)
 	},
 }
 

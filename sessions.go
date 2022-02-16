@@ -30,6 +30,16 @@ func sessionInitializer() func(c *gin.Context) {
 			if err != nil {
 				c.Error(err)
 			}
+			// Clan time.
+			errClan := db.QueryRow("SELECT clan, perms = 8 FROM user_clans WHERE user = ?", userid).Scan(
+				&ctx.User.Clan, &ctx.User.ClanOwner,
+			)
+
+			if errClan != nil {
+				ctx.User.Clan = 0
+				ctx.User.ClanOwner = 0
+			}
+
 			if sess.Get("logout") == nil {
 				sess.Set("logout", rs.String(15))
 			}

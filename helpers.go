@@ -1,8 +1,9 @@
 package main
 
 import (
-	gocontext "context"
+	"bytes"
 	"crypto/md5"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,12 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"bytes"
-
-	"github.com/gin-gonic/gin"
 	"github.com/RealistikOsu/hanayo/modules/bbcode"
 	tp "github.com/RealistikOsu/hanayo/modules/top-passwords"
-	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/gin-gonic/gin"
 )
 
 //go:generate go run scripts/generate_mappings.go -g
@@ -51,10 +49,10 @@ func validatePassword(p string) string {
 func recaptchaCheck(c *gin.Context) bool {
 	f := make(url.Values)
 	f.Add("secret", config.RecaptchaPrivate)
-	f.Add("response", c.PostForm("g-recaptcha-response"))
+	f.Add("response", c.PostForm("h-captcha-response"))
 	f.Add("remoteip", clientIP(c))
 
-	req, err := http.Post("https://www.google.com/recaptcha/api/siteverify",
+	req, err := http.Post("https://hcaptcha.com/siteverify",
 		"application/x-www-form-urlencoded", strings.NewReader(f.Encode()))
 	if err != nil {
 		c.Error(err)
@@ -90,82 +88,6 @@ func parseBBCode(c *gin.Context) {
 	c.String(200, d)
 }
 
-func discordFinish(c *gin.Context) {
-	sess := getSession(c)
-	defer func() {
-		sess.Save()
-		c.Redirect(302, "/settings/discord")
-	}()
-
-	ctx := getContext(c)
-	if ok, _ := CSRF.Validate(ctx.User.ID, c.Query("state")); !ok {
-		addMessage(c, errorMessage{T(c, "Your session has expired. Please try redoing what you were trying to do.")})
-		return
-	}
-
-	if ctx.User.Privileges&common.UserPrivilegeDonor == 0 {
-		addMessage(c, errorMessage{T(c, "You're not a donor!")})
-		return
-	}
-
-	reqCtx, _ := gocontext.WithTimeout(gocontext.Background(), time.Second*20)
-	tok, err := getDiscord().Exchange(reqCtx, c.Query("code"))
-	if err != nil {
-		c.Error(err)
-		addMessage(c, errorMessage{T(c, "An error occurred.")})
-		return
-	}
-
-	// Yoloest error handling ever
-	// Here we're getting the user ID of our user on discord
-	req, _ := http.NewRequest("GET", "https://discordapp.com/api/users/@me", nil)
-	req.Header.Set("Authorization", "Bearer "+tok.AccessToken)
-	resp, _ := http.DefaultClient.Do(req)
-	rawData, _ := ioutil.ReadAll(resp.Body)
-	var x struct {
-		ID string `json:"id"`
-	}
-	err = json.Unmarshal(rawData, &x)
-	if err != nil {
-		c.Error(err)
-		addMessage(c, errorMessage{T(c, "An error occurred.")})
-		return
-	}
-
-	// Here, instead, we're telling donorbot about the user.
-	// setup post data
-	vals := make(url.Values, 2)
-	vals.Set("discord_id", x.ID)
-	vals.Set("secret", config.DonorBotSecret)
-	// send request
-	resp, err = http.Post(config.DonorBotURL+"/api/v1/give_donor", "application/x-www-form-urlencoded", bytes.NewReader([]byte(vals.Encode())))
-	if err != nil {
-		c.Error(err)
-		addMessage(c, errorMessage{T(c, "An error occurred.")})
-		return
-	}
-
-	var o struct {
-		Status int `json:"status"`
-	}
-	json.NewDecoder(resp.Body).Decode(&o)
-
-	switch o.Status {
-	case 200:
-		// move on
-	case 404:
-		addMessage(c, errorMessage{T(c, "You've not joined the discord server! Links to it are below on the page. Please join the server before attempting to connect your account to Discord.")})
-	default:
-		c.Error(fmt.Errorf("donorbot: %d", resp.StatusCode))
-		addMessage(c, errorMessage{T(c, "An error occurred.")})
-		return
-	}
-
-	db.Exec("INSERT INTO discord_roles (id, userid, discordid, roleid) VALUES (NULL, ?, ?, 0)", ctx.User.ID, x.ID)
-
-	addMessage(c, successMessage{T(c, "Your account has been linked successfully!")})
-}
-
 func mustCSRFGenerate(u int) string {
 	v, err := CSRF.Generate(u)
 	if err != nil {
@@ -174,3 +96,165 @@ func mustCSRFGenerate(u int) string {
 	return v
 }
 
+// Discord integration stuff.
+func discordUnlink(c *gin.Context) {
+	ctx := getContext(c)
+	if ctx.User.ID == 0 {
+		resp403(c)
+		return
+	}
+
+	var m message
+	defer func() {
+		addMessage(c, m)
+		getSession(c).Save()
+		c.Redirect(302, "/settings/discord-integration")
+	}()
+
+	// Now we do some checks.
+	var checkInt int
+	err := db.QueryRow("SELECT 1 FROM discord_oauth WHERE user_id = ?", ctx.User.ID).Scan(&checkInt)
+	if err != nil && err == sql.ErrNoRows {
+		m = errorMessage{T(c, "You have no discord account linked to your RealistikOsu account!")}
+		return
+	} else if err != nil {
+		c.Error(err)
+		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM discord_oauth WHERE user_id = ?", ctx.User.ID)
+	if err != nil && err == sql.ErrNoRows {
+		m = errorMessage{T(c, "You have no discord account linked to your RealistikOsu account!")}
+		return
+	} else if err != nil {
+		c.Error(err)
+		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
+		return
+	}
+
+	m = successMessage{T(c, "Successfully unlinked your discord account!")}
+}
+
+type TokenStuff struct {
+	TokenType   string `json:"token_type"`
+	AccessToken string `json:"access_token"`
+}
+
+func getCodeAccess(code string) (token TokenStuff, err error) {
+	data := url.Values{}
+	data.Set("client_id", "936211493874188349")
+	data.Set("client_secret", "VEYXgaj0dcA8l-Q8T_nsElZUAVXhi1ZO")
+	data.Set("grant_type", "authorization_code")
+	data.Set("code", code)
+	data.Set("redirect_uri", "https://ussr.pl/settings/discord-integration/redirect")
+	responseBody := bytes.NewBuffer([]byte(data.Encode()))
+
+	resp, err := http.Post(
+		"https://discord.com/api/v8/oauth2/token",
+		"application/x-www-form-urlencoded",
+		responseBody,
+	)
+	if err != nil {
+		return token, err
+	}
+
+	defer resp.Body.Close()
+	//Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return token, err
+	}
+
+	err = json.Unmarshal(body, &token)
+	if err != nil {
+		return token, err
+	}
+	return token, nil
+}
+
+type DCUser struct {
+	DiscordID            string `json:"id"`
+	DiscordName          string `json:"username"`
+	DiscordDiscriminator string `json:"discriminator"`
+}
+
+func getUserData(accessType string, accessToken string) (data DCUser, err error) {
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+	req, err := http.NewRequest("GET", "https://discord.com/api/users/@me", nil)
+
+	if err != nil {
+		return data, err
+	}
+	// Curseddddddd
+	req.Header.Add("Authorization", accessType+" "+accessToken)
+	resp, err := client.Do(req)
+	if err != nil {
+		return data, err
+	}
+
+	defer resp.Body.Close()
+	//Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+func discordRedirCheck(c *gin.Context) {
+	ctx := getContext(c)
+	if ctx.User.ID == 0 {
+		resp403(c)
+		return
+	}
+
+	var m message
+	defer func() {
+		addMessage(c, m)
+		getSession(c).Save()
+		c.Redirect(302, "/settings/discord-integration")
+	}()
+
+	code := c.DefaultQuery("code", "")
+	if code == "" {
+		// No code, prob self inserting :thinking:.
+		m = errorMessage{T(c, "No code specified, linking failed!")}
+		return
+	}
+
+	tokenData, err := getCodeAccess(code)
+	if err != nil {
+		// No code, prob self inserting :thinking:.
+		c.Error(err)
+		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
+		return
+	}
+
+	data, err := getUserData(tokenData.TokenType, tokenData.AccessToken)
+	if err != nil {
+		// No code, prob self inserting :thinking:.
+		c.Error(err)
+		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
+		return
+	}
+
+	_, err = db.Exec(`
+		INSERT INTO discord_oauth(id, discord_id, user_id)
+		VALUES (NULL, ?, ?)`, data.DiscordID, ctx.User.ID,
+	)
+	if err != nil {
+		// No code, prob self inserting :thinking:.
+		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
+		return
+	}
+
+	m = successMessage{T(c, fmt.Sprintf("You have successfully linked %s#%s to your RealistikOsu account!", data.DiscordName, data.DiscordDiscriminator))}
+}

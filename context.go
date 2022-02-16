@@ -17,12 +17,14 @@ type sessionUser struct {
 	Username   string
 	Privileges common.UserPrivileges
 	Flags      uint64
+	Clan       int
+	ClanOwner  int
 }
 
 // OnlyUserPublic returns a string containing "(user.privileges & 1 = 1 OR users.id = <userID>)"
 // if the user does not have the UserPrivilege AdminManageUsers, and returns "1" otherwise.
 func (ctx context) OnlyUserPublic() string {
-	if ctx.User.Privileges&common.AdminPrivilegeManageUsers == common.AdminPrivilegeManageUsers {
+	if ctx.User.Privileges & common.AdminPrivilegeManageUsers == common.AdminPrivilegeManageUsers {
 		return "1"
 	}
 	// It's safe to use sprintf directly even if it's a query, because UserID is an int.

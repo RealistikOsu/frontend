@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
-	"github.com/RealistikOsu/RealistikAPI/common"
-	"zxq.co/ripple/schiavolib"
+	schiavo "zxq.co/ripple/schiavolib"
 )
 
 func register(c *gin.Context) {
@@ -142,7 +142,7 @@ func registerResp(c *gin.Context, messages ...message) {
 	resp(c, 200, "register/register.html", &baseTemplateData{
 		TitleBar:  "Register",
 		KyutGrill: "register.jpg",
-		Scripts:   []string{"https://www.google.com/recaptcha/api.js"},
+		Scripts:   []string{"https://js.hcaptcha.com/1/api.js"},
 		Messages:  messages,
 		FormData:  normaliseURLValues(c.Request.PostForm),
 	})

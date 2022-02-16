@@ -67,6 +67,7 @@ function toggleBeatmap(id, elm) {
     for (let i in beatmapAudios) {
         if (beatmapAudios[i].id == id) {
             if (!beatmapAudios[i].playing) {
+                beatmapAudios[i].audio.volume = 0.2;
                 beatmapAudios[i].audio.currentTime = 0;
                 beatmapAudios[i].audio.play();
 
@@ -199,7 +200,7 @@ async function search(options, offset=0, r=false) {
                 <div class="map">
                     <div class="map-header">
                         <a href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">
-                            <img src="https://assets.ppy.sh/beatmaps/${beatmap.SetID}/covers/card.jpg" alt="">
+                            <img src="https://assets.ppy.sh/beatmaps/${beatmap.SetID}/covers/cover.jpg" alt="">
                         </a>
                     </div>
                     <button class="beatmapPlay" onclick="toggleBeatmap(${beatmap.SetID}, this)"><i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i></button>

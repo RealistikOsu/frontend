@@ -21,11 +21,11 @@ func profBackground(c *gin.Context) {
 		resp403(c)
 		return
 	}
-	var m message = successMessage{T(c, "Your profile background has been saved.")}
+	var m message = successMessage{T(c, "Your profile banner has been saved.")}
 	defer func() {
 		addMessage(c, m)
 		getSession(c).Save()
-		c.Redirect(302, "/settings/profbackground")
+		c.Redirect(302, "/settings/profbanner")
 	}()
 	if ok, _ := CSRF.Validate(ctx.User.ID, c.PostForm("csrf")); !ok {
 		m = errorMessage{T(c, "Your session has expired. Please try redoing what you were trying to do.")}
@@ -59,7 +59,7 @@ func profBackground(c *gin.Context) {
 			Quality: 88,
 		})
 		if err != nil {
-			m = errorMessage{T(c, "We were not able to save your profile background.")}
+			m = errorMessage{T(c, "We were not able to save your profile banner.")}
 			c.Error(err)
 			return
 		}

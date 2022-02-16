@@ -147,6 +147,8 @@ type baseTemplateData struct {
 	KyutGrill         string
 	KyutGrillAbsolute bool
 	SolidColour       string
+	ProfileBackground string
+	ProfileColour     string
 	DisableHH         bool // HH = Huge Heading
 	Messages          []message
 	RequestInfo       map[string]interface{}

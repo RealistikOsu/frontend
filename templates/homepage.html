@@ -24,6 +24,14 @@ KyutGrill=homepage2.jpg
 		border-radius: 20px;
 		background: rgba(0,0,0,.6);
 	}
+	.content {
+		width: 2000px;
+	}
+	@media(max-width:576px) {
+	    .content {
+	        width: ;
+	    }
+	}
 </style>
 {{/* End CSS */}}
 
@@ -39,7 +47,6 @@ KyutGrill=homepage2.jpg
 </head>
 
 	<div class="ui container">
-		<div class=""> 
 		<div class="main-block">
 			<div class="woman"></div>
 			<div class="content">
@@ -73,8 +80,9 @@ KyutGrill=homepage2.jpg
 					{{end}}
 					<a href="/static/ROS.exe" class="ui button inverted blue" style="margin-left: 6px;">Server Switcher</a>
 				</div>
+				<div class="js-landing-graph" style="left: 0;"></div>
 			</div>
-			<canvas id="HomeGraph" height="20" style="position: absolute;"></canvas>
+			<!-- <canvas id="HomeGraph" height="20" style="position: absolute;"></canvas> -->
 				<script>
 					/*
 					//ok i commented it as im tired
@@ -84,7 +92,8 @@ KyutGrill=homepage2.jpg
 					//ok so first we gonna get the online data yes
 					fetch("https://ussr.pl/api2/onlinehistory")
 					.then(res => res.json())
-					.then((out) => {
+					.then((out) => {fetch("https://ussr.pl/api2/onlinehistory")
+                                        .then(res => res.json()
 						Chart.defaults.global.legend.display = false;
 						var ctx = document.getElementById('HomeGraph').getContext('2d');
 						if (out["status"] == 200) {
@@ -162,13 +171,10 @@ KyutGrill=homepage2.jpg
 							<i class="user plus orange icon status-icon"></i>
 						</div>
 						<div class="twelve wide column">
-							{{ range $key, $value := (qb "SELECT username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
-							{{ range $key, $valu := (qb "SELECT id FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
+							{{ $newest := (qb "SELECT id, username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
 							<p class="status-head" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
-								<a href="/u/{{ $valu }}" style="color: inherit;">{{ $value }}</a>
+								<a href="/u/{{ $newest.id }}" style="color: inherit;">{{ $newest.username }}</a>
 							</p>
-							{{ end }}
-							{{ end }}
 							<p class="status-footer">{{ .T "Latest Player" }}</p>
 						</div>
 					</div>
@@ -180,9 +186,8 @@ KyutGrill=homepage2.jpg
                             <i class="angle double up lblue icon status-icon"></i>
                         </div>
                         <div class="twelve wide column">
-						{{ range $key, $value := (qb "SELECT COUNT(*) FROM beatmaps WHERE ranked_status_freezed = 1;") }}
-						<p class="status-head">{{ $value }}</p>
-						{{ end }}
+						{{ $count := (qb "SELECT COUNT(*) AS c FROM beatmaps WHERE ranked_status_freezed = 1") }}
+						<p class="status-head">{{ $count.c }}</p>
                         <p class="status-footer">{{ .T "Maps Ranked" }}</p>
                         </div>
                     </div>
@@ -195,7 +200,7 @@ KyutGrill=homepage2.jpg
 		<iframe src="https://discord.com/widget?id=820068143866970142&theme=dark" id="ds-widget" allowtransparency="true" frameborder="0" style="width: 100%;height: 100%;"></iframe>
 	</div>
 	{{ $glob := . }}
-	{{ with getv2 "topppplays" }}
+	{{ with apiV2 "server/home/top" }}
 		<div class="five wide column">
 			<div class="ui segments" style="height: 100%;">
 				<div class="sixteen wide column" style="margin-bottom: 11px;">
@@ -205,8 +210,8 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up yellow icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .vanilla.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/u/{{ .vanilla.user_id }}">{{ .vanilla.username }}</a></p>
+								<p class="status-head">{{ .data.vn.pp }}pp</p>
+								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/u/{{ .data.vn.user_id }}">{{ .data.vn.username }}</a></p>
 								<p class="status-footer">{{ $glob.T "Top Score" }}</p>
 							</div>
 						</div>
@@ -219,8 +224,8 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up pink icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .relax.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/rx/u/{{ .relax.user_id }}">{{ .relax.username }}</a></p>
+								<p class="status-head">{{ .data.rx.pp }}pp</p>
+								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/rx/u/{{ .data.rx.user_id }}">{{ .data.rx.username }}</a></p>
 								<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
 							</div>
 						</div>
@@ -233,8 +238,8 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up purple icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .autopilot.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/ap/u/{{ .autopilot.user_id }}">{{ .autopilot.username }}</a></p>
+								<p class="status-head">{{ .data.ap.pp }}pp</p>
+								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/ap/u/{{ .data.ap.user_id }}">{{ .data.ap.username }}</a></p>
 								<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
 							</div>
 						</div>
@@ -246,6 +251,136 @@ KyutGrill=homepage2.jpg
 	</div> {{/* Global Stats end past this /div */}}
 	</div>
 	</div>
-	
+<script type="text/javascript" defer="">
+	// Special kudos to Kotrik for making this Landing class :D.
+	//fetch("http://ussr.pl:4333/api2/onlinehistory")
+        //   .then(res => res.json())
+        //    .then((out) => {
+	//	graphData.push(...out["stats"])
+	//    })
+	var graphData = {{ with apiV2 "server/home/graph" }}{{ .data }}{{ end }}
+	var goodList = [];
+	for (var i = 0; i < graphData.length; i++) {
+		goodList.push({y: parseInt(graphData[i]), x: ((i - 1) + 1)});
+	}
+	$(document).ready(function() {
+      let graph = new LandingUserStats();
+      $(window).resize(() => {
+          graph.resize();
+      })
+	})
+
+    class LandingUserStats {
+        constructor() {
+            this.margin = {
+                top: 40,
+                right: 0,
+                bottom: 0,
+                left: 0
+            };
+            this.peakR = 5;
+            this.svgContainerOuter = d3.select('.js-landing-graph');
+            this.svgContainerOuter.selectAll('svg').remove();
+            this.svgContainerInner = this.svgContainerOuter.append('svg').attr('class', 'landing-graph');
+            this.svg = this.svgContainerInner.append('g').attr('transform', "translate(" + this.margin.left + ", " + (this.margin.top + 1) + ")");
+            this.svgArea = this.svg.append('path').attr('class', 'landing-graph__area');
+            this.svgPeakText = this.svg.append('text').attr('class', 'landing-graph__text').attr('y', -this.peakR * 2);
+            this.svgPeakCircle = this.svg.append('circle').attr('class', 'landing-graph__circle').attr('cy', 0).attr('r', this.peakR);
+            this.scaleX = d3.scaleLinear();
+            this.scaleY = d3.scaleTime();
+            this.area = d3.area().curve(d3.curveBasis).x((function(_this) {
+                return function(d) {
+                return _this.scaleX(d.x);
+                };
+            })(this)).y0((function(_this) {
+                return function() {
+                return _this.height;
+                };
+            })(this)).y1((function(_this) {
+                return function(d) {
+                return _this.scaleY(d.y);
+                };
+            })(this));
+            this.loadData();
+            this.resize();
+        }
+
+        loadData() {
+            this.data = window.goodList;
+
+            if (this.data.length < 1) {
+                return;
+            }
+            let maxVal = 0;
+            this.maxElem = {x:0,y:0};
+            for (let el of this.data) {
+                if (el.y > maxVal || el.y == maxVal) {
+                    this.maxElem = el
+                    maxVal = el.y;
+                }
+            }
+            this.scaleX.domain(d3.extent(this.data, function(d) {
+                return d.x;
+            }));
+            this.scaleY.domain([
+                0, d3.max(this.data, function(d) {
+                return d.y;
+                })
+            ]);
+
+            // Calculate amount of hours/minutes in graph data.
+            var time = (this.data.length * 7.2) * 60 * 1000
+
+            this.svgPeakText.text(`Max, ${this.formatNumber(this.maxElem.y)} players in last ${timeSince(new Date(Date.now() - time))}`);
+            return this.peakTextLength = this.svgPeakText.node().getComputedTextLength();
+        }
+
+        resize() {
+            if (this.data.length < 1) {
+                return;
+            }
+            this.width = parseInt(this.svgContainerOuter.style('width')) - this.margin.left - this.margin.right;
+            this.height = parseInt(this.svgContainerOuter.style('height')) - this.margin.top - this.margin.bottom;
+            this.scaleX.range([0, this.width]);
+            this.scaleY.range([this.height, 0]);
+            this.svgContainerInner.attr('width', this.width + this.margin.left + this.margin.right).attr('height', this.height + this.margin.top + this.margin.bottom);
+            this.svgArea.datum(this.data).attr('d', this.area);
+            this.svgPeakCircle.attr('cx', this.scaleX(this.maxElem.x));
+            return this.svgPeakText.attr('x', (function(_this) {
+                return function() {
+                    var rightX;
+                    rightX = _this.scaleX(_this.maxElem.x) + (_this.peakR * 2);
+                    if ((_this.peakTextLength + rightX) > _this.width) {
+                        return _this.scaleX(_this.maxElem.x) - (_this.peakTextLength + (_this.peakR * 2));
+                    } else {
+                        return rightX;
+                    }
+                };
+            })(this));
+            }
+
+        formatNumber(number) {
+            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
+        }
+	}
+
+	function timeSince(date) {
+	  var seconds = Math.floor((new Date() - date) / 1000);
+
+	  var interval = seconds / 31536000 / 2592000 / 86400;
+	  // Hours.
+	  interval = seconds / 3600;
+	  if (interval > 1) {
+	    return Math.round(interval) + "h";
+	  }
+	  // Minutes.
+	  interval = seconds / 60;
+	  if (interval > 1) {
+	    return Math.round(interval) + "m";
+	  }
+
+	}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.7/d3.min.js" type="text/javascript"></script>	
 	{{ end }}
 	

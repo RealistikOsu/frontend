@@ -4,60 +4,138 @@ TitleBar=Leaderboard
 KyutGrill=leaderboard2.jpg
 */}}
 {{ define "tpl" }}
-<div class="ui container">
-	{{ $user := . }}
-	{{ $favModeRaw := .Get "users/self/favourite_mode" }}
-	{{ $favMode := _or (atoi (.Gin.Query "mode")) $favModeRaw.favourite_mode (float 0) }}
-	<script>
-		var favouriteMode = {{ $favMode }};
-		var rx = {{ .Gin.Query "rx" | atoi | (float 0) }};
-		var page = {{ .Gin.Query "p" | atoint | atLeastOne }};
-		var sort = {{ .Gin.Query "sort" }}.toLowerCase();
-		if (sort == "") {
-			sort = "pp";
-		}
-		var country = {{ .Gin.Query "country" }}.toLowerCase();
-		if (country.length != 2)
-			country = "";
-	</script>
-	<div class="ui two item menu" id="sort-menu">
-			<a class="0 item" data-sort="pp" href="/leaderboard?sort=pp">PP Leaderboard</a>
-			<a class="1 item" data-sort="score" href="/leaderboard?sort=score">Score Leaderboard</a>
-	</div>
 
-	<div class="ui three item menu" id="rx-menu">
-			<a class="0 item" data-rx="0" href="/leaderboard?rx=0">Vanilla</a>
-			<a class="1 item" data-rx="1" href="/leaderboard?rx=1">Relax</a>
-			<a class="1 item" data-rx="2" href="/leaderboard?rx=2">Autopilot</a>
-	</div>
+{{ $user := . }}
+{{ $favMode := _or ((.Gin.Query "m") (string "std")) }}
+{{ $rxMode := _or ((.Gin.Query "rx") (string "vn")) }}
+{{ $sortType := _or ((.Gin.Query "sort") (string "pp")) }}
+{{ $country := _or (.Gin.Query "c") }}
+{{ $page := _or (atoi (.Gin.Query "p")) (float 1) }}
+<script type='text/javascript'>
+	var mode = {{ $favMode }}.toLowerCase();
+	if (mode == "") {
+		mode = "std"
+	}
+	var relax = {{ $rxMode }}.toLowerCase();
+	if (relax == "") {
+		relax = "vn"
+	}
+	var page = {{ $page }};
+	var sort = {{ $sortType }}.toLowerCase();
+	if (sort == "")
+		sort = "pp";
+	var country = {{ $country }};
+</script>
 
+<script src="/static/vue/vue.js"></script>
+<script src="/static/vue/vue-axios.js"></script>
+
+<div class="ui container" style="padding: 22px; background: #212121;" id="app">
+	<div class="ui grid">
+		<div class="six wide column">
+			<div class="ui two item menu" id="sort-menu">
+				<a :href="'/leaderboard?m='+mode+'&sort=pp'" @click="loadLeaderboardData('pp', mode, relax, 1, '')" :class="(sort == 'pp' ? 'active ' : '')+'item'" >
+					<% (mobileCheck() == false ? "PP Leaderboard" : "PP" ) %>
+				</a>
+				<a :href="'/leaderboard?m='+mode+'&sort=score'" @click="loadLeaderboardData('score', mode, relax, 1, '')" :class="(sort == 'score' ? 'active ' : '')+'item'">
+					<% (mobileCheck() == false ? "Score Leaderboard" : "Score" ) %>
+				</a>			
+			</div>
+		</div>
+		<div class="ten wide column">
+			<div class="ui three item menu">
+				<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx=vn'"
+	                :class="'item '+(relax == 'vn' ? 'active' : '')"
+	                @click="loadLeaderboardData(sort, mode, 'vn', 1, '')">Vanilla</a>
+	            <a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx=rx'"
+	                :class="'item '+(relax == 'rx' ? 'active' : '')+(mode == 'mania' ? 'disabled':'')"
+	                @click="loadLeaderboardData(sort, mode, 'rx', 1, '')">Relax</a>
+	            <a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx=ap'"
+	                :class="'item '+(relax == 'ap' ? 'active' : '')+(mode == 'mania' ? 'disabled':'')+(mode == 'fruits' ? 'disabled':'')+(mode == 'taiko' ? 'disabled':'')"
+	                @click="loadLeaderboardData(sort, mode, 'ap', 1, '')">Autopilot</a>
+			</div>
+		</div>
+	</div>
 	<div class="ui four item menu" id="mode-menu">
-		{{ range $k, $v := modes }}
-			<a class="{{ favMode $favMode $k }}item" data-mode="{{ $k }}" href="/leaderboard?mode={{ $k }}">{{ $v }}</a>
-		{{ end }}
+		<a :href="'/leaderboard?m=osu&sort='+sort+'&rx='+relax"
+            :class="'item '+(mode == 'std' ? 'active ' : '')"
+            @click="loadLeaderboardData(sort, 'std', relax, 1, '')">osu!</a>
+        <a :href="'/leaderboard?m=taiko&sort='+sort+'&rx='+relax"
+            :class="'item '+(mode == 'taiko' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')"
+            @click="loadLeaderboardData(sort, 'taiko', relax, 1, '')">Taiko</a>
+        <a :href="'/leaderboard?m=fruits&sort='+sort+'&rx='+relax"
+            :class="'item '+(mode == 'fruits' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')"
+            @click="loadLeaderboardData(sort, 'fruits', relax, 1, '')">Catch</a>
+        <a :href="'/leaderboard?m=mania&sort='+sort+'&rx='+relax" 
+			:class="'item '+(mode == 'mania' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')+(relax == 'rx' ? 'disabled':'')"
+            @click="loadLeaderboardData(sort, 'mania', relax, 1, '')">Mania</a>
 	</div>
 	<div class="ui twelve item stackable menu">
 		{{ range countryList 11 }}
-			<a class="item lb-country" data-country="{{ . }}"><img class="new-flag nopad" src="/static/flags/{{ . }}.png"></img></a>
+			<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{.}}'" :class="'item lb-country '+(country == '{{.}}' ? 'active ' : '')" @click="loadLeaderboardData(sort, mode, relax, 1, '{{.}}')"><img class="new-flag nopad" src="https://ussr.pl/static/flags/{{.}}.png"></img></a>
 		{{ end }}
 		<a class="item" id="country-chooser-modal">...</a>
 	</div>
-	<table class="ui fixed table">
+	<table class="ui table leaderboard-table">
 		<thead>
-			{{ template "simplepag" 5 }}
 			<tr>
-				<th class="two wide"> {{ .T "Rank" }} </th>
-				<th class="four wide">{{ .T "Player" }} </th>
-				<th class="four wide">{{ .T "PP/Score" }} </th>
-				<th class="three wide">{{ .T "Accuracy" }} </th>
-				<th class="three wide">{{ .T "Playcount" }} </th>
+				<th colspan="5">
+					<div class="simplepag">
+						<div class="ui left floated pagination menu">
+							<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&p='+(page-1)+'&c='+country" :class="'icon item '+((page - 1) == 0 ? 'disabled' : '')"
+					            @click="loadLeaderboardData(sort, mode, relax, page - 1, country)">
+					            <i class="left chevron icon"></i>
+					        </a>
+						</div>
+						<div class="ui right floated pagination menu">
+							<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&p='+addOne(page)+'&c='+country" :class="'icon item '+(data.length != 50 ? 'disabled' : '')"
+					            @click="loadLeaderboardData(sort, mode, relax, addOne(page), country)">
+					            <i class="right chevron icon"></i>
+					        </a>
+						</div>
+					</div>
+				</th>
+			</tr>
+			<tr>
+				<th class="t-heading center aligned">Rank</th>
+				<th id="t-player" :class="'t-heading t-player'+(mobileCheck==true ? 'center aligned' : '')">Player Name</th>
+				<th v-if="sort == 'pp' || sort == 'score'" class="t-heading center aligned">
+					<% (sort=='pp' ? "Performance Points" : "" ) %>
+					<% (sort=='score' ? "Score" : "" ) %>
+				</th>
+				<th class="t-heading center aligned">Accuracy</th>
+				<th class="t-heading center aligned">Playcount</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="table-scores">
+			<tr class="l-player" v-for="(user, index) in data">
+				<td class="center aligned">
+					#<% index + 1 + (50 * (page - 1)) %>
+				</td>
+				<td>
+					<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
+						<img class='new-flag' :src="'https://ussr.pl/static/flags/'+user.country+'.png'"><% user.username %>
+					</a>
+				</td>
+				<td class="center aligned" v-if="sort == 'pp'">
+					<b><% addCommas(user.chosen_mode.pp) %>pp</b>
+                </td>
+                <td class="center aligned" v-else-if="sort == 'score'">
+                	<span v-if="mobileCheck() == false" :data-tooltip=addCommas(user.chosen_mode.ranked_score)>
+                		<b><% convertIntToLabel(user.chosen_mode.ranked_score) %></b>
+                	</span>
+                	<span v-else-if="mobileCheck() == true">
+                		<b><% convertIntToLabel(user.chosen_mode.ranked_score) %></b>
+                	</span>
+                </td>
+                <td class="center aligned">
+                	<% user.chosen_mode.accuracy.toFixed(2) %>%
+                </td>
+                <td class="center aligned">
+                	<% addCommas(user.chosen_mode.playcount) %>
+                </td>
+			</tr>
 		</tbody>
-		<tfoot>
-			{{ template "simplepag" 5 }}
-		</tfoot>
 	</table>
 	<div class="ui modal">
 		<div class="content">
@@ -65,11 +143,24 @@ KyutGrill=leaderboard2.jpg
 				{{ range countryList 500 }}
 					{{ $short := . }}
 					{{ with country . true }}
-						<div class="ui clickable column lb-country" data-country="{{ $short }}">{{ . }}</div>
+						<div :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{$short}}'" class="ui clickable column lb-country" @click="loadLeaderboardData(sort, mode, relax, 1, '{{$short}}')">{{ . }}</div>
 					{{ end }}
 				{{ end }}
 			</div>
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function() {
+		$("#country-chooser-modal")
+	      .click(function() {
+	        $(".ui.modal").modal("show");
+	    });
+	    $(".lb-country")
+		  .click(function() {
+		    $(".ui.modal").modal("hide");
+		});
+	})
+</script>
+<script src="/static/vue/pages/leaderboards.js"></script>
 {{ end }}

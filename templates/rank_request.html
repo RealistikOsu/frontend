@@ -20,20 +20,24 @@ MinPrivileges=2
 			<h4 style="display: inline; font-weight: normal;">{{ $.T "In the past 24 hours" }}</h4><br>
 			{{ $perc := perc .submitted .queue_size }}
 			<div class="ui container" style="width: 50%; margin-top: 8px; margin-bottom: 8px;">
-				<div class="ui blue progress" data-percent="{{ $perc }}" id="progressbar">
+				<div class="progress2 progress-moved" style="position: relative; top: 5px;--bar-percentage: {{ $perc }}%;">
+                  <div class="progress-bar2"></div>
+	            </div>
+	            <p style="position: relative; top: 6px;right:-257px;">{{ $perc }}%</p>
+				<!-- <div class="ui blue progress" data-percent="{{ $perc }}" id="progressbar">
 					<div class="bar">
 						<div class="progress">{{ $perc }}%</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 			{{ if .can_submit }}
-				<form class="ui form" id="b-form">
+				<form class="ui form" id="b-form" style="position: relative; top: 5px;">
 					<div class="ui fluid action input">
 						<input tabindex="1" type="text" placeholder="https://ussr.pl/beatmaps/1918979" id="beatmap">
 						{{ $f }}
-						<button tabindex="2" class="ui right labeled icon blue button">
-							<i class="right arrow icon"></i>
+						<button tabindex="2" class="ui button inverted blue">
 							{{ $.T "Submit" }}
+							<i class="fas fa-arrow-right" style="position: relative;top: 1px;left:4px;"></i>
 						</button>
 					</div>
 				</form>

@@ -1,44 +1,110 @@
 {{/*###
-Handler=/clans
-TitleBar=Clans
+Handler=/clanboard
+TitleBar=Clans Leaderboard
 KyutGrill=leaderboard2.jpg
 */}}
 {{ define "tpl" }}
-<div class="ui container">
-	{{ $favMode := _or (atoi (.Gin.Query "mode")) }}
-	<script>
-		var favouriteMode = {{ $favMode }};
-		var page = {{ .Gin.Query "p" | atoint | atLeastOne }};
-	</script>
-	<div class="ui four item menu" id="mode-menu">
-			<a class="0 item" href="/clans?mode=0">osu!</a>
-			<a class="1 item" href="/clans?mode=1">osu!taiko</a>
-			<a class="2 item" href="/clans?mode=2">osu!catch</a>
-			<a class="3 item" href="/clans?mode=3">osu!mania</a>
+
+{{ $favMode := _or (atoi (.Gin.Query "mode")) }}
+{{ $page := _or (atoi (.Gin.Query "p")) (float 1) }}
+{{ $relax := _or (atoi (.Gin.Query "rx")) }}
+<script>
+	var favouriteMode = {{ $favMode }};
+	var mode = {{ $favMode }};
+	if (mode == "") {
+		mode = "std"
+	}
+	var relax = {{ $relax }}.toLowerCase();
+	if (relax == "") {
+		relax = "vn"
+	}
+	var page = {{ $page }};
+</script>
+
+<script src="/static/vue/vue.js"></script>
+<script src="/static/vue/vue-axios.js"></script>
+
+<div class="ui container" style="padding: 22px; background: #212121;" id="app">
+	<div class="ui three item menu" id="relax-menu">
+		<a :href="'/clanboard?mode='+mode+'&rx=vn'"
+			:class="'item '+(relax == 'vn' ? 'active' : '')"
+			@click="loadClanboardData(mode, 'vn', 1)">Vanilla</a>
+		<a :href="'/clanboard?mode='+mode+'&rx=rx'"
+			:class="'item '+(relax == 'rx' ? 'active' : '')+(mode == 'mania' ? 'disabled':'')"
+			@click="loadClanboardData(mode, 'rx', 1)">Relax</a>
+		<a :href="'/clanboard?mode='+mode+'&rx=ap'"
+			:class="'item '+(relax == 'ap' ? 'active' : '')+(mode == 'mania' ? 'disabled':'')+(mode == 'fruits' ? 'disabled':'')+(mode == 'taiko' ? 'disabled':'')"
+			@click="loadClanboardData(mode, 'ap', 1)">Autopilot</a>
 	</div>
-	<table class="ui fixed table">
+	<div class="ui four item menu" id="mode-menu">
+		<a :href="'/clanboard?mode=osu&rx='+relax"
+            :class="'item '+(mode == 'std' ? 'active ' : '')"
+            @click="loadClanboardData('std', relax, 1)">osu!</a>
+        <a :href="'/clanboard?mode=taiko&rx='+relax"
+            :class="'item '+(mode == 'taiko' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')"
+            @click="loadClanboardData('taiko', relax, 1)">Taiko</a>
+        <a :href="'/clanboard?mode=fruits&rx='+relax"
+            :class="'item '+(mode == 'fruits' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')"
+            @click="loadClanboardData('fruits', relax, 1)">Catch</a>
+        <a :href="'/clanboard?mode=mania&rx='+relax" 
+			:class="'item '+(mode == 'mania' ? 'active ' : '')+(relax == 'ap' ? 'disabled':'')+(relax == 'rx' ? 'disabled':'')"
+            @click="loadClanboardData('mania', relax, 1)">Mania</a>
+	</div>
+	<table class="ui table leaderboard-table">
 		<thead>
-			{{ template "simplepag" 4 }}
 			<tr>
-				<th class="four wide">{{ .T "Rank" }} </th>
-				<th class="four wide">{{ .T "Clan" }} </th>
-				<th class="four wide">{{ .T "PP/Score" }} </th>
-				<th class="four wide">{{ .T "Playcount" }} </th>
+				<th colspan="5">
+					<div class="simplepag">
+						<div class="ui left floated pagination menu">
+							<a :href="'/clanboard?mode='+mode+'&rx='+relax+'&p='+(page-1)" :class="'icon item '+((page - 1) == 0 ? 'disabled' : '')"
+					            @click="loadClanboardData(mode, relax, page - 1)">
+					            <i class="left chevron icon"></i>
+					        </a>
+						</div>
+						<div class="ui right floated pagination menu">
+							<a :href="'/clanboard?mode='+mode+'&rx='+relax+'&p='+addOne(page)" :class="'icon item '+(data.length != 50 ? 'disabled' : '')"
+					            @click="loadClanboardData(mode, relax, addOne(page))">
+					            <i class="right chevron icon"></i>
+					        </a>
+						</div>
+					</div>
+				</th>
 			</tr>
-	</table>
-	<table class="ui fixed table">
-		<thead>
-		{{ range (.Get "clans/stats/all?m=$d" $favMode).clans }}
-			{{ if .name }}
 			<tr>
-				<th class="four wide">#{{ .rank }} </th>
-				<th class="four wide"> <a href="/c/{{ .id }}?mode={{ $favMode }}">{{ .name }}</a></th>
-				<th class="four wide">{{ .chosen_mode.pp }}pp ({{ humanize .chosen_mode.total_score }})</th>
-				<th class="four wide">{{ .chosen_mode.playcount }}</th>
+				<th class="t-heading center aligned">Rank</th>
+				<th id="t-player" :class="'t-heading t-player'+(mobileCheck==true ? 'center aligned' : '')">Clan Name</th>
+				<th class="t-heading center aligned">Performance Points</th>
+				<th class="t-heading center aligned">Total Score</th>
+				<th class="t-heading center aligned">Playcount</th>
 			</tr>
-			{{end}}
-			{{end}}
-			</thead>
+		</thead>
+		<tbody>
+			<tr class="l-player" v-for="(clan, index) in data">
+				<td class="center aligned">
+					#<% clan.rank %>
+				</td>
+				<td>
+					<a title='View Clan' :href="'/c/'+clan.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
+						<% clan.name %>
+					</a>
+				</td>
+				<td class="center aligned">
+					<b><% addCommas(clan.chosen_mode.pp) %>pp</b>
+                </td>
+				<td class="center aligned">
+					<span v-if="mobileCheck() == false" :data-tooltip=addCommas(clan.chosen_mode.total_score)>
+                		<b><% convertIntToLabel(clan.chosen_mode.total_score) %></b>
+                	</span>
+                	<span v-else-if="mobileCheck() == true">
+                		<b><% convertIntToLabel(clan.chosen_mode.total_score) %></b>
+                	</span>
+                </td>
+				<td class="center aligned">
+					<b><% addCommas(clan.chosen_mode.playcount) %></b>
+                </td>
+			</tr>
+		</tbody>
 	</table>
 </div>
+<script src="/static/vue/pages/clanboard.js"></script>
 {{ end }}

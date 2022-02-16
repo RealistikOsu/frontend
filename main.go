@@ -8,8 +8,17 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
+	"sort"
+	"strconv"
 	"time"
 
+	"math/rand"
+
+	"github.com/RealistikOsu/hanayo/modules/btcaddress"
+	"github.com/RealistikOsu/hanayo/modules/btcconversions"
+	"github.com/RealistikOsu/hanayo/routers/pagemappings"
+	"github.com/RealistikOsu/hanayo/services"
+	"github.com/RealistikOsu/hanayo/services/cieca"
 	"github.com/fatih/structs"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sessions"
@@ -22,12 +31,7 @@ import (
 	"gopkg.in/mailgun/mailgun-go.v1"
 	"gopkg.in/redis.v5"
 	"zxq.co/ripple/agplwarning"
-	"github.com/RealistikOsu/hanayo/modules/btcaddress"
-	"github.com/RealistikOsu/hanayo/modules/btcconversions"
-	"github.com/RealistikOsu/hanayo/routers/pagemappings"
-	"github.com/RealistikOsu/hanayo/services"
-	"github.com/RealistikOsu/hanayo/services/cieca"
-	"zxq.co/ripple/schiavolib"
+	schiavo "zxq.co/ripple/schiavolib"
 	"zxq.co/x/rs"
 )
 
@@ -146,6 +150,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	// set it to random
+	rand.Seed(time.Now().Unix())
 
 	// initialise mailgun
 	mg = mailgun.NewMailgun(
@@ -278,7 +284,7 @@ func generateEngine() *gin.Engine {
 	r.POST("/register", registerSubmit)
 	r.GET("/register/verify", verifyAccount)
 	r.GET("/register/welcome", welcome)
-	
+
 	r.GET("/clans/create", ccreate)
 	r.POST("/clans/create", ccreateSubmit)
 
@@ -302,6 +308,25 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, "/beatmaps/"+bid)
 	})
 
+	r.GET("/beatmapsets/:bsetid", func(c *gin.Context) {
+		bsetid := c.Param("bsetid")
+		fmt.Println(bsetid)
+		data, err := getBeatmapSetData(bsetid)
+
+		if err != nil {
+			return
+		}
+
+		sort.Slice(data, func(i, j int) bool {
+			if data[i].Mode != data[j].Mode {
+				return data[i].Mode < data[j].Mode
+			}
+			return data[i].DifficultyRating < data[j].DifficultyRating
+		})
+
+		c.Redirect(301, "/beatmaps/"+strconv.Itoa(data[len(data)-1].BeatmapID))
+	})
+
 	r.GET("/u/:user", userProfile)
 	r.GET("/c/:cid", clanPage)
 	r.GET("/beatmaps/:bid", beatmapInfo)
@@ -314,9 +339,12 @@ func generateEngine() *gin.Engine {
 	r.POST("/settings/password", changePasswordSubmit)
 	r.POST("/settings/userpage/parse", parseBBCode)
 	r.POST("/settings/avatar", avatarSubmit)
-	r.GET("/settings/discord/finish", discordFinish)
-	r.POST("/settings/profbackground/:type", profBackground)
-	
+	r.POST("/settings/profbanner/:type", profBackground)
+
+	// Discord integration.
+	r.GET("/settings/discord-integration/unlink", discordUnlink)
+	r.GET("/settings/discord-integration/redirect", discordRedirCheck)
+
 	r.POST("/settings/clansettings", createInvite)
 	r.POST("settings/clansettings/k", clanKick)
 	r.GET("/clans/invite/:inv", clanInvite)

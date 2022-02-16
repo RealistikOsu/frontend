@@ -1,11 +1,10 @@
 {{ define "navbar" }}
 {{ $isRAP   := and (hasAdmin .Context.User.Privileges) (isRAP .Path) }}
 {{ $isAdmin := hasAdmin .Context.User.Privileges }}
-{{ $isClanO := qb "SELECT user, clan FROM user_clans WHERE user = ? AND perms = 8" .Context.User.ID }}
-{{ $isClan := qb "SELECT user, clan FROM user_clans WHERE user = ?" .Context.User.ID }}
 {{ $ds      := band .ClientFlags 1 }}
 <div class="ui secondary fixed-height stackable white background main menu no margin bottom{{ if .DisableHH }} dropped{{ end }}" id="navbar">
-	<div class="ui container">
+	<img navbar class="navbar-image" id="navimg" src="/static/images/navbar.png">
+	<div class="ui container responsive">
 		<div class="item">
 			<b><a href="/" title="{{ .T "Home page" }}"><img class="ripple logo" alt="RealistikOsu!" style="max-height: 35px;" src="/static/image/logo_new.png"></a></b>
 		</div>
@@ -21,12 +20,12 @@
 			<div class="ui dropdown item">
 				<span>{{ .T "Clans" }}</span>
 				<div class="menu">
-					{{ navbarItem .Path (.T "Clan Leaderboard") "/clans?mode=0" }}
-					{{ if not ($isClan) }}
-					{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
+					{{ navbarItem .Path (.T "Clan Leaderboard") "/clanboard" }}
+					{{ if not (.Context.User.Clan) }}
+						{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
 					{{ end }}
-					{{ if ($isClanO) }}
-					{{ navbarItem .Path (.T "Clan Settings") "/settings/clansettings" }}
+					{{ if (.Context.User.ClanOwner) }}
+						{{ navbarItem .Path (.T "Clan Settings") "/settings/clansettings" }}
 					{{ end }}
 				</div>
 			</div>
@@ -35,22 +34,23 @@
 				<div class="menu">
 					{{ navbarItem .Path (.T "About") "/about" }}
 					{{ navbarItem .Path (.T "Rules") "/doc/rules" }}
-					{{ navbarItem .Path (.T "Server Switcher (Deprecated)") "http://dl.ussr.pl/files/osu/ROS.exe" }}
+					{{ navbarItem .Path (.T "Server Switcher (Deprecated)") "/static/ROS.exe" }}
 					{{ navbarItem .Path (.T "Our Team") "/team" }}
 				</div>
 			</div>
 			{{ if .Context.User.Username }}
-			<div class="ui dropdown item">
-				<span>{{ .T "Beatmaps" }}</span>
-				<div class="menu">
-					{{ navbarItem .Path (.T "Request Beatmap Ranking") "/rank_request" }}
-					{{ navbarItem .Path (.T "Beatmaps Listing") "/bmaps_listing" }}		
+				<div class="ui dropdown item">
+					<span>{{ .T "Beatmaps" }}</span>
+					<div class="menu">
+						{{ navbarItem .Path (.T "Request Beatmap Ranking") "/rank_request" }}
+						{{ navbarItem .Path (.T "Beatmaps Listing") "/bmaps_listing" }}		
+					</div>
 				</div>
-			</div>
-			<a class="item" href="/donate" >❤️Donate</a>
+				<a class="item" href="/donate" >❤️Donate</a>
 			{{ end }}
-			{{/* navbarItem .Path (.T "Donate" | printf "<i class=\"red heart icon\"></i>%s") "/donate" */}}
-			{{ if $isAdmin }}{{ navbarItem .Path (.T "Admin Panel" | printf "<b>%s</b>") "https://old.ussr.pl" }}{{ end }}
+			{{ if $isAdmin }}
+				{{ navbarItem .Path (.T "Admin Panel" | printf "<b>%s</b>") "https://old.ussr.pl" }}
+			{{ end }}
 		{{ end }}
 		<div class="firetrucking-right-menu">
 			<div class="item">
@@ -64,7 +64,6 @@
 			{{ if .Context.User.Username }}
 				<div class="ui dropdown item">
 					<img id="avatar" class="ui avatar image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
-					<span>{{ .Context.User.Username }}</span>
 					<div class="menu">
 						{{ navbarItem .Path (.T "Profile") (printf "/u/%d" .Context.User.ID) }}
 						{{ navbarItem .Path (.T "Friends") "/friends" }}

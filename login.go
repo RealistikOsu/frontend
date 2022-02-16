@@ -42,6 +42,8 @@ func loginSubmit(c *gin.Context) {
 		pRaw            int64
 		Privileges      common.UserPrivileges
 		Flags           uint
+		Clan            int
+		ClanOwner       int
 	}
 	err := db.QueryRow(`
 	SELECT 
@@ -49,7 +51,7 @@ func loginSubmit(c *gin.Context) {
 		u.username, u.password_version,
 		s.country, u.privileges, u.flags
 	FROM users u
-	LEFT JOIN users_stats s ON s.id = u.id
+	INNER JOIN users_stats s ON s.id = u.id
 	WHERE u.`+param+` = ? LIMIT 1`, strings.TrimSpace(u)).Scan(
 		&data.ID, &data.Password,
 		&data.Username, &data.PasswordVersion,
@@ -68,6 +70,16 @@ func loginSubmit(c *gin.Context) {
 		c.Error(err)
 		resp500(c)
 		return
+	}
+
+	// Clan time.
+	errClan := db.QueryRow("SELECT clan, perms = 8 FROM user_clans WHERE user = ?", data.ID).Scan(
+		&data.Clan, &data.ClanOwner,
+	)
+
+	if errClan != nil {
+		data.Clan = 0
+		data.ClanOwner = 0
 	}
 
 	if data.PasswordVersion == 1 {
@@ -96,7 +108,7 @@ func loginSubmit(c *gin.Context) {
 
 	sess := getSession(c)
 
-	if data.Privileges&common.UserPrivilegePendingVerification > 0 {
+	if data.Privileges & common.UserPrivilegePendingVerification > 0 {
 		setYCookie(data.ID, c)
 		addMessage(c, warningMessage{T(c, "You will need to verify your account first.")})
 		sess.Save()
@@ -104,7 +116,7 @@ func loginSubmit(c *gin.Context) {
 		return
 	}
 
-	if data.Privileges&common.UserPrivilegeNormal == 0 {
+	if data.Privileges & common.UserPrivilegeNormal == 0 {
 		simpleReply(c, errorMessage{T(c, "You are not allowed to login. This means your account is either banned or locked.")})
 		return
 	}

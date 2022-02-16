@@ -12,11 +12,13 @@ NoCompile=true
 
 		{{ navbarItem .Path (.T "Password") "/settings/password" }}
 
+		{{ navbarItem .Path (.T "Discord Linking") "/settings/discord-integration" }}
+
 		{{/* Stuff for donators */}}
 		{{/* if has .Context.User.Privileges 4 */}}
 		
 		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
-		{{ navbarItem .Path (printf "%s %s" (.T "Profile Background") $d) "/settings/profbackground" }}
+		{{ navbarItem .Path (printf "%s %s" (.T "Profile Banner") $d) "/settings/profbanner" }}
 
 		{{/* end */}}
 	</div>

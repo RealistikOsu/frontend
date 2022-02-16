@@ -1,5 +1,5 @@
 // code that is executed on every user profile
-$(document).ready(function() {
+$(document).ready(function () {
 	var wl = window.location;
 	var newPathName = wl.pathname;
 	// userID is defined in profile.html
@@ -25,165 +25,269 @@ $(document).ready(function() {
 	if (window.chart == null)
 		initialiseChart(favouriteMode, preferRelax);
 	// Credits to Akatsuki here :D
-	$("#rx-menu>.item").click(function(e) {
-        e.preventDefault();
-        if ($(this).hasClass("active"))
-            return;
-        preferRelax = $(this).data("rx");
-        updateChartData(favouriteMode, preferRelax);
-        $("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
-        $("[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
-        $("#rx-menu>.active.item").removeClass("active");
-        var needsLoad = $("#scores-zone>[data-mode=" + favouriteMode + "][data-loaded=0][data-rx=" + preferRelax + "]");
-        if (needsLoad.length > 0)
-	        initialiseScores(needsLoad, favouriteMode);
-        $(this).addClass("active");
-        window.history.replaceState('', document.title, `${wl.pathname}?mode=${favouriteMode}&rx=${preferRelax}${wl.hash}`)
-    });
-	$("#mode-menu>.item").click(function(e) {
-        e.preventDefault();
-        if ($(this).hasClass("active"))
-            return;
-        var m = $(this).data("mode");
-        favouriteMode = m;
-        updateChartData(favouriteMode, preferRelax);
-        $("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
-        $("[data-mode=" + m + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
-        $("#mode-menu>.active.item").removeClass("active");
-        var needsLoad = $("#scores-zone>[data-mode=" + m + "][data-loaded=0][data-rx=" + preferRelax + "]");
-        if (needsLoad.length > 0)
-	        initialiseScores(needsLoad, m);
-        $(this).addClass("active");
-        window.history.replaceState('', document.title, `${wl.pathname}?mode=${m}&rx=${preferRelax}${wl.hash}`);
-    });
+	$("#rx-menu>.item").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("active"))
+			return;
+
+		setDefaultScoreTable();
+		$("#filter-failed").prop("checked", false)
+		for (let elm of document.getElementsByClassName("score-failed-recent")) {
+			elm.style.removeProperty("display");
+		}
+
+		//$(".recent-load-more").removeClass("disabled");
+
+		preferRelax = $(this).data("rx");
+		$("#clickAutopilot").removeClass("disabled");
+		$("#clickRelax").removeClass("disabled");
+
+		$("#clickTaiko").removeClass("disabled");
+		$("#clickCatch").removeClass("disabled");
+		$("#clickMania").removeClass("disabled");
+
+		switch (preferRelax) {
+			case 1:
+				$("#clickMania").addClass("disabled");
+				break;
+			case 2:
+				$("#clickTaiko").addClass("disabled");
+				$("#clickCatch").addClass("disabled");
+				$("#clickMania").addClass("disabled");
+				break;
+		}
+		updateChartData(favouriteMode, preferRelax);
+		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
+		$("[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
+		$("#rx-menu>.active.item").removeClass("active");
+		var needsLoad = $("#scores-zone>[data-mode=" + favouriteMode + "][data-loaded=0][data-rx=" + preferRelax + "]");
+		if (needsLoad.length > 0)
+			initialiseScores(needsLoad, favouriteMode);
+		$(this).addClass("active");
+		window.history.replaceState('', document.title, `${wl.pathname}?mode=${favouriteMode}&rx=${preferRelax}${wl.hash}`)
+
+		$("#filter-failed").change(filterRecentScores);
+	});
+	$("#mode-menu>.item").click(function (e) {
+		e.preventDefault();
+		if ($(this).hasClass("active"))
+			return;
+
+		setDefaultScoreTable();
+		$("#filter-failed").prop("checked", false)
+		for (let elm of document.getElementsByClassName("score-failed-recent")) {
+			elm.style.removeProperty("display");
+		}
+
+		//$(".recent-load-more").removeClass("disabled");
+
+		var m = $(this).data("mode");
+		$("#clickAutopilot").removeClass("disabled");
+		$("#clickRelax").removeClass("disabled");
+
+		$("#clickTaiko").removeClass("disabled");
+		$("#clickCatch").removeClass("disabled");
+		$("#clickMania").removeClass("disabled");
+
+		switch (m) {
+			case 1:
+				$("#clickAutopilot").addClass("disabled");
+				break;
+			case 2:
+				$("#clickAutopilot").addClass("disabled");
+				break;
+			case 3:
+				$("#clickRelax").addClass("disabled");
+				$("#clickAutopilot").addClass("disabled");
+				break;
+		}
+		favouriteMode = m;
+		updateChartData(favouriteMode, preferRelax);
+		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
+		$("[data-mode=" + m + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
+		$("#mode-menu>.active.item").removeClass("active");
+		var needsLoad = $("#scores-zone>[data-mode=" + m + "][data-loaded=0][data-rx=" + preferRelax + "]");
+		if (needsLoad.length > 0)
+			initialiseScores(needsLoad, m);
+		$(this).addClass("active");
+		window.history.replaceState('', document.title, `${wl.pathname}?mode=${m}&rx=${preferRelax}${wl.hash}`);
+
+
+		$("#filter-failed").change(filterRecentScores);
+	});
+	// This is such a mess...
+	$("#clickAutopilot").removeClass("disabled");
+	$("#clickRelax").removeClass("disabled");
+
+	$("#clickTaiko").removeClass("disabled");
+	$("#clickCatch").removeClass("disabled");
+	$("#clickMania").removeClass("disabled");
+
+	switch (preferRelax) {
+		case 1:
+			$("#clickMania").addClass("disabled");
+			break;
+		case 2:
+			$("#clickTaiko").addClass("disabled");
+			$("#clickCatch").addClass("disabled");
+			$("#clickMania").addClass("disabled");
+			break;
+	}
+
+	switch (favouriteMode) {
+		case 1:
+			$("#clickAutopilot").addClass("disabled");
+			break;
+		case 2:
+			$("#clickAutopilot").addClass("disabled");
+			break;
+		case 3:
+			$("#clickRelax").addClass("disabled");
+			$("#clickAutopilot").addClass("disabled");
+			break;
+	}
+
 	initialiseFriends();
 	// load scores page for the current favourite mode
-	var i = function(){
+	var i = function () {
 		initialiseScores($("#scores-zone>div[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]"), favouriteMode)
 	};
 	if (i18nLoaded)
 		i();
 	else
-		i18next.on("loaded", function() {
+		i18next.on("loaded", function () {
 			i();
 		});
 	loadOnlineStatus();
 	setInterval(loadOnlineStatus, 10000);
+	$("#filter-failed").change(filterRecentScores);
 });
 
 function updateChartData(mode, rx) {
-	var relax
-	switch (rx) {
-		case 1:
-			relax = "Relax";
-			break;
-		case 2:
-			relax = "Autopilot";
-			break;
-		default:
-			relax = "Vanilla";
-	}
-	fetch(`https://ussr.pl/api2/getuser/${userID}`)
-	.then(res => res.json())
-	.then((out) => {
-		var label;
-		switch (mode) {
-			case 1:
-				label = out[relax]["RankTAI"];
-				break;
-			case 2:
-				label = out[relax]["RankCTB"];
-				break;
-			case 3:
-				label = out[relax]["RankMAN"];
-				break;
-			default:
-				label = out[relax]["RankSTD"];
-		}
+	fetch(`https://api.ussr.pl/users/rank_graph?id=${userID}&relax=${rx}&mode=${mode}`)
+		.then(res => res.json())
+		.then((out) => {
+			let node = document.getElementById("graphNoData");
+			if (node !== null && node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
 
-	    window.chart.data.datasets[0].data = label;
-	    window.chart.options.scales.yAxes[0].ticks.max = Math.max(...label) + 10;
-	    window.chart.update();
-	})
-	.catch(err => { throw err }); 
+			window.chart.data.labels = createLabels(out.data)
+			window.chart.data.datasets[0].data = out.data;
+			window.chart.options.scales.yAxes[0].ticks.min = Math.min(...out.data);
+			window.chart.options.scales.yAxes[0].ticks.max = Math.max(...out.data);
+			window.chart.update();
+
+			if (!out.data.length > 0) {
+				var element = document.getElementById("GraphSegment");
+				let msg = document.createElement("h3")
+				msg.setAttribute("id", "graphNoData");
+				msg.append("No data to display!")
+				element.append(msg)
+				return
+			}
+
+		})
+		.catch(err => { throw err });
+}
+
+function createLabels(data) {
+	var labels = ["now"]
+	for (var i = 1; i < data.length; i++) {
+		if (i == 1) {
+			labels.push(`1 day ago`)
+		} else {
+			labels.push(`${i} days ago`)
+		}
+	}
+	return labels.reverse()
 }
 
 function initialiseChart(mode, rx) {
-	var relax
-	switch (rx) {
-		case 1:
-			relax = "Relax";
-			break;
-		case 2:
-			relax = "Autopilot";
-			break;
-		default:
-			relax = "Vanilla";
-	}
-	fetch(`https://ussr.pl/api2/getuser/${userID}`)
-	.then(res => res.json())
-	.then((out) => {
-		var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
+	fetch(`https://api.ussr.pl/users/rank_graph?id=${userID}&relax=${rx}&mode=${mode}`)
+		.then(res => res.json())
+		.then((out) => {
+			var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
 
-		var label;
-		switch (mode) {
-			case 1:
-				label = out[relax]["RankTAI"];
-				break;
-			case 2:
-				label = out[relax]["RankCTB"];
-				break;
-			case 3:
-				label = out[relax]["RankMAN"];
-				break;
-			default:
-				label = out[relax]["RankSTD"];
-		}
+			let node = document.getElementById("graphNoData");
+			if (node !== null && node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
 
-		var data = {
-			labels: out.Labels.VanillaLabel,
-			datasets: [{
-				label: "Rank",
-				data: label,
-				borderWidth: 2,
-				backgroundColor: 'rgba(15, 151, 255, 0.73)',
-				borderWidth: 0,
-				borderColor: 'transparent',
-				pointBorderWidth: 0,
-				pointRadius: 3.5,
-				pointBackgroundColor: 'transparent',
-				pointHoverBackgroundColor: 'rgba(15, 151, 255, 0.73)',
-				fill: "start"
-			}]
-		}
+			var data = {
+				labels: createLabels(out.data),
+				datasets: [{
+					fill: false,
+					label: "Global Rank",
+					data: out.data,
+					lineTension: 0.3,
+					borderWidth: 3.5,
+					//backgroundColor: 'rgba(15, 151, 255, 0.73)',
+					//borderWidth: 0,
+					borderColor: 'rgba(15, 151, 255, 0.73)',
+					//pointBorderWidth: 0,
+					pointRadius: 8,
+					pointBorderColor: 'transparent',
+					pointBackgroundColor: 'transparent',
+					pointHoverBackgroundColor: 'transparent',
+					pointHoverBorderColor: 'rgba(15, 151, 255, 0.73)',
+					pointHoverBorderWidth: 5,
+					pointHoverRadius: 8
+				}]
+			}
 
-		window.chart = new Chart(graphCtx, {
-			type: 'line',
-			data: data,
-			options: {
-				legend: {
-					display: false
-				},
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							reverse: true,
-							max: Math.max(...data.datasets[0].data) + 10
-						}
-					}],
-					xAxes: [
-						{
+			window.chart = new Chart(graphCtx, {
+				type: 'line',
+				data: data,
+				bezierCurve: false,
+				options: {
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
 							ticks: {
+								beginAtZero: true,
+								reverse: true,
+								min: Math.min(...out.data),
+								max: Math.max(...out.data),
+								userCallback: function (label, index, labels) {
+									// when the floored value is the same as the value we have a whole number
+									if (Math.floor(label) === label) {
+										return label;
+									}
+
+								},
+							},
+							gridLines: {
 								display: false
 							}
-						}
-					]
+						}],
+						xAxes: [
+							{
+								ticks: {
+									display: false
+								},
+								gridLines: {
+									display: false
+								}
+							}
+						]
+					}
 				}
+			});
+
+			if (!out.data.length > 0) {
+				var element = document.getElementById("GraphSegment");
+				let msg = document.createElement("h3")
+				msg.setAttribute("id", "graphNoData");
+				msg.append("No data to display!")
+				element.append(msg)
+				return
 			}
-		});
-	})
-	.catch(err => { throw err }); 
+
+		})
+		.catch(err => { throw err });
 }
 
 function formatOnlineStatusBeatmap(a) {
@@ -194,7 +298,7 @@ function formatOnlineStatusBeatmap(a) {
 
 function loadOnlineStatus() {
 	// load in-game status through delta api
-	banchoAPI('clients/' + userID, {}, function(resp) {
+	banchoAPI('clients/' + userID, {}, function (resp) {
 
 		var client = null;
 		resp.clients.forEach(function (el) {
@@ -258,6 +362,7 @@ function loadOnlineStatus() {
 		} else {
 			// offline
 			// we wont pulse if they are offline.
+			hexColour = "rgb(10, 10, 10)"
 			innerHtml = `<span class data-tooltip="Offline"><img alt="avatar" src="https://a.ussr.pl/${userID}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">`;
 		}
 
@@ -269,32 +374,27 @@ function loadOnlineStatus() {
 function loadMostPlayedBeatmaps(mode) {
 	var mostPlayedTable = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type='most-played']");
 	currentPage[preferRelax][mode].mostPlayed++
-	api('users/most_played', {id: userID, mode: mode, p: currentPage[preferRelax][mode].mostPlayed, l: 5, rx: preferRelax}, function (resp) {
+	api('users/most_played', { id: userID, mode: mode, p: currentPage[preferRelax][mode].mostPlayed, l: 5, rx: preferRelax }, function (resp) {
 		if (resp.beatmaps === null) {
 			return;
 		}
 
-		if (currentPage[preferRelax][mode].mostPlayed > 1) {
-			var current = parseInt(document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML.slice(0, -6));
-			document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML = `${(current - resp.beatmaps.length)} more!`;
-		} else {
-			document.getElementById(`mostplayedbmaps-${mode}-${preferRelax}`).innerHTML = `${resp.total - resp.beatmaps.length} more!`
-		}
-		resp.beatmaps.forEach(function(el, idx) {
+		document.getElementById("mostplayed-text").innerHTML = '<i class="play icon"></i>' + T("Most Played Beatmaps") + ` (${resp.total})`;
+		resp.beatmaps.forEach(function (el, idx) {
 			mostPlayedTable.children('tbody').append(
-				$("<tr />").append(
+				$("<tr style='background: linear-gradient(90deg,#212121,#00000087,#212121), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ el.beatmap.beatmapset_id +"/covers/cover.jpg?filter=blurgaussian&smooth=1) no-repeat right !important; background-size: cover !important;' />").append(
 					$("<td />").append(
-						$("<h4 class='ui image header' />").append(
-							$("<img src='https://assets.ppy.sh/beatmaps/" + el.beatmap.beatmapset_id + "/covers/list.jpg' class='ui mini rounded image'>"),
-							$("<div class='content' />").append(
-								$("<a href='/beatmaps/" + el.beatmap.beatmap_id + "' />").append(
-									$('<b />').text(el.beatmap.song_name)
-								)
+						//$("<h4 class='ui image header' />").append(
+						//$("<img src='https://assets.ppy.sh/beatmaps/" + el.beatmap.beatmapset_id + "/covers/list.jpg' class='ui mini rounded image'>"),
+						$("<div class='content' />").append(
+							$("<a href='/beatmaps/" + el.beatmap.beatmap_id + "' />").append(
+								$('<b />').text(el.beatmap.song_name)
 							)
 						)
+						//)
 					),
 					$("<td class='right aligned' />").append(
-						$('<i class="play circle icon" />'),
+						$('<span style="margin-right: 5px;margin-top: 0.2em;"><span class="fas fa-play" /></span>'),
 						$('<b />').text(el.playcount)
 					)
 				)
@@ -308,101 +408,106 @@ function loadMostPlayedBeatmaps(mode) {
 
 function initialiseAchievements() {
 	api('users/achievements' + (currentUserID == userID ? '?all' : ''),
-		{id: userID}, function (resp) {
-		var achievements = resp.achievements;
-		// no achievements -- show default message
-		if (achievements.length === 0) {
-			$("#achievements")
-				.append($("<div class='ui sixteen wide column'>")
-					.text(T("Nothing here. Yet.")));
-			$("#load-more-achievements").remove();
-			return;
-		}
+		{ id: userID }, function (resp) {
+			var achievements = resp.achievements;
+			// no achievements -- show default message
+			if (achievements.length === 0) {
+				$("#achievements")
+					.append($("<div class='ui sixteen wide column'>")
+						.text(T("Nothing here. Yet.")));
+				$("#load-more-achievements").remove();
+				return;
+			}
 
-		var displayAchievements = function(limit, achievedOnly) {
-			var $ach = $("#achievements").empty();
-			limit = limit < 0 ? achievements.length : limit;
-			var shown = 0;
-			for (var i = 0; i < achievements.length; i++) {
-				var ach = achievements[i];
-				if (shown >= limit || (achievedOnly && !ach.achieved)) {
-					continue;
+			var displayAchievements = function (limit, achievedOnly) {
+				var $ach = $("#achievements").empty();
+				limit = limit < 0 ? achievements.length : limit;
+				var shown = 0;
+				for (var i = 0; i < achievements.length; i++) {
+					var ach = achievements[i];
+					if (shown >= limit || (achievedOnly && !ach.achieved)) {
+						continue;
+					}
+					shown++;
+					$ach.append(
+						$("<div class='ui two wide column'>").append(
+							$("<img src='https://s.ripple.moe/images/medals-" +
+								"client/" + ach.icon + ".png' alt='" + ach.name +
+								"' class='" +
+								(!ach.achieved ? "locked-achievement" : "achievement") +
+								"'>").popup({
+									title: ach.name,
+									content: ach.description,
+									position: "bottom center",
+									distanceAway: 10
+								})
+						)
+					);
 				}
-				shown++;
-				$ach.append(
-					$("<div class='ui two wide column'>").append(
-						$("<img src='https://s.ripple.moe/images/medals-" +
-							"client/" + ach.icon + ".png' alt='" + ach.name +
-							"' class='" +
-							(!ach.achieved ? "locked-achievement" : "achievement") +
-							"'>").popup({
-							title: ach.name,
-							content: ach.description,
-							position: "bottom center",
-							distanceAway: 10
-						})
-					)
-				);
-			}
-			// if we've shown nothing, and achievedOnly is enabled, try again
-			// this time disabling it.
-			if (shown == 0 && achievedOnly) {
-				displayAchievements(limit, false);
-			}
-		};
+				// if we've shown nothing, and achievedOnly is enabled, try again
+				// this time disabling it.
+				if (shown == 0 && achievedOnly) {
+					displayAchievements(limit, false);
+				}
+			};
 
-		// only 8 achievements - we can remove the button completely, because
-		// it won't be used (no more achievements).
-		// otherwise, we simply remove the disabled class and add the click handler
-		// to activate it.
-		if (achievements.length <= 8) {
-			$("#load-more-achievements").remove();
-		} else {
-			$("#load-more-achievements")
-				.removeClass("disabled")
-				.click(function() {
-				$(this).remove();
-				displayAchievements(-1, false);
-			});
-		}
-		displayAchievements(8, true);
-	});
+			// only 8 achievements - we can remove the button completely, because
+			// it won't be used (no more achievements).
+			// otherwise, we simply remove the disabled class and add the click handler
+			// to activate it.
+			if (achievements.length <= 8) {
+				$("#load-more-achievements").remove();
+			} else {
+				$("#load-more-achievements")
+					.removeClass("disabled")
+					.click(function () {
+						$(this).remove();
+						displayAchievements(-1, false);
+					});
+			}
+			displayAchievements(8, true);
+		});
 }
 
 function initialiseFriends() {
 	var b = $("#add-friend-button");
 	if (b.length == 0) return;
-	api('friends/with', {id: userID}, setFriendOnResponse);
+	api('friends/with', { id: userID }, setFriendOnResponse);
 	b.click(friendClick);
 }
 function setFriendOnResponse(r) {
 	var x = 0;
-	if (r.friend) x++;
+	if (r.friend) {
+		if (window.relation != null && window.relation.friend != r.friend)
+			window.followers++;
+		x++;
+	} else {
+		if (window.relation != null && window.relation.friend != r.friend)
+			window.followers--;
+	}
 	if (r.mutual) x++;
+	window.relation = r;
 	setFriend(x);
 }
 function setFriend(i) {
 	var b = $("#add-friend-button");
 	b.removeClass("loading green blue red");
 	switch (i) {
-	case 0:
-		b
-			.addClass("blue")
-			.attr("title", T("Add friend"))
-			.html("<i class='plus icon'></i>");
-		break;
-	case 1:
-		b
-			.addClass("green")
-			.attr("title", T("Remove friend"))
-			.html("<i class='minus icon'></i>");
-		break;
-	case 2:
-		b
-			.addClass("red")
-			.attr("title", T("Unmutual friend"))
-			.html("<i class='heart icon'></i>");
-		break;
+		case 0:
+			b
+				.addClass("blue")
+				.html(`<i class="fas fa-user-plus"></i>  ${window.followers}`);
+			break;
+		case 1:
+			b
+				.addClass("green")
+				.html(`<i class="fas fa-user-times"></i>  ${window.followers}`);
+			break;
+		case 2:
+			b
+				.addClass("red")
+				.html(`<i class="fas fa-user-friends"></i>  ${window.followers}`);
+			break;
 	}
 	b.attr("data-friends", i > 0 ? 1 : 0)
 }
@@ -410,21 +515,12 @@ function friendClick() {
 	var t = $(this);
 	if (t.hasClass("loading")) return;
 	t.addClass("loading");
-	api("friends/" + (t.attr("data-friends") == 1 ? "del" : "add"), {user: userID}, setFriendOnResponse, true);
+	api("friends/" + (t.attr("data-friends") == 1 ? "del" : "add"), { user: userID }, setFriendOnResponse, true);
 }
 
 var defaultScoreTable;
-var firstPlacesTable;
 function setDefaultScoreTable() {
-	defaultScoreTable = $("<table class='ui table score-table' data-mode='" + favouriteMode + "' data-rx='" + preferRelax + "' />")
-		.append(
-			$("<thead />").append(
-				$("<tr />").append(
-					$("<th>" + T("General info") + "</th>"),
-					$("<th>"+ T("Score") + "</th>")
-				)
-			)
-		)
+	defaultScoreTable = $("<table class='ui table score-table profile-table' />")
 		.append(
 			$("<tbody />")
 		)
@@ -438,68 +534,62 @@ function setDefaultScoreTable() {
 					)
 				)
 			)
-		);
-	firstPlacesTable = $("<table class='ui table score-table' data-mode='" + favouriteMode + "' data-rx='" + preferRelax + "' />")
-		.append(
-			$("<thead />").append(
-				$("<tr />").append(
-					$("<th>" + T("General info") + "</th>"),
-					$("<th>"+ T("Score") + "</th>")
-				)
-			)
 		)
-		.append(
-			$("<tbody />")
-		)
-		.append(
-			$("<tfoot />").append(
-				$("<tr />").append(
-					$("<th colspan=2 />").append(
-						$("<div class='ui floated pagination' />").append(
-							$("<a class='ui button load-more-button inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreClick)
-						).append(
-							$(`<div class="ui label inverted violet" style="background-color: #A291FB !important" id="firstplaces-${favouriteMode}-${preferRelax}">0</div>`)
-						)
-					)
-				)
-			)
-		);
-
+		;
 }
-i18next.on('loaded', function(loaded) {
+i18next.on('loaded', function (loaded) {
 	setDefaultScoreTable();
 });
+
+function recentFilter(recent) {
+	$(recent).find(".load-more-button").parent().append(`
+		<div class="ui checkbox">
+			<input id="filter-failed" type="checkbox">
+			<label>Hide failed scores.</label>
+		</div>
+    `);
+
+	$(recent).find(".load-more-button").addClass("recent-load-more");
+}
+
+function filterRecentScores() {
+	if ($(this).prop("checked")) {
+		for (let elm of document.getElementsByClassName("score-failed-recent")) {
+			elm.style.setProperty("display", "none", "important");
+		}
+		//$(".recent-load-more").addClass("disabled");
+		return 0;
+	}
+
+	for (let elm of document.getElementsByClassName("score-failed-recent")) {
+		elm.style.removeProperty("display");
+	}
+	$(".recent-load-more").removeClass("disabled");
+}
+
 function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
-	setDefaultScoreTable()
 	var best = defaultScoreTable.clone(true).addClass("purple");
 	var recent = defaultScoreTable.clone(true).addClass("blue");
-	var first = firstPlacesTable.clone(true).addClass("red");
-	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
-			.append(
-					$("<thead />").append(
-							$("<tr />").append(
-									$("<th>"+ T("Beatmap") + "</th>"),
-									$("<th class='right aligned'>"+ T("Plays") + "</th>")
-							)
+	var first = defaultScoreTable.clone(true).addClass("red");
+
+	recentFilter(recent);
+
+	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green profile-table' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
+		.append(
+			$('<tbody />')
+		)
+		.append(
+			$("<tfoot />").append(
+				$("<tr />").append(
+					$("<th colspan=2 />").append(
+						$("<div class='ui floated pagination' />").append(
+							$("<a class='ui button load-more inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
+						)
 					)
+				)
 			)
-			.append(
-					$('<tbody />')
-			)
-			.append(
-					$("<tfoot />").append(
-							$("<tr />").append(
-									$("<th colspan=2 />").append(
-											$("<div class='ui floated pagination' />").append(
-													$("<a class='ui button load-more inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
-											).append(
-												$(`<div class="ui label inverted violet" style="background-color: #A291FB !important" id="mostplayedbmaps-${mode}-${preferRelax}">0</div>`)
-											)
-									)
-							)
-					)
-			)
+		)
 	best.attr("data-type", "best");
 	recent.attr("data-type", "recent");
 	first.attr("data-type", "first");
@@ -507,9 +597,9 @@ function initialiseScores(el, mode) {
 	first.addClass("no bottom margin");
 	el.append($("<div class='ui segments no bottom margin' />").append(
 		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
-		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
+		$("<div class='ui segment' />").append('<h4 id="mostplayed-text" class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
 		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
-		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
+		$("<div class='ui segment' />").append('<h4 id="firstplace-text" class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
 	));
 	loadScoresPage("best", mode);
 	loadScoresPage("recent", mode);
@@ -524,6 +614,9 @@ function loadMoreClick() {
 	var type = t.parents("table[data-type]").data("type");
 	var mode = t.parents("div[data-mode]").data("mode");
 	loadScoresPage(type, mode);
+	if (type === 'recent') {
+		filterRecentScores();
+	}
 }
 function loadMoreMostPlayed() {
 	var t = $(this);
@@ -535,24 +628,28 @@ function loadMoreMostPlayed() {
 }
 // currentPage for each mode
 var currentPage = {
-	0: {0: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		1: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		2: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		3: {best: 0, recent: 0, mostPlayed: 0, first: 0}
+	0: {
+		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
 	},
-	1: {0: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		1: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		2: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		3: {best: 0, recent: 0, mostPlayed: 0, first: 0}
+	1: {
+		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
 	},
-	2: {0: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		1: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		2: {best: 0, recent: 0, mostPlayed: 0, first: 0},
-		3: {best: 0, recent: 0, mostPlayed: 0, first: 0}
+	2: {
+		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
 	}
 };
 
 var scoreStore = {};
+const DIFF_MAX_LEN = 32;
 function loadScoresPage(type, mode) {
 	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=" + type + "] tbody");
 	var page = ++currentPage[preferRelax][mode][type];
@@ -569,48 +666,55 @@ function loadScoresPage(type, mode) {
 		l: limit,
 		rx: preferRelax,
 		id: userID
-	}, function(r) {
+	}, function (r) {
 		if (r.scores == null) {
 			disableLoadMoreButton(type, mode);
 			return;
-		} else {
-            disableLoadMoreButton(type, mode, true);
-        }
-		if (type == "first"){
-			if (currentPage[preferRelax][mode].first > 1) {
-				var current = parseInt(document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML.slice(0, -6))
-				document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML = `${current - r.scores.length} more!`;
-			} else {
-				document.getElementById(`firstplaces-${mode}-${preferRelax}`).innerHTML = `${r.total - r.scores.length} more!`;
-			}
 		}
-		r.scores.forEach(function(v, idx){
+		if (type == "first") {
+			//screw jqery, webjs god
+			document.getElementById("firstplace-text").innerHTML = '<i class="trophy icon"></i>' + T("First Places") + ` (${r.total})`;
+		}
+		r.scores.forEach(function (v, idx) {
 			scoreStore[v.id] = v;
 			var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
 			var scoreRankIcon = "<img src='/static/ranking-icons/ranking-" + scoreRank + "-small.png' class='score rank' alt='" + scoreRank + "'> ";
 			var rowColor = '';
 			// Please at least credit if you steal this :(
-			if (v.completed < 2){
+			if (v.completed < 2) {
 				var StyleCol = "#6b201f"; // jajajaja
 			} else {
 				var StyleCol = "#212121";
 			}
-			
+
 			if (type === 'recent') {
 				rowColor = v.completed === 3 ? 'positive' : v.completed < 2 ? 'error' : '';
 			}
-			table.append($("<tr class='new score-row " + rowColor + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://assets.ppy.sh/beatmaps/" + v.beatmap.beatmapset_id + "/covers/cover.jpg) no-repeat right !important; background-size: cover !important;' />").append(
+
+			// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
+			let song_name_f = v.beatmap.song_name;
+			let fufrieu = song_name_f.split("[");
+			let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
+			let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
+			let failedClass = v.completed < 2 ? "score-failed-recent" : "";
+
+			if (diff_name.length > DIFF_MAX_LEN) {
+				// Heck. Gotta reconstruct the bmap name.
+				v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
+			}
+
+			table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg?filter=blurgaussian&smooth=1) no-repeat right !important; background-size: cover !important;' />").append(
 				$(
 					"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
 					escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
 					"<div class='subtitle'><time class='new timeago' datetime='" + v.time + "'>" + v.time + "</time></div></td>"
 				),
-				$("<td><b>" + ppOrScore(v.pp, v.score) + "</b> " + weightedPP(type, page, idx, v.pp) +	(v.completed == 3 ? "<br>" + downloadStar(v.id) : "") +	"</td>")
+				$("<td><b>" + ppOrScore(v.pp, v.score, v.beatmap.ranked) + "</b> " + weightedPP(type, page, idx, v.pp) + (v.completed == 3 ? "<br>" + downloadStar(v.id) : "") + "</td>")
 			));
 		});
 		$(".new.timeago").timeago().removeClass("new");
 		$(".new.score-row").click(viewScoreInfo).removeClass("new");
-		$(".new.downloadstar").click(function(e) {
+		$(".new.downloadstar").click(function (e) {
 			e.stopPropagation();
 		}).removeClass("new");
 		var enable = true;
@@ -627,13 +731,80 @@ function weightedPP(type, page, idx, pp) {
 		return "";
 	var perc = Math.pow(0.95, ((page - 1) * 20) + idx);
 	var wpp = pp * perc;
-	return "<i title='Weighted PP, " + Math.round(perc*100) + "%'>(" + wpp.toFixed(2) + "pp)</i>";
+	return "<i title='Weighted PP, " + Math.round(perc * 100) + "%'>(" + wpp.toFixed(2) + "pp)</i>";
 }
 function disableLoadMoreButton(type, mode, enable) {
 	var button = $("#scores-zone div[data-mode=" + mode + "] table[data-type=" + type + "] .load-more-button");
 	if (enable) button.removeClass("disabled");
 	else button.addClass("disabled");
 }
+
+function getScoreModsHtml(e, t) {
+	var n = [];
+	return 512 == (512 & e) && (e &= -65), 16384 == (16384 & e) && (e &= -33), modsHtml.forEach(function (t, i) {
+		(e & 1 << i) > 0 && n.push(t)
+	}), n.length > 0 ? (t ? "" : "+ ") + n.join(" ") : t ? T("") : ""
+}
+
+var modsHtml = [
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png'>",
+	"NV",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_relax.dbcfb8d8.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>",
+	"AU",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_autopilot.31c6ca71.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png'>",
+	"K4",
+	"K5",
+	"K6",
+	"K7",
+	"K8",
+	"K9",
+	"RN",
+	"LM",
+	"K9",
+	"K0",
+	"K1",
+	"K3",
+	"K2"
+]
+
+function timeSince(date) {
+
+	var seconds = Math.floor((new Date() - date) / 1000);
+
+	var interval = seconds / 31536000;
+
+	if (interval > 1) {
+		return Math.floor(interval) + " years ago";
+	}
+	interval = seconds / 2592000;
+	if (interval > 1) {
+		return Math.floor(interval) + " months ago";
+	}
+	interval = seconds / 86400;
+	if (interval > 1) {
+		return Math.floor(interval) + " days ago";
+	}
+	interval = seconds / 3600;
+	if (interval > 1) {
+		return Math.floor(interval) + " hours ago";
+	}
+	interval = seconds / 60
+	if (interval > 1) {
+		return Math.floor(interval) + " minutes ago";
+	}
+	return "now"
+}
+
 function viewScoreInfo() {
 	var scoreid = $(this).data("scoreid");
 	if (!scoreid && scoreid !== 0) return;
@@ -642,19 +813,16 @@ function viewScoreInfo() {
 
 	// data to be displayed in the table.
 	var data = {
-		"Points":			 addCommas(s.score),
-		"PP":					 addCommas(s.pp),
-		"Beatmap":			"<a href='/beatmaps/" + s.beatmap.beatmap_id + "'>" + escapeHTML(s.beatmap.song_name) + "</a>",
-		"Accuracy":		 s.accuracy + "%",
-		"Max combo":		addCommas(s.max_combo) + "/" + addCommas(s.beatmap.max_combo)
-											+ (s.full_combo ? " " + T("(full combo)") : ""),
-		"Difficulty":	 T("{{ stars }} star", {
-			stars: s.beatmap.difficulty2[modesShort[s.play_mode]],
-			count: Math.round(s.beatmap.difficulty2[modesShort[s.play_mode]]),
-	 }),
-		"Mods":				 getScoreMods(s.mods, true),
-		"Passed":			 T(s.completed >= 2 ? "Yes" : "No"),
-		"Personal high score": T(s.completed === 3 ? "Yes" : "No")
+		"Score": addCommas(s.score),
+		"PP": addCommas(s.pp.toFixed(2)),
+		"Beatmap": "<a href='/beatmaps/" + s.beatmap.beatmap_id + "'>" + escapeHTML(s.beatmap.song_name) + "</a>",
+		"Accuracy": s.accuracy.toFixed(2) + "%",
+		"Max Combo": addCommas(s.max_combo) + "/" + addCommas(s.beatmap.max_combo) + "x" + (s.full_combo || s.max_combo > 0.97 * (s.beatmap.max_combo)
+			&& s.count_miss == 0 ? " " + T("(FC)") : ""),
+		"Difficutly": `${s.beatmap.difficulty2[modesShort[s.play_mode]].toFixed(2)}` + ' <i class="fas fa-star"></i>',
+		"Mods": getScoreModsHtml(s.mods, true),
+		"Passed": T(s.completed >= 2 ? "Yes" : "No"),
+		"Personal Best": T(s.completed === 3 ? "Yes" : "No")
 	};
 
 	// hits data
@@ -667,18 +835,17 @@ function viewScoreInfo() {
 		s.count_geki,
 		s.count_katu,
 		s.count_miss,
-	].forEach(function(val, i) {
-		hd[trans[i]] = val;
+	].forEach(function (val, i) {
+		data[trans[i]] = val;
 	});
 
-	data = $.extend(data, hd, {
-		"Ranked?":			T(s.completed == 3 ? "Yes" : "No"),
-		"Achieved":		 s.time,
-		"Mode":				 modes[s.play_mode],
+	data = $.extend(data, {
+		"Achieved": timeSince(Date.parse(s.time)),
+		"Mode": modes[s.play_mode],
 	});
 
 	var els = [];
-	$.each(data, function(key, value) {
+	$.each(data, function (key, value) {
 		els.push(
 			$("<tr />").append(
 				$("<td>" + T(key) + "</td>"),
@@ -714,7 +881,7 @@ var modeTranslations = [
 		"Ticks (100s)",
 		"Droplets",
 		"Gekis",
-		"Droplet misses",
+		"Droplet Misses",
 		"Misses"
 	],
 	[
@@ -728,7 +895,7 @@ var modeTranslations = [
 ];
 
 function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
-	var total = c300+c100+c50+cmiss;
+	var total = c300 + c100 + c50 + cmiss;
 
 	// Hidden | Flashlight | FadeIn
 	var hdfl = (mods & (1049608)) > 0;
@@ -736,7 +903,7 @@ function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
 	var ss = hdfl ? "SSHD" : "SS";
 	var s = hdfl ? "SHD" : "S";
 
-	switch(gameMode) {
+	switch (gameMode) {
 		case 0:
 		case 1:
 			var ratio300 = c300 / total;
@@ -797,9 +964,11 @@ function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
 	}
 }
 
-function ppOrScore(pp, score) {
+function ppOrScore(pp, score, ranked) {
+	const txt = ranked == 5 ? " <i class='heart icon small'></i>" : "pp";
+
 	if (pp != 0)
-		return addCommas(pp.toFixed(2)) + "pp";
+		return addCommas(pp.toFixed(2)) + txt;
 	return addCommas(score);
 }
 
