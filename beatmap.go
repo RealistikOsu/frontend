@@ -2,42 +2,43 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"sort"
 	"strconv"
-        "errors"
-	"math/rand"
-  	//"time"
+
+	//"time"
 
 	"github.com/gin-gonic/gin"
 	//"github.com/osuripple/cheesegull/models"
 )
 
 type Beatmap struct {
-	BeatmapSetID int `json:"beatmapset_id,string"`
-	BeatmapID int `json:"beatmap_id,string"`
-	Approved int `json:"approved,string"`
-	TotalLength int `json:"total_length,string"`
-	HitLength int `json:"hit_length,string"`
-	Version string `json:"version"`
-	FileMD5 string `json:"file_md5"`
-	CS float32 `json:"diff_size,string"`
-	OD float32 `json:"diff_overall,string"`
-	AR float32 `json:"diff_approach,string"`
-	HP float32 `json:"diff_drain,string"`
-	Mode int `json:"mode,string"`
-	Artist string `json:"artist"`
-	Title string `json:"title"`
-	Creator string `json:"creator"`
-	CreatorID int `json:"creator_id,string"`
-	BPM float64 `json:"bpm,string"`
-	Source string `json:"source"`
-	MaxCombo int `json:"max_combo,string"`
+	BeatmapSetID     int     `json:"beatmapset_id,string"`
+	BeatmapID        int     `json:"beatmap_id,string"`
+	Approved         int     `json:"approved,string"`
+	TotalLength      int     `json:"total_length,string"`
+	HitLength        int     `json:"hit_length,string"`
+	Version          string  `json:"version"`
+	FileMD5          string  `json:"file_md5"`
+	CS               float32 `json:"diff_size,string"`
+	OD               float32 `json:"diff_overall,string"`
+	AR               float32 `json:"diff_approach,string"`
+	HP               float32 `json:"diff_drain,string"`
+	Mode             int     `json:"mode,string"`
+	Artist           string  `json:"artist"`
+	Title            string  `json:"title"`
+	Creator          string  `json:"creator"`
+	CreatorID        int     `json:"creator_id,string"`
+	BPM              float64 `json:"bpm,string"`
+	Source           string  `json:"source"`
+	MaxCombo         int     `json:"max_combo,string"`
 	DifficultyRating float64 `json:"difficultyrating,string"`
-	Playcount int `json:"playcount,string"`
-	Passcount int `json:"passcount,string"`
+	Playcount        int     `json:"playcount,string"`
+	Passcount        int     `json:"passcount,string"`
 }
 
 type beatmapPageData struct {
@@ -45,7 +46,7 @@ type beatmapPageData struct {
 
 	Found      bool
 	ReqBeatmap Beatmap
-	Beatmaps []Beatmap
+	Beatmaps   []Beatmap
 	SetJSON    string
 }
 
@@ -100,7 +101,7 @@ var API_KEYS = []string{"bb79d81daaefcfa10ed39136db4fe997cbec38ea", "6c9c565908a
 // 		err = db.QueryRow(fmt.Sprintf("SELECT difficulty_%s, song_name, file_name FROM beatmaps WHERE beatmap_md5 = ?", suffix), b.FileMD5).Scan(&b.DifficultyRating, &song_name, &file_name)
 // 		if file_name == "" && song_name == "" {
 // 			b.DiffName = "Unknown"
-// 		} 
+// 		}
 // 		if file_name == "" {
 // 			index := strings.Index(song_name, "[")
 // 			b.DiffName = song_name[index+1 : len(song_name)-1]
@@ -118,7 +119,6 @@ var API_KEYS = []string{"bb79d81daaefcfa10ed39136db4fe997cbec38ea", "6c9c565908a
 // 	bset.ChildrenBeatmaps = bmaps
 // 	return bset, nil
 // }
-
 
 func beatmapInfo(c *gin.Context) {
 	data := new(beatmapPageData)
@@ -155,7 +155,7 @@ func beatmapInfo(c *gin.Context) {
 		return
 	}
 
-	for i, _ := range data.Beatmaps {
+	for i := range data.Beatmaps {
 		err := db.QueryRow("SELECT playcount, passcount FROM beatmaps WHERE beatmap_md5 = ?", data.Beatmaps[i].FileMD5).Scan(&data.Beatmaps[i].Playcount, &data.Beatmaps[i].Passcount)
 		if err != nil {
 			data.Beatmaps[i].Playcount = 0
@@ -178,7 +178,7 @@ func beatmapInfo(c *gin.Context) {
 }
 
 func getBeatmapData(b string) (beatmap Beatmap, err error) {
-	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k="+API_KEYS[rand.Intn(len(API_KEYS))]+"&b="+b)
+	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&b=" + b)
 	if err != nil {
 		return beatmap, err
 	}
@@ -203,7 +203,7 @@ func getBeatmapData(b string) (beatmap Beatmap, err error) {
 
 func getBeatmapSetData(parentID string) (bset []Beatmap, err error) {
 	//rand.Seed(time.Now().Unix())
-	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k="+API_KEYS[rand.Intn(len(API_KEYS))]+"&s="+parentID)
+	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&s=" + parentID)
 	if err != nil {
 		return bset, err
 	}

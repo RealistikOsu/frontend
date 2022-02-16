@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/RealistikOsu/FrontendPriv/services"
 	"github.com/thehowl/cieca"
-	"github.com/RealistikOsu/hanayo/services"
 	"zxq.co/x/rs"
 )
 

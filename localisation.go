@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/RealistikOsu/hanayo/modules/locale"
+	"github.com/RealistikOsu/FrontendPriv/modules/locale"
 	"github.com/gin-gonic/gin"
 )
 

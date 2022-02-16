@@ -14,11 +14,11 @@ import (
 
 	"math/rand"
 
-	"github.com/RealistikOsu/hanayo/modules/btcaddress"
-	"github.com/RealistikOsu/hanayo/modules/btcconversions"
-	"github.com/RealistikOsu/hanayo/routers/pagemappings"
-	"github.com/RealistikOsu/hanayo/services"
-	"github.com/RealistikOsu/hanayo/services/cieca"
+	"github.com/RealistikOsu/FrontendPriv/modules/btcaddress"
+	"github.com/RealistikOsu/FrontendPriv/modules/btcconversions"
+	"github.com/RealistikOsu/FrontendPriv/routers/pagemappings"
+	"github.com/RealistikOsu/FrontendPriv/services"
+	"github.com/RealistikOsu/FrontendPriv/services/cieca"
 	"github.com/fatih/structs"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sessions"

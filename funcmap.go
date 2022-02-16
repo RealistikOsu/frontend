@@ -15,16 +15,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/FrontendPriv/modules/bbcode"
+	"github.com/RealistikOsu/FrontendPriv/modules/btcaddress"
+	"github.com/RealistikOsu/FrontendPriv/modules/doc"
+	fasuimappings "github.com/RealistikOsu/FrontendPriv/modules/fa-semantic-mappings"
 	"github.com/RealistikOsu/RealistikAPI/common"
-	"github.com/RealistikOsu/hanayo/modules/bbcode"
-	"github.com/RealistikOsu/hanayo/modules/btcaddress"
-	"github.com/RealistikOsu/hanayo/modules/doc"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/russross/blackfriday"
 	"github.com/thehowl/qsql"
-	"golang.org/x/oauth2"
 	"zxq.co/ripple/playstyle"
 )
 
@@ -452,9 +452,9 @@ var funcMap = template.FuncMap{
 	// systemSetting retrieves some information from the table system_settings
 	"systemSettings": systemSettings,
 	// authCodeURL gets the auth code for discord
-	"authCodeURL": func(u int) string {
-		return getDiscord().AuthCodeURL(mustCSRFGenerate(u))
-	},
+	// "authCodeURL": func(u int) string {
+	// 	return getDiscord().AuthCodeURL(mustCSRFGenerate(u))
+	// },
 	// perc returns a percentage
 	"perc": func(i, total float64) string {
 		return fmt.Sprintf("%.0f", i/total*100)
@@ -599,15 +599,15 @@ func systemSettings(names ...string) map[string]systemSetting {
 	return settings
 }
 
-func getDiscord() *oauth2.Config {
-	return &oauth2.Config{
-		ClientID:     config.DiscordOAuthID,
-		ClientSecret: config.DiscordOAuthSecret,
-		RedirectURL:  config.BaseURL + "/settings/discord/finish",
-		Endpoint:     discordoauth.Endpoint,
-		Scopes:       []string{"identify"},
-	}
-}
+// func getDiscord() *oauth2.Config {
+// 	return &oauth2.Config{
+// 		ClientID:     config.DiscordOAuthID,
+// 		ClientSecret: config.DiscordOAuthSecret,
+// 		RedirectURL:  config.BaseURL + "/settings/discord/finish",
+// 		Endpoint:     discordoauth.Endpoint,
+// 		Scopes:       []string{"identify"},
+// 	}
+// }
 
 func getLanguageFromGin(c *gin.Context) string {
 	for _, l := range getLang(c) {
