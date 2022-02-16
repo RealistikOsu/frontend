@@ -19,14 +19,12 @@ import (
 	"github.com/RealistikOsu/hanayo/modules/bbcode"
 	"github.com/RealistikOsu/hanayo/modules/btcaddress"
 	"github.com/RealistikOsu/hanayo/modules/doc"
-	"github.com/RealistikOsu/hanayo/modules/fa-semantic-mappings"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/russross/blackfriday"
 	"github.com/thehowl/qsql"
 	"golang.org/x/oauth2"
-	"zxq.co/ripple/go-discord-oauth"
 	"zxq.co/ripple/playstyle"
 )
 
