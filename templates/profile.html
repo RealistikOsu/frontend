@@ -217,7 +217,12 @@
 						<div style="margin-top: 1rem;margin-bottom: 1rem;">
 
 							<h1 id="rainbow" class="ui header">
-								<span id="highlight" style="font-size: 40px;font-weight:normal;">{{ .username }} <a href="/leaderboard?c={{ .country }}"><img src="https://ussr.pl/static/flags/{{ .country }}.png" width="30"></a></span>
+								<span id="highlight" style="font-size: 40px;font-weight:normal;">
+									{{ .username }}
+									<a data-tooltip="{{ countryReadable .country }}" href="/leaderboard?c={{ .country }}">
+										<img style="margin-bottom: -0.14em" src="/static/images/new-flags/flag-{{ stringLower .country }}.svg" width="35">
+									</a>
+								</span>
 							</h1>
 							{{ $oof := . }}
 							{{ if ne $oof.clan.name "" }}

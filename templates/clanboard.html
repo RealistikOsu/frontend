@@ -5,9 +5,9 @@ KyutGrill=leaderboard2.jpg
 */}}
 {{ define "tpl" }}
 
-{{ $favMode := _or (atoi (.Gin.Query "mode")) }}
-{{ $page := _or (atoi (.Gin.Query "p")) (float 1) }}
-{{ $relax := _or (atoi (.Gin.Query "rx")) }}
+{{ $favMode := .Gin.Query "mode" }}
+{{ $page := atoi (.Gin.Query "p") }}
+{{ $relax := .Gin.Query "rx" }}
 <script>
 	var favouriteMode = {{ $favMode }};
 	var mode = {{ $favMode }};
@@ -84,7 +84,7 @@ KyutGrill=leaderboard2.jpg
 					#<% clan.rank %>
 				</td>
 				<td>
-					<a title='View Clan' :href="'/c/'+clan.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
+					<a title='View Clan' :href="'/c/'+clan.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
 						<% clan.name %>
 					</a>
 				</td>

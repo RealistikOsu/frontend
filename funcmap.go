@@ -179,6 +179,7 @@ var funcMap = template.FuncMap{
 	},
 	// countryReadable converts a country's ISO name to its full name.
 	"countryReadable": countryReadable,
+	"stringLower": strings.ToLower,
 	"country": func(s string, name bool) template.HTML {
 		var c string
 		if name {
@@ -186,8 +187,9 @@ var funcMap = template.FuncMap{
 			if c == "" {
 				return ""
 			}
+			return template.HTML(fmt.Sprintf(`<img class="new-flag nopad" src="/static/images/new-flags/flag-%s.svg"> %s`, strings.ToLower(s), c))
 		}
-		return template.HTML(fmt.Sprintf(`<img class="new-flag nopad" src="https://ussr.pl/static/flags/%s.png"> %s`, strings.ToUpper(s), c))
+		return template.HTML(fmt.Sprintf(`<img class="new-flag nopad" src="/static/images/new-flags/flag-%s.svg">`, strings.ToLower(s)))
 	},
 	// humanize pretty-prints a float, e.g.
 	//     humanize(1000) == "1,000"

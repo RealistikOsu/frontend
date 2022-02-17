@@ -310,7 +310,6 @@ func generateEngine() *gin.Engine {
 
 	r.GET("/beatmapsets/:bsetid", func(c *gin.Context) {
 		bsetid := c.Param("bsetid")
-		fmt.Println(bsetid)
 		data, err := getBeatmapSetData(bsetid)
 
 		if err != nil {

@@ -2,11 +2,12 @@ package main
 
 import (
 	"database/sql"
-	"strconv"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math/rand"
+	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // TODO: replace with simple ResponseInfo containing userid
@@ -15,14 +16,13 @@ type clanData struct {
 	ClanID int
 }
 
-
 func leaveClan(c *gin.Context) {
 	i := c.Param("cid")
 	// login check
 	if getContext(c).User.ID == 0 {
-			resp403(c)
-			return
-		}
+		resp403(c)
+		return
+	}
 	if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ? AND clan = ? AND perms = 8", getContext(c).User.ID, i).
 		Scan(new(int)) == sql.ErrNoRows {
 		// ดูว่าคนนี้มีแคลนหรือยัง
@@ -75,20 +75,20 @@ func leaveClan(c *gin.Context) {
 		for _, user := range users_list {
 			rd.Publish("rosu:clan_update", strconv.Itoa(user))
 		}
-		
+
 		addMessage(c, successMessage{T(c, "Your clan has been disbanded")})
 		getSession(c).Save()
 		c.Redirect(302, "/clans?mode=0")
 	}
-	
+
 }
 
 func clanPage(c *gin.Context) {
 	var (
-		clanID           int
-		clanName         string
-		clanDescription  string
-		clanIcon         string
+		clanID          int
+		clanName        string
+		clanDescription string
+		clanIcon        string
 	)
 
 	// ctx := getContext(c)
@@ -134,28 +134,28 @@ func clanPage(c *gin.Context) {
 
 	data.TitleBar = T(c, "%s's Clan Page", clanName)
 	data.DisableHH = true
-	// data.Scripts = append(data.Scripts, "/static/profile.js")
+	data.Scripts = append(data.Scripts, "/static/clan.js")
 }
 
 func checkCount(rows *sql.Rows) (count int) {
- 	for rows.Next() {
-    	err:= rows.Scan(&count)
-    	if err != nil {
+	for rows.Next() {
+		err := rows.Scan(&count)
+		if err != nil {
 			panic(err)
 		}
-    }   
-    return count
+	}
+	return count
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func randSeq(n int) string {
-	rand.Seed(time.Now().UnixNano()+int64(3))
-    b := make([]rune, n)
-    for i := range b {
-        b[i] = letters[rand.Intn(len(letters))]
-    }
-    return string(b)
+	rand.Seed(time.Now().UnixNano() + int64(3))
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
 func createInvite(c *gin.Context) {
@@ -171,14 +171,14 @@ func createInvite(c *gin.Context) {
 			resp403(c)
 			return
 		}
-		
+
 		tag := ""
 		if c.PostForm("tag") != "" {
 			tag = c.PostForm("tag")
 		}
-		
+
 		if db.QueryRow("SELECT 1 FROM clans WHERE tag = ? AND id != ?", c.PostForm("tag"), clan).
-		Scan(new(int)) != sql.ErrNoRows {
+			Scan(new(int)) != sql.ErrNoRows {
 			resp403(c)
 			addMessage(c, errorMessage{T(c, "Someone already used that TAG! Please try another!")})
 			return
@@ -246,11 +246,11 @@ func createInvite(c *gin.Context) {
 			resp403(c)
 			return
 		}
-		
+
 		db.Exec("DELETE FROM clans_invites WHERE clan = ?", clan)
-		
+
 		var s string
-		
+
 		s = randSeq(8)
 
 		db.Exec("INSERT INTO clans_invites(clan, invite) VALUES (?, ?)", clan, s)
@@ -260,44 +260,43 @@ func createInvite(c *gin.Context) {
 	c.Redirect(302, "/settings/clansettings")
 }
 
-
 func clanInvite(c *gin.Context) {
 	i := c.Param("inv")
-	
+
 	res := resolveInvite(i)
 	s := strconv.Itoa(res)
 	if res != 0 {
-	
+
 		// ไอ้บ้านี้มันล็อกอินยัง
 		if getContext(c).User.ID == 0 {
 			resp403(c)
 			return
 		}
-	
+
 		// เห้ยไอ้นี้โดนแบนปะวะ
-		if getContext(c).User.Privileges & 1 != 1 {
+		if getContext(c).User.Privileges&1 != 1 {
 			resp403(c)
 			return
 		}
-		
+
 		// มีแคลนนี้ปะวะเนี่ย
-			if db.QueryRow("SELECT 1 FROM clans WHERE id = ?", res).
+		if db.QueryRow("SELECT 1 FROM clans WHERE id = ?", res).
 			Scan(new(int)) == sql.ErrNoRows {
 
-				addMessage(c, errorMessage{T(c, "Seems like we don't found that clan.")})
-				getSession(c).Save()
-				c.Redirect(302, "/c/"+s)
-				return
-			}
+			addMessage(c, errorMessage{T(c, "Seems like we don't found that clan.")})
+			getSession(c).Save()
+			c.Redirect(302, "/c/"+s)
+			return
+		}
 		// ไอ้เหี้ยนี้อยู่ในแคลนปะวะ?
-			if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ?", getContext(c).User.ID).
+		if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ?", getContext(c).User.ID).
 			Scan(new(int)) != sql.ErrNoRows {
-				
-				addMessage(c, errorMessage{T(c, "Seems like you're already in the clan.")})
-				getSession(c).Save()
-				c.Redirect(302, "/c/"+s)
-				return
-			}
+
+			addMessage(c, errorMessage{T(c, "Seems like you're already in the clan.")})
+			getSession(c).Save()
+			c.Redirect(302, "/c/"+s)
+			return
+		}
 
 		// ควยไรสัส
 		var count int
@@ -330,10 +329,10 @@ func clanKick(c *gin.Context) {
 	}
 
 	if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ? AND perms = 8", getContext(c).User.ID).
-			Scan(new(int)) == sql.ErrNoRows {
-				resp403(c)
-				return
-			}
+		Scan(new(int)) == sql.ErrNoRows {
+		resp403(c)
+		return
+	}
 
 	member, err := strconv.ParseInt(c.PostForm("member"), 10, 32)
 	if err != nil {
@@ -345,10 +344,10 @@ func clanKick(c *gin.Context) {
 	}
 
 	if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ? AND perms = 1", member).
-			Scan(new(int)) == sql.ErrNoRows {
-				resp403(c)
-				return
-			}
+		Scan(new(int)) == sql.ErrNoRows {
+		resp403(c)
+		return
+	}
 
 	db.Exec("DELETE FROM user_clans WHERE user = ?", member)
 	rd.Publish("rosu:clan_update", c.PostForm("member"))
@@ -357,14 +356,14 @@ func clanKick(c *gin.Context) {
 	c.Redirect(302, "/settings/clansettings")
 }
 
-func resolveInvite(c string)(int) {
+func resolveInvite(c string) int {
 	var clanid int
 	row := db.QueryRow("SELECT clan FROM clans_invites WHERE invite = ?", c)
-		err := row.Scan(&clanid)
-		
-		if err != nil {
-			fmt.Println(err)
-		}
+	err := row.Scan(&clanid)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(clanid)
 	return clanid
 }

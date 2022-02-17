@@ -53,8 +53,12 @@ new Vue({
                 window.event.preventDefault();
             }
             vm.load = true;
-            vm.mode = mode;
-            vm.relax = relax;
+            
+            if (mode) 
+                vm.mode = mode;
+            if (relax)
+                vm.relax = relax;
+
             switch(mode) {
                 case 'taiko':
                     vm.modeInt = 1;

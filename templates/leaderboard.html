@@ -6,11 +6,11 @@ KyutGrill=leaderboard2.jpg
 {{ define "tpl" }}
 
 {{ $user := . }}
-{{ $favMode := _or ((.Gin.Query "m") (string "std")) }}
-{{ $rxMode := _or ((.Gin.Query "rx") (string "vn")) }}
-{{ $sortType := _or ((.Gin.Query "sort") (string "pp")) }}
-{{ $country := _or (.Gin.Query "c") }}
-{{ $page := _or (atoi (.Gin.Query "p")) (float 1) }}
+{{ $favMode := .Gin.Query "m" }}
+{{ $rxMode := .Gin.Query "rx" }}
+{{ $sortType := .Gin.Query "sort" }}
+{{ $country := .Gin.Query "c" }}
+{{ $page := atoi (.Gin.Query "p") }}
 <script type='text/javascript'>
 	var mode = {{ $favMode }}.toLowerCase();
 	if (mode == "") {
@@ -24,7 +24,7 @@ KyutGrill=leaderboard2.jpg
 	var sort = {{ $sortType }}.toLowerCase();
 	if (sort == "")
 		sort = "pp";
-	var country = {{ $country }};
+	var country = {{ $country }}.toUpperCase();
 </script>
 
 <script src="/static/vue/vue.js"></script>
@@ -72,7 +72,10 @@ KyutGrill=leaderboard2.jpg
 	</div>
 	<div class="ui twelve item stackable menu">
 		{{ range countryList 11 }}
-			<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{.}}'" :class="'item lb-country '+(country == '{{.}}' ? 'active ' : '')" @click="loadLeaderboardData(sort, mode, relax, 1, '{{.}}')"><img class="new-flag nopad" src="https://ussr.pl/static/flags/{{.}}.png"></img></a>
+			{{ $code := . }}
+			{{ with country . false }}
+				<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{$code}}'" :class="'item lb-country '+(country == '{{$code}}' ? 'active ' : '')" @click="loadLeaderboardData(sort, mode, relax, 1, '{{$code}}')">{{.}}</a>
+			{{ end }}
 		{{ end }}
 		<a class="item" id="country-chooser-modal">...</a>
 	</div>
@@ -113,9 +116,14 @@ KyutGrill=leaderboard2.jpg
 					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
-					<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
-						<img class='new-flag' :src="'https://ussr.pl/static/flags/'+user.country+'.png'"><% user.username %>
-					</a>
+					<div style="display: inline; white-space:nowrap">
+						<a :data-tooltip="countryName(user.country)" :href="'/leaderboard?c='+user.country">
+							<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
+						</a>
+						<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
+							<% user.username %>
+						</a>
+					</div>
 				</td>
 				<td class="center aligned" v-if="sort == 'pp'">
 					<b><% addCommas(user.chosen_mode.pp) %>pp</b>

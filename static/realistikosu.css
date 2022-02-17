@@ -1078,8 +1078,25 @@ body {
 
 /*new osu style flags*/
 .new-flag {
-    width: 16px;
+    width: 20px;
     margin-right: 0.5em;
+}
+
+.l-player td div a {
+    display: block !important;
+    position: relative;
+    margin: 0 3px;
+}
+
+.l-player td div img {
+    display: inline-block !important;
+    position: relative;
+    top: 50%;
+}
+
+.l-player td div {
+    display: inline-grid !important;
+    grid-template-columns: auto auto;
 }
 
 /* KOLOROWE KRETKI */

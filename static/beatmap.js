@@ -184,9 +184,9 @@ function FillScores(rx) {
           $("<td style='font-size: 15px;' data-sort-value=" + score.accuracy + " />")
             .text(score.accuracy.toFixed(2) + "%"),
           $("<td style='font-size: 15px;' />").html("<a href='/u/" + user.id +
-                                 "' title='View profile'><img src='https://ussr.pl/static/flags/" +
-                                 user.country + ".png' class='new-flag'></img>" +
-                                 escapeHTML(user.username) + "</a>"),
+                                 "' title='View profile'><img src='https://ussr.pl/static/images/new-flags/flag-" +
+                                 user.country.toLowerCase() + ".svg' class='new-flag nopad' style='margin-bottom: -0.25em !important;'></img>" +
+                                 " " + escapeHTML(user.username) + "</a>"),
           $("<td style='font-size: 15px;' data-sort-value=" + score.max_combo + " />")
             .text(addCommas(score.max_combo) + "x"),
           $("<td style='font-size: 15px;' data-sort-value=" + score.pp + " />")

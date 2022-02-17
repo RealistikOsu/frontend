@@ -30,14 +30,6 @@ $(document).ready(function () {
 		if ($(this).hasClass("active"))
 			return;
 
-		setDefaultScoreTable();
-		$("#filter-failed").prop("checked", false)
-		for (let elm of document.getElementsByClassName("score-failed-recent")) {
-			elm.style.removeProperty("display");
-		}
-
-		//$(".recent-load-more").removeClass("disabled");
-
 		preferRelax = $(this).data("rx");
 		$("#clickAutopilot").removeClass("disabled");
 		$("#clickRelax").removeClass("disabled");
@@ -56,6 +48,7 @@ $(document).ready(function () {
 				$("#clickMania").addClass("disabled");
 				break;
 		}
+		initialiseScores($("#scores-zone>div[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]"), favouriteMode)
 		updateChartData(favouriteMode, preferRelax);
 		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
 		$("[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
@@ -66,20 +59,11 @@ $(document).ready(function () {
 		$(this).addClass("active");
 		window.history.replaceState('', document.title, `${wl.pathname}?mode=${favouriteMode}&rx=${preferRelax}${wl.hash}`)
 
-		$("#filter-failed").change(filterRecentScores);
 	});
 	$("#mode-menu>.item").click(function (e) {
 		e.preventDefault();
 		if ($(this).hasClass("active"))
 			return;
-
-		setDefaultScoreTable();
-		$("#filter-failed").prop("checked", false)
-		for (let elm of document.getElementsByClassName("score-failed-recent")) {
-			elm.style.removeProperty("display");
-		}
-
-		//$(".recent-load-more").removeClass("disabled");
 
 		var m = $(this).data("mode");
 		$("#clickAutopilot").removeClass("disabled");
@@ -102,6 +86,7 @@ $(document).ready(function () {
 				break;
 		}
 		favouriteMode = m;
+		initialiseScores($("#scores-zone>div[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]"), favouriteMode)
 		updateChartData(favouriteMode, preferRelax);
 		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
 		$("[data-mode=" + m + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
@@ -112,8 +97,6 @@ $(document).ready(function () {
 		$(this).addClass("active");
 		window.history.replaceState('', document.title, `${wl.pathname}?mode=${m}&rx=${preferRelax}${wl.hash}`);
 
-
-		$("#filter-failed").change(filterRecentScores);
 	});
 	// This is such a mess...
 	$("#clickAutopilot").removeClass("disabled");
@@ -160,7 +143,6 @@ $(document).ready(function () {
 		});
 	loadOnlineStatus();
 	setInterval(loadOnlineStatus, 10000);
-	$("#filter-failed").change(filterRecentScores);
 });
 
 function updateChartData(mode, rx) {
@@ -382,7 +364,7 @@ function loadMostPlayedBeatmaps(mode) {
 		document.getElementById("mostplayed-text").innerHTML = '<i class="play icon"></i>' + T("Most Played Beatmaps") + ` (${resp.total})`;
 		resp.beatmaps.forEach(function (el, idx) {
 			mostPlayedTable.children('tbody').append(
-				$("<tr style='background: linear-gradient(90deg,#212121,#00000087,#212121), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ el.beatmap.beatmapset_id +"/covers/cover.jpg?filter=blurgaussian&smooth=1) no-repeat right !important; background-size: cover !important;' />").append(
+				$("<tr style='background: linear-gradient(90deg,#212121,#00000087,#212121), url(https://assets.ppy.sh/beatmaps/"+ el.beatmap.beatmapset_id +"/covers/cover.jpg) no-repeat right !important; background-size: cover !important;' />").append(
 					$("<td />").append(
 						//$("<h4 class='ui image header' />").append(
 						//$("<img src='https://assets.ppy.sh/beatmaps/" + el.beatmap.beatmapset_id + "/covers/list.jpg' class='ui mini rounded image'>"),
@@ -541,40 +523,38 @@ i18next.on('loaded', function (loaded) {
 	setDefaultScoreTable();
 });
 
+function recentOnClick() {
+	var value = $('#filter-failed').prop('checked')
+	$("#recent-table").remove()
+	var recent = defaultScoreTable.clone(true).addClass("blue").attr('id', 'recent-table');
+	recentFilter(recent)
+	recent.attr("data-type", "recent");
+	var howManyTimes = currentPage[preferRelax][favouriteMode]["recent"]
+	currentPage[preferRelax][favouriteMode]["recent"] = 0
+
+	$(recent).insertAfter("#recenttable-text")
+	$("#filter-failed").attr('checked', value);
+	for (let i = 0; i < howManyTimes; i++) {
+		loadScoresPage("recent", favouriteMode);
+	}
+}
+
 function recentFilter(recent) {
 	$(recent).find(".load-more-button").parent().append(`
 		<div class="ui checkbox">
-			<input id="filter-failed" type="checkbox">
+			<input onclick="recentOnClick()" id="filter-failed" type="checkbox">
 			<label>Hide failed scores.</label>
 		</div>
     `);
-
-	$(recent).find(".load-more-button").addClass("recent-load-more");
-}
-
-function filterRecentScores() {
-	if ($(this).prop("checked")) {
-		for (let elm of document.getElementsByClassName("score-failed-recent")) {
-			elm.style.setProperty("display", "none", "important");
-		}
-		//$(".recent-load-more").addClass("disabled");
-		return 0;
-	}
-
-	for (let elm of document.getElementsByClassName("score-failed-recent")) {
-		elm.style.removeProperty("display");
-	}
-	$(".recent-load-more").removeClass("disabled");
 }
 
 function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
 	var best = defaultScoreTable.clone(true).addClass("purple");
-	var recent = defaultScoreTable.clone(true).addClass("blue");
+	var recent = defaultScoreTable.clone(true).addClass("blue").attr('id', 'recent-table');
 	var first = defaultScoreTable.clone(true).addClass("red");
 
 	recentFilter(recent);
-
 	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green profile-table' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
 		.append(
 			$('<tbody />')
@@ -595,10 +575,10 @@ function initialiseScores(el, mode) {
 	first.attr("data-type", "first");
 	mostPlayedBeatmapsTable.attr("data-type", "most-played");
 	first.addClass("no bottom margin");
-	el.append($("<div class='ui segments no bottom margin' />").append(
+	el.append($("<div id='scores-container' class='ui segments no bottom margin' />").append(
 		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
 		$("<div class='ui segment' />").append('<h4 id="mostplayed-text" class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
-		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
+		$("<div class='ui segment' />").append('<h4 id="recenttable-text" class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
 		$("<div class='ui segment' />").append('<h4 id="firstplace-text" class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
 	));
 	loadScoresPage("best", mode);
@@ -614,9 +594,6 @@ function loadMoreClick() {
 	var type = t.parents("table[data-type]").data("type");
 	var mode = t.parents("div[data-mode]").data("mode");
 	loadScoresPage(type, mode);
-	if (type === 'recent') {
-		filterRecentScores();
-	}
 }
 function loadMoreMostPlayed() {
 	var t = $(this);
@@ -660,13 +637,13 @@ function loadScoresPage(type, mode) {
 		rx: preferRelax
 	});
 	var limit = type === 'best' ? 10 : 5;
-	api("users/scores/" + type, {
-		mode: mode,
-		p: page,
-		l: limit,
-		rx: preferRelax,
-		id: userID
-	}, function (r) {
+
+	params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID }
+	if ($('#filter-failed').prop('checked') && type === "recent") {
+		params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID, filter: "recent" }
+	}
+
+	api("users/scores/" + type, params, function (r) {
 		if (r.scores == null) {
 			disableLoadMoreButton(type, mode);
 			return;
@@ -697,13 +674,14 @@ function loadScoresPage(type, mode) {
 			let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
 			let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
 			let failedClass = v.completed < 2 ? "score-failed-recent" : "";
+			let apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
 
 			if (diff_name.length > DIFF_MAX_LEN) {
 				// Heck. Gotta reconstruct the bmap name.
 				v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
 			}
 
-			table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg?filter=blurgaussian&smooth=1) no-repeat right !important; background-size: cover !important;' />").append(
+			table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg"+apiImageParams+") no-repeat right !important; background-size: cover !important;' />").append(
 				$(
 					"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
 					escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
