@@ -1,41 +1,76 @@
+"use strict";
 
-function getScoreModsHtml(e, t) {
-    var n = [];
-    return 512 == (512 & e) && (e &= -65), 16384 == (16384 & e) && (e &= -33), modsHtml.forEach(function(t, i) {
-        (e & 1 << i) > 0 && n.push(t)
-    }), n.length > 0 ? (t ? "" : "+ ") + n.join(" ") : t ? T("") : ""
+const toImageMod = {
+  "NF": "no-fail", "EZ": "easy",
+  "TD": "touchdevice", // Previously used for NV
+  "HD": "hidden", "HR": "hard-rock",
+  "SD": "sudden-death", "DT": "double-time",
+  "RX": "relax", "HT": "half",
+  "NC": "nightcore", "FL": "flashlight",
+  "AU": "auto", "AP": "autopilot",
+  "PF": "perfect", "SO": "spun-out",
+  "K4": "4Kc", "K5": "5Kc",
+  "K6": "6Kc", "K7": "7Kc",
+  "K8": "8Kc", "FI": "fader",
+  "RN": "random", "LM": "",
+  "K9": "9Kc", "K1": "1Kc",
+  "K3": "3Kc", "K2": "2Kc",
+  "S2": "", "MR": "mirror"
+};
+
+function getScoreMods(n) {
+  const modsObj = {
+      "NF": 1, "EZ": 2,
+      "TD": 4, // Previously used for NV
+      "HD": 8, "HR": 16,
+      "SD": 32, "DT": 64,
+      "RX": 128, "HT": 256,
+      "NC": 512, "FL": 1024,
+      "AU": 2048, "AP": 8192,
+      "PF": 16384, "SO": 4096,
+      "K4": 32768, "K5": 65536,
+      "K6": 131072, "K7": 262144,
+      "K8": 524288, "FI": 1048576,
+      "RN": 2097152, "LM": 4194304,
+      "K9": 16777216, "K1": 33554432,
+      "K3": 67108864, "K2": 134217728,
+      "S2": 536870912, "MR": 1073741824
+  };    
+
+  const _modsString = Object.keys(modsObj);
+  const mods = JSON.parse(JSON.stringify(modsObj));
+  const playmods = [];
+
+  // has nc => remove dt
+  if (n & mods.NC) {
+      playmods.push("NC");
+      mods.NC = 0;
+      mods.DT = 0;
+  } else if (n & mods.DT) {
+      playmods.push("DT");
+      mods.NC = 0;
+      mods.DT = 0;
+  }
+
+  // has pf => remove sd
+  if (n & mods.PF) {
+      playmods.push("PF")
+      mods.PF = 0;
+      mods.SD = 0;
+  } else if (n & mods.SD) {
+      playmods.push("SD")
+      mods.PF = 0;
+      mods.SD = 0;
+  }
+
+  for (let mod = 0; mod < _modsString.length; mod++) {
+      if (mods[_modsString[mod]] != 0 && (n & mods[_modsString[mod]])) {
+          playmods.push(_modsString[mod]);
+      }
+  }
+
+  return playmods;
 }
-
-var modsHtml = [
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png'>",
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png'>",
-"NV", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png'>",
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_relax.dbcfb8d8.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png'>",
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>", 
-"AU", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png'>",
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_autopilot.31c6ca71.png'>", 
-"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png'>",
-"K4", 
-"K5", 
-"K6", 
-"K7", 
-"K8", 
-"K9", 
-"RN", 
-"LM", 
-"K9", 
-"K0", 
-"K1", 
-"K3", 
-"K2"
-]
 
 function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
   var total = c300+c100+c50+cmiss;
@@ -43,8 +78,8 @@ function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
   // Hidden | Flashlight | FadeIn
   var hdfl = (mods & (1049608)) > 0;
 
-  var ss = hdfl ? "SSHD" : "SS";
-  var s = hdfl ? "SHD" : "S";
+  var ss = hdfl ? "SS+" : "SS";
+  var s = hdfl ? "S+" : "S";
 
   switch(gameMode) {
     case 0:
@@ -171,9 +206,15 @@ function FillScores(rx) {
       var i = 0;
       data.scores.sort(function(a, b) { return b.Score - a.Score; });
       data.scores.forEach(function(score) {
+
+        const scoreMods = getScoreMods(score.mods);
+        const mods = scoreMods.map(m => 
+          `<img style='height: 18px;width: calc(18px*45/32)' src="https://ussr.pl/static/images/mods/mod_${toImageMod[m]}.png" />`    
+        ).join("");
+
         var user = score.user;
         var scoreRank = getRank(m, score.mods, score.accuracy, score.count_300, score.count_100, score.count_50, score.count_miss);
-        var scoreRankIcon = "<img style='margin-bottom: -2.3px;' src='/static/ranking-icons/ranking-" + scoreRank + "-small.png' class='score rank' alt='" + scoreRank + "'> ";
+        var scoreRankIcon = `<a class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")}">${scoreRank}</a>`
         tb.append($("<tr />").append(
 
           $("<td style='font-size: 15px;' data-sort-value=" + (++i) + " />")
@@ -191,19 +232,9 @@ function FillScores(rx) {
             .text(addCommas(score.max_combo) + "x"),
           $("<td style='font-size: 15px;' data-sort-value=" + score.pp + " />")
             .html(score.pp.toFixed(2)),
-          $("<td />").html(getScoreModsHtml(score.mods, true)),
+          $("<td />").html(mods),
           $("<td style='font-size: 15px;' />").html(timeSince(Date.parse(score.time))),
           $("<td />").html(`<a href="/web/replays/${score.id}" class="downloadstar"><i class="star icon"></i>Get</a>`)));
-          // $("<td data-sort-value=" + score.score + " />")
-          //   .html(addCommas(score.score)),
-          // $("<td />").html(getScoreMods(score.mods, true)),
-          // $("<td data-sort-value=" + score.accuracy + " />")
-          //   .text(score.accuracy.toFixed(2) + "%"),
-          // $("<td data-sort-value=" + score.max_combo + " />")
-          //   .text(addCommas(score.max_combo)),
-          // $("<td data-sort-value=" + score.pp + " />")
-          //   .html(score.pp.toFixed(2)),
-          // $("<td />").html(`<a href="/web/replays/${score.id}" class="downloadstar"><i class="star icon"></i>Get</a>`)));
       });
     });
   }

@@ -1,6 +1,16 @@
 {{ define "tpl" }}
 	{{ $ := . }}
 	{{ if ne .ReqBeatmap.BeatmapSetID 0 }}
+	<head>
+		<meta property="og:type" content="website" />
+		<meta name="theme-color" content="#0f97ff">
+		<meta property="og:url" content="https://ussr.pl/b/{{ .ReqBeatmap.BeatmapID }}" />
+		<meta property="og:title" content="{{ .ReqBeatmap.Artist }} - {{ .ReqBeatmap.Title }} [{{ .ReqBeatmap.Version }}]" />
+		<meta property="og:description" content="Beatmap By: {{ .ReqBeatmap.Creator }} 
+		⭐- {{ printf "%.2f" .ReqBeatmap.DifficultyRating }} | 🎵 - {{ .ReqBeatmap.BPM }}
+		| AR: {{ .ReqBeatmap.AR }} | OD: {{ .ReqBeatmap.OD }} | CS: {{ .ReqBeatmap.CS }} | HP: {{ .ReqBeatmap.HP }} |" />
+		<meta property="og:image" content="https://b.ppy.sh/thumb/{{ .ReqBeatmap.BeatmapSetID }}l.jpg" />
+	</head>
 	<div class="ui container">
 		<div class="ui grey floating icon labeled dropdown button" id="diff-menu">
 			<i class="caret down icon"></i>
@@ -19,7 +29,7 @@
 				{{ end }}
 			</div>
 		</div>
-		<audio id="BeatmapAudio" src="https://api.ussr.pl/beatmaps/preview/{{ .ReqBeatmap.BeatmapSetID }}" preload="auto"></audio>
+		<audio id="BeatmapAudio" src="https://catboy.best/preview/audio/{{ .ReqBeatmap.BeatmapID }}" preload="auto"></audio>
 
 		<div class="ui segments">
 			<div class="ui segment">

@@ -24,11 +24,11 @@ KyutGrill=homepage2.jpg
 		border-radius: 20px;
 		background: rgba(0,0,0,.6);
 	}
-	.content {
+	.main-content {
 		width: 2000px;
 	}
 	@media(max-width:576px) {
-	    .content {
+	    .main-content {
 	        width: ;
 	    }
 	}
@@ -49,7 +49,7 @@ KyutGrill=homepage2.jpg
 	<div class="ui container">
 		<div class="main-block">
 			<div class="woman"></div>
-			<div class="content">
+			<div class="main-content content">
 				<div class="status">
 					<span>
 						<span style="color: #4287f5;" class="counter-text"> {{ .T "%s" (rediget "ripple:registered_users")}} </span> total users
@@ -75,75 +75,14 @@ KyutGrill=homepage2.jpg
 				<div class="buttons">
 					{{ if not .Context.User.ID }}
 						<a href="/register" class="ui button inverted pink">Register</a>
+						<a href="/about" class="ui button inverted green" style="margin-left: 6px;">About Us</a>
 					{{ else }}
 						<a href="/u/{{ .Context.User.ID }}" class="ui button inverted pink">Profile</a>
-					{{end}}
-					<a href="/static/ROS.exe" class="ui button inverted blue" style="margin-left: 6px;">Server Switcher</a>
+						<a href="/connect" class="ui button inverted blue" style="margin-left: 6px;">Connection Methods</a>
+					{{ end }}
 				</div>
 				<div class="js-landing-graph" style="left: 0;"></div>
 			</div>
-			<!-- <canvas id="HomeGraph" height="20" style="position: absolute;"></canvas> -->
-				<script>
-					/*
-					//ok i commented it as im tired
-					//yes yes i know i should put this in a js file or in the head tag but this entire frontend is going to be replaced
-					//so in the end its not gonna matter.
-
-					//ok so first we gonna get the online data yes
-					fetch("https://ussr.pl/api2/onlinehistory")
-					.then(res => res.json())
-					.then((out) => {fetch("https://ussr.pl/api2/onlinehistory")
-                                        .then(res => res.json()
-						Chart.defaults.global.legend.display = false;
-						var ctx = document.getElementById('HomeGraph').getContext('2d');
-						if (out["status"] == 200) {
-							var Stats = out["stats"];
-							var Labels = out["labels"];
-							//var Labels = "";
-						}
-						else {
-							var Stats = [0, 0]; //2 points so we can fill a graph
-							var Labels = ["a", "a"]; //2 points so we can fill a graph
-						}
-						var GraphData = {
-							labels: Labels,
-							datasets: [{
-								label: "Rank",
-								data: Stats,
-								borderWidth: 2,
-								backgroundColor: 'rgba(235, 63, 51, 0.73)',
-								borderWidth: 0,
-								borderColor: 'transparent',
-								pointBorderWidth: 0,
-								pointRadius: 3.5,
-								pointBackgroundColor: 'transparent',
-								pointHoverBackgroundColor: 'rgba(235, 63, 51, 0.73)',
-								fill: "start"
-							}]
-						}
-						var myChart = new Chart(ctx, {
-							type: 'line',
-							data: GraphData,
-							options: {
-								scales: {
-									yAxes: [{
-										ticks: {
-											beginAtZero: true,
-										}
-									}]
-								},
-								legend: {
-									display: false,
-									labels: {
-										fontSize: 0
-									}
-								},
-							}
-						});
-					})
-					.catch(err => { throw err; console.log("hahayes"); }); 
-					*/
-				</script>
 		</div>
 	{{/* MarginBoi */}}
 	<br> 
@@ -252,12 +191,7 @@ KyutGrill=homepage2.jpg
 	</div>
 	</div>
 <script type="text/javascript" defer="">
-	// Special kudos to Kotrik for making this Landing class :D.
-	//fetch("http://ussr.pl:4333/api2/onlinehistory")
-        //   .then(res => res.json())
-        //    .then((out) => {
-	//	graphData.push(...out["stats"])
-	//    })
+
 	var graphData = {{ with apiV2 "server/home/graph" }}{{ .data }}{{ end }}
 	var goodList = [];
 	for (var i = 0; i < graphData.length; i++) {

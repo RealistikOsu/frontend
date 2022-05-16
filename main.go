@@ -14,8 +14,6 @@ import (
 
 	"math/rand"
 
-	"github.com/RealistikOsu/FrontendPriv/modules/btcaddress"
-	"github.com/RealistikOsu/FrontendPriv/modules/btcconversions"
 	"github.com/RealistikOsu/FrontendPriv/routers/pagemappings"
 	"github.com/RealistikOsu/FrontendPriv/services"
 	"github.com/RealistikOsu/FrontendPriv/services/cieca"
@@ -26,9 +24,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/johnniedoe/contrib/gzip"
+	"github.com/mailgun/mailgun-go/v4"
 	"github.com/thehowl/conf"
 	"github.com/thehowl/qsql"
-	"gopkg.in/mailgun/mailgun-go.v1"
 	"gopkg.in/redis.v5"
 	"zxq.co/ripple/agplwarning"
 	schiavo "zxq.co/ripple/schiavolib"
@@ -157,8 +155,8 @@ func main() {
 	mg = mailgun.NewMailgun(
 		config.MailgunDomain,
 		config.MailgunPrivateAPIKey,
-		config.MailgunPublicAPIKey,
 	)
+	mg.SetAPIBase(mailgun.APIBaseEU)
 
 	// initialise CSRF service
 	CSRF = cieca.NewCSRF()
@@ -176,11 +174,6 @@ func main() {
 		Addr:     config.RedisAddress,
 		Password: config.RedisPassword,
 	})
-
-	// initialise btcaddress
-	btcaddress.Redis = rd
-	btcaddress.APIKey = config.CoinbaseAPIKey
-	btcaddress.APISecret = config.CoinbaseAPISecret
 
 	// initialise schiavo
 	schiavo.Prefix = "hanayo"
@@ -349,10 +342,32 @@ func generateEngine() *gin.Engine {
 	r.GET("/clans/invite/:inv", clanInvite)
 	r.POST("/c/:cid", leaveClan)
 
-	r.GET("/donate/rates", btcconversions.GetRates)
-
 	r.GET("/help", func(c *gin.Context) {
 		c.Redirect(301, "https://discord.gg/8ySdzhyMtt")
+	})
+
+	r.POST("/mergers/tanuki", func(c *gin.Context) {
+		ctx := getContext(c)
+		username := c.PostForm("username")
+		passwd := c.PostForm("password")
+
+		rd.Publish("merger:merge_user:1", fmt.Sprintf("%s/|/%s/|/%d", username, passwd, ctx.User.ID))
+
+		// sleep for 200ms
+		time.Sleep(200 * time.Millisecond)
+		c.Redirect(302, "/mergers/tanuki")
+	})
+
+	r.POST("/mergers/katsumi", func(c *gin.Context) {
+		ctx := getContext(c)
+		username := c.PostForm("username")
+		passwd := c.PostForm("password")
+
+		rd.Publish("merger:merge_user:2", fmt.Sprintf("%s/|/%s/|/%d", username, passwd, ctx.User.ID))
+
+		// sleep for 200ms
+		time.Sleep(200 * time.Millisecond)
+		c.Redirect(302, "/mergers/katsumi")
 	})
 
 	loadSimplePages(r)

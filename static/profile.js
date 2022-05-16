@@ -293,7 +293,7 @@ function loadOnlineStatus() {
 			switch (client.type) {
 				case 0: {
 					// bancho
-					switch (client.action.id) {
+					switch (client.action.text.id) {
 						case 1: {
 							// AFK
 							hexColour = "rgb(10, 10, 10)"
@@ -302,17 +302,17 @@ function loadOnlineStatus() {
 						case 2: {
 							// Playing
 							hexColour = "rgb(140, 160, 160)"
-							innerHtml = `<span class data-tooltip="Playing ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="Playing ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break
 						case 3: {
 							// Editing
 							hexColour = "rgb(160, 60, 60)"
-							innerHtml = `<span class data-tooltip="Editing ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="Editing ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 4: {
 							// Modding
 							hexColour = "rgb(60, 160, 60)"
-							innerHtml = `<span class data-tooltip="Modding ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="Modding ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 5: {
 							// In match
@@ -322,7 +322,7 @@ function loadOnlineStatus() {
 						case 12: {
 							// Playing multi
 							hexColour = "rgb(221, 190, 0)"
-							innerHtml = `<span class data-tooltip="Multiplaying ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="Multiplaying ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 11: {
 							// In lobby
@@ -331,7 +331,7 @@ function loadOnlineStatus() {
 						}; break;
 						case 6: {
 							// Spectating.
-							innerHtml = `<span class data-tooltip="Spectating ${formatOnlineStatusBeatmap(client.action)}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="Spectating ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						default: {
 							// online
@@ -653,9 +653,13 @@ function loadScoresPage(type, mode) {
 			document.getElementById("firstplace-text").innerHTML = '<i class="trophy icon"></i>' + T("First Places") + ` (${r.total})`;
 		}
 		r.scores.forEach(function (v, idx) {
+
+			// Filter dupes, XXX: temponary fix
+			if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx-1].beatmap_md5) return;
+
 			scoreStore[v.id] = v;
 			var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
-			var scoreRankIcon = "<img src='/static/ranking-icons/ranking-" + scoreRank + "-small.png' class='score rank' alt='" + scoreRank + "'> ";
+			var scoreRankIcon = `<a style="margin-right: 0.2em !important;" class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")}">${scoreRank}</a>`
 			var rowColor = '';
 			// Please at least credit if you steal this :(
 			if (v.completed < 2) {
@@ -727,9 +731,9 @@ function getScoreModsHtml(e, t) {
 var modsHtml = [
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png'>",
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png'>",
-	"NV",
+	"TD",
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>",
+	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hard-rock.52c35a3a.png'>",
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png'>",
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png'>",
 	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_relax.dbcfb8d8.png'>",
@@ -878,8 +882,8 @@ function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
 	// Hidden | Flashlight | FadeIn
 	var hdfl = (mods & (1049608)) > 0;
 
-	var ss = hdfl ? "SSHD" : "SS";
-	var s = hdfl ? "SHD" : "S";
+	var ss = hdfl ? "SS+" : "SS";
+	var s = hdfl ? "S+" : "S";
 
 	switch (gameMode) {
 		case 0:

@@ -41,7 +41,7 @@ TitleBar=Clan Settings
                             </div>
 			
                             <div class="ui buttons">
-                                <label tabindex="1" for="file" class="ui green labeled icon button">
+                                <label tabindex="1" for="file" class="ui green inverted labeled icon button">
                                     <i class="file icon"></i>
                                     {{ .T "Open File" }}
                                 </label>
@@ -61,7 +61,7 @@ TitleBar=Clan Settings
                         </form>
 
                         <br>
-                        <button tabindex="5" class="ui primary button" type="submit" form="register-form">{{ .T "Save" }}</button>
+                        <button tabindex="5" class="ui inverted blue primary button" type="submit" form="register-form">{{ .T "Save" }}</button>
                     </div>
                     <br>
                     <font size="6">Invite</font>
@@ -73,13 +73,13 @@ TitleBar=Clan Settings
                         </div>
                         <br><form action="/settings/clansettings" method="POST">
                             {{ ieForm .Gin }}
-                            <button type="submit" class="ui right green button">
+                            <button type="submit" class="ui inverted right green button">
                                 {{ $.T "Generate a new invite!" }}
                             </button>
                         </form>
                         <br><form action="/c/{{ $o }}" method="POST">
                             {{ ieForm .Gin }}
-                            <button type="submit" class="ui right red button">
+                            <button type="submit" class="ui inverted right red button">
                                 {{ $.T "Disband Clan!" }}
                             </button>
                         </form>

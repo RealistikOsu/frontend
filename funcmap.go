@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/RealistikOsu/FrontendPriv/modules/bbcode"
-	"github.com/RealistikOsu/FrontendPriv/modules/btcaddress"
 	"github.com/RealistikOsu/FrontendPriv/modules/doc"
 	fasuimappings "github.com/RealistikOsu/FrontendPriv/modules/fa-semantic-mappings"
 	"github.com/RealistikOsu/RealistikAPI/common"
@@ -179,7 +178,7 @@ var funcMap = template.FuncMap{
 	},
 	// countryReadable converts a country's ISO name to its full name.
 	"countryReadable": countryReadable,
-	"stringLower": strings.ToLower,
+	"stringLower":     strings.ToLower,
 	"country": func(s string, name bool) template.HTML {
 		var c string
 		if name {
@@ -490,7 +489,6 @@ var funcMap = template.FuncMap{
 		}
 		return x.Val()
 	},
-	"getBitcoinAddress": btcaddress.Get,
 	"languageInformation": func() []langInfo {
 		return languageInformation
 	},

@@ -1,13 +1,16 @@
 package main
 
 import (
+	ct "context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"strings"
+	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mailgun/mailgun-go.v1"
-	"github.com/RealistikOsu/RealistikAPI/common"
 	"zxq.co/x/rs"
 )
 
@@ -24,15 +27,14 @@ func passwordReset(c *gin.Context) {
 	}
 
 	var (
-		id         int
-		username   string
-		email      string
-		privileges uint64
+		id       int
+		username string
+		email    string
 	)
 
-	err := db.QueryRow("SELECT id, username, email, privileges FROM users WHERE "+field+" = ?",
+	err := db.QueryRow("SELECT id, username, email FROM users WHERE "+field+" = ?",
 		c.PostForm("username")).
-		Scan(&id, &username, &email, &privileges)
+		Scan(&id, &username, &email)
 
 	switch err {
 	case nil:
@@ -46,9 +48,9 @@ func passwordReset(c *gin.Context) {
 		return
 	}
 
-	if common.UserPrivileges(privileges)&
-		(common.UserPrivilegeNormal|common.UserPrivilegePendingVerification) == 0 {
-		simpleReply(c, errorMessage{T(c, "You look pretty banned/locked here.")})
+	// recaptcha verify
+	if config.RecaptchaPrivate != "" && !recaptchaCheck(c) {
+		simpleReply(c, errorMessage{T(c, "Captcha check failed, please try again.")})
 		return
 	}
 
@@ -64,19 +66,22 @@ func passwordReset(c *gin.Context) {
 		return
 	}
 
-	content := T(c,
-		"Hey %s! Someone, which we really hope was you, requested a password reset for your account. In case it was you, please <a href='%s'>click here</a> to reset your password on Ripple. Otherwise, silently ignore this email.",
+	content := fmt.Sprintf(
+		"Hey %s!<br><br>We've heard you forgot your RealistikOsu! account password, it can happen to the best of us. You can change it by <a href='%s'>clicking here</a>!<br><br>If you didn't request a password reset, you don't have to do anything. Just ignore this email.",
 		username,
 		config.BaseURL+"/pwreset/continue?k="+key,
 	)
-	msg := mailgun.NewMessage(
+
+	msg := mg.NewMessage(
 		config.MailgunFrom,
-		T(c, "RealistikOsu! password recovery instructions"),
+		"RealistikOsu! - Password recovery!",
 		content,
 		email,
 	)
 	msg.SetHtml(content)
-	_, _, err = mg.Send(msg)
+	ctxx, cancel := ct.WithTimeout(ct.Background(), time.Second*10)
+	defer cancel()
+	_, _, err = mg.Send(ctxx, msg)
 
 	if err != nil {
 		c.Error(err)
@@ -84,7 +89,7 @@ func passwordReset(c *gin.Context) {
 		return
 	}
 
-	addMessage(c, successMessage{T(c, "Done! You should shortly receive an email from us at the email you used to sign up on Ripple.")})
+	addMessage(c, successMessage{"Done! You should receive an email to your original mailbox shortly!"})
 	getSession(c).Save()
 	c.Redirect(302, "/")
 }
@@ -153,6 +158,19 @@ func passwordResetContinueSubmit(c *gin.Context) {
 		return
 	}
 
+	var userID int
+	err = db.QueryRow("SELECT id FROM users WHERE username_safe = ? LIMIT 1", username).Scan(&userID)
+	if err != nil {
+		c.Error(err)
+		resp500(c)
+		return
+	}
+
+	redisData, _ := json.Marshal(map[string]int{
+		"user_id": userID,
+	})
+	rd.Publish("peppy:change_pass", string(redisData))
+
 	_, err = db.Exec("DELETE FROM password_recovery WHERE k = ? LIMIT 1", c.PostForm("k"))
 	if err != nil {
 		c.Error(err)
@@ -160,7 +178,7 @@ func passwordResetContinueSubmit(c *gin.Context) {
 		return
 	}
 
-	addMessage(c, successMessage{T(c, "All right, we have changed your password and you should now be able to login! Have fun!")})
+	addMessage(c, successMessage{T(c, "We have changed your password and you should now be able to login! Have fun!")})
 	getSession(c).Save()
 	c.Redirect(302, "/login")
 }
@@ -242,6 +260,12 @@ func changePasswordSubmit(c *gin.Context) {
 	if err != nil {
 		c.Error(err)
 	}
+
+	redisData, _ := json.Marshal(map[string]int{
+		"user_id": ctx.User.ID,
+	})
+
+	rd.Publish("peppy:change_pass", string(redisData))
 
 	db.Exec("UPDATE users SET flags = flags & ~3 WHERE id = ? LIMIT 1", ctx.User.ID)
 

@@ -14,6 +14,30 @@
 @import url('https://fonts.googleapis.com/css2?family=KoHo:wght@300&family=Niramit&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Raleway:wght@300;400&display=swap');
 
+.rank-sh, .rank-ssh { color:#CDE7E7; }
+.rank-s, .rank-ss { color:#FC2; }
+.rank-a { color:#2BFF35; }
+.rank-b { color:#3D97FF; }
+.rank-c { color:#FF56dA; }
+.rank-d { color:#FF6262; }
+.rank-f { color:#FF5959; }
+.rank {
+    font-family: "Rubik", sans-serif;
+    font-size: 2.5rem;
+    max-width: 90%;
+    position: absolute;
+    left: 90%; top: 80%;
+}
+.score-rank {
+    font-family: "Rubik", sans-serif;
+    font-size: 1.5rem;
+}
+.score-rank:hover {
+    text-decoration: none !important;
+    cursor: text !important;
+    color: white !important;
+}
+
 .level-frame {
     display: flex;
     justify-content: center;
@@ -40,14 +64,14 @@ a:hover {
  
 .progress2 {
   padding: 6px;
-  border-radius: 30px;
+  border-radius: .28571429rem;
   background: rgba(0, 0, 0, 0.25);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .progress-bar2 {
   height: 18px;
-  border-radius: 30px;
+  border-radius: .28571429rem;
   background-image: 
   linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
   transition: 0.4s linear;
@@ -1176,31 +1200,14 @@ td [data-tooltip] {
     width: 100%;
 }
 
-#user-search-input {
-    background: #141665;
-    color: white;
-}
+/* #user-search-input {
+    background: #0091ff;
+    color: black;
+} */
 
 @media(max-width: 576px) {
     .js-landing-graph {
-        height: 50px;
-    }
-    #user-search-input {
-        background: #ffff;
-        color: black;
-    }
-    .search.link.icon {
-        color: black;
-    }
-}
-
-@media(max-height: 717px) {
-    #user-search-input {
-        background: #ffff;
-        color: black;
-    }
-    .search.link.icon {
-        color: black;
+        display: none;
     }
 }
 
@@ -1346,4 +1353,13 @@ td:last-child {
     border-right-style: solid;
     /* border-bottom-right-radius: 10px; 
     border-top-right-radius: 10px;  */
+}
+
+.noUi-target {
+    background: #212121 !important;
+}
+
+.noUi-connect {
+    background: #54C8FF !important;
+    box-shadow: 0 0 0 2px #54C8FF inset !important;
 }

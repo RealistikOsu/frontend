@@ -1,27 +1,22 @@
+//go:build !windows
 // +build !windows
 
 package main
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"os/exec"
-	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rcrowley/goagain"
-	"zxq.co/ripple/schiavolib"
+	schiavo "zxq.co/ripple/schiavolib"
 )
 
 var l net.Listener
 
 func startuato(engine *gin.Engine) bool {
-	engine.GET("/51/update", updateFromRemote)
 
 	returnCh := make(chan bool)
 	// whether it was from this very thing or not
@@ -92,81 +87,4 @@ func startuato(engine *gin.Engine) bool {
 	}()
 
 	return <-returnCh
-}
-
-func updateFromRemote(c *gin.Context) {
-	if c.Query("hanayokey") != config.APISecret {
-		c.String(403, "nope")
-		return
-	}
-	if f, err := os.Stat(".git"); err == os.ErrNotExist || !f.IsDir() {
-		c.String(500, "not git ffs")
-		return
-	}
-
-	br := c.Query("branch")
-	if br == "" {
-		br = "master"
-	}
-
-	c.String(200, "all right")
-	go func() {
-		if !execCommand("git", "fetch", "origin", br) {
-			return
-		}
-		if !execCommand("git", "checkout", "origin/"+br) {
-			return
-		}
-		if !execCommand("git", "submodule", "update") {
-			return
-		}
-		// go get
-		//        -u: update all dependencies
-		//        -d: stop after downloading deps
-		if !execCommand("go", "get", "-v", "-u", "-d") {
-			return
-		}
-		if !execCommand("bash", "-c", "go build -v") {
-			return
-		}
-
-		proc, err := os.FindProcess(syscall.Getpid())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		proc.Signal(syscall.SIGUSR2)
-	}()
-}
-
-func execCommand(command string, args ...string) bool {
-	cmd := exec.Command(command, args...)
-	cmd.Env = os.Environ()
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	if err := cmd.Start(); err != nil {
-		log.Println(err)
-		return false
-	}
-	data, err := ioutil.ReadAll(stderr)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	// Bob. We got a problem.
-	if len(data) != 0 {
-		log.Println(string(data))
-	}
-	io.Copy(os.Stdout, stdout)
-	cmd.Wait()
-	stdout.Close()
-	return true
 }

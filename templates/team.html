@@ -23,9 +23,18 @@ KyutGrill=team2.jpg
 			<h4 class="ui horizontal divider header"><i class="tasks icon"></i>Administrator Team</h4>
 			<p>
 				{{ .T "Administrator are all-mighty powerful beings that are here to ensure everything runs smoothly. This can be anything from organising events to hunting hackers. They are cool people ready to help you." }}<br>
-				{{ .T "They have power in numerous sectors such as the discord server" | html }}
+				{{ .T "They have power in numerous sectors such as the discord server." | html }}
 			</p>
 			{{ template "userGroup" (.Get "badges/members?id=%d" 1018) }}
+		</div>
+
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="envelope icon"></i>Community Management Team</h4>
+			<p>
+				{{ .T "Community Managers deal with bans, silences, name changes and pretty much everything that has to do with the community." }}<br>
+				{{ .T "They take care of our Discord server and reply to emails sent to the support services (Discord)." | html }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 1020) }}
 		</div>
 		
 		<div class="ui center aligned segment">

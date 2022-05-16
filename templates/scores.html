@@ -1,0 +1,50 @@
+{{/*###
+Handler=/scores
+TitleBar=Live Score Feed
+KyutGrill=score_feed.jpg
+*/}}
+{{ define "tpl" }}
+{{ $ := . }}
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/scores.css">
+</head>
+<div class="ui container">
+    <div class="ui raised segment center aligned">
+        Always wanted to see what others play? Or you maybe
+        wanted to compete with someone?
+        <br />
+        Well this page should help you, here you can check the
+        newest submitted scores!
+    </div>
+
+    <div class="ui raised segment center aligned">
+        <div class="ui grid">
+            <div class="six wide column">
+                <div id="sort-menu" class="ui two item menu">
+                    <a id="t_all" onclick="setMode('type', 'all')" class="filter-btn item active">All</a>
+                    <a id="t_passed" onclick="setMode('type', 'passed')" class="filter-btn item">Passed</a>
+                </div>
+            </div>
+            <div class="ten wide column">
+                <div class="ui four item menu">
+                    <a id="m_all" onclick="setMode('mode', 'all')" class="filter-btn item active">All</a>
+                    <a id="m_vn" onclick="setMode('mode', 'vn')" class="filter-btn item">Vanilla</a>
+                    <a id="m_rx" onclick="setMode('mode', 'rx')" class="filter-btn item">Relax</a>
+                    <a id="m_ap" onclick="setMode('mode', 'ap')" class="filter-btn item">Autopilot</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="score-container">
+            <div class="ui segment" id="loading-score">
+                <div class="ui active dimmer">
+                    <div class="ui text loader">Waiting for scores...</div>
+                </div>
+                <p></p>
+            </div>	
+        </div>
+    </div>
+
+    <script src="/static/scores.js" type="text/javascript"></script>
+</div>
+{{ end }}

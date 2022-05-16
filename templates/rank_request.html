@@ -24,16 +24,11 @@ MinPrivileges=2
                   <div class="progress-bar2"></div>
 	            </div>
 	            <p style="position: relative; top: 6px;right:-257px;">{{ $perc }}%</p>
-				<!-- <div class="ui blue progress" data-percent="{{ $perc }}" id="progressbar">
-					<div class="bar">
-						<div class="progress">{{ $perc }}%</div>
-					</div>
-				</div> -->
 			</div>
 			{{ if .can_submit }}
 				<form class="ui form" id="b-form" style="position: relative; top: 5px;">
 					<div class="ui fluid action input">
-						<input tabindex="1" type="text" placeholder="https://ussr.pl/beatmaps/1918979" id="beatmap">
+						<input tabindex="1" type="text" placeholder="eg. https://ussr.pl/beatmaps/1918979" id="beatmap" required>
 						{{ $f }}
 						<button tabindex="2" class="ui button inverted blue">
 							{{ $.T "Submit" }}

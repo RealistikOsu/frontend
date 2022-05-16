@@ -12,14 +12,14 @@ TitleBar=Reset password
 				<form id="pw-reset-form" class="ui form" method="post" action="/pwreset/continue">
 					<div class="field">
 						<label>{{ .T "Password" }}</label>
-						<input type="password" name="password" placeholder="{{ .T "Password" }}" value="{{ .FormData.password }}" required>
+						<input type="password" name="password" placeholder="{{ .T "**********" }}" value="{{ .FormData.password }}" required>
 					</div>
 					<input type="hidden" name="k" value="{{ .RequestInfo.Key }}">
 					{{ ieForm .Gin }}
 				</form>
 			</div>
 			<div class="ui right aligned segment">
-				<button class="ui primary button" type="submit" form="pw-reset-form">{{ .T "Submit" }}</button>
+				<button class="ui button inverted blue" type="submit" form="pw-reset-form">{{ .T "Submit" }}</button>
 			</div>
 		</div>
 	</div>

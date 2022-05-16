@@ -1,5 +1,5 @@
 .map{
-    border-radius: 8px;
+    border-radius: .28571429rem;
     width:100%;
     min-height:145px;
     display:inline-block;
@@ -20,7 +20,7 @@ i.icon.download:before{
     color: #fff!important;
 }
 .status{
-    border-radius: 25px;
+    border-radius: .28571429rem;
     font-weight:500;
     z-index:3;
     position:absolute;
@@ -118,7 +118,7 @@ i.icon.download:before{
     transition: 100ms background-color;
     font-size: 14px;
     font-weight: 500;
-    border-radius: 18px;
+    border-radius: .28571429rem;
     padding: 8px 16px;
     background-color: transparent;
 }

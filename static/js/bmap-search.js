@@ -10,7 +10,7 @@ const searchSettings = {
 
 let beatmapTimer;
 
-const mirror_api = "https://api.chimu.moe"; // we rlly do need our own
+const mirror_api = "https://catboy.best/api"; // we rlly do need our own
 
 function buttons() {
     const modes = document.querySelectorAll("#mode-button");
@@ -133,7 +133,7 @@ async function search(options, offset=0, r=false) {
     const sources = [
         { name: "RealistikOsu", mirror: "https://ussr.pl/d/" },
         { name: "Beatconnect", mirror: "https://beatconnect.io/b/" },
-        { name: "Chimu", mirror: "https://chimu.moe/en/d/" }
+        { name: "Mino", mirror: "https://catboy.best/d/" }
     ];
 
     options.offset = (r ? options.offset+offset : 0);
@@ -159,7 +159,7 @@ async function search(options, offset=0, r=false) {
         color: rgb(5, 5, 5);
     */
 
-    var link = `${mirror_api}/cheesegull/search?offset=${options.offset || 0}&amount=${options.amount || 20}&mode=${options.mode || 0}&query=${querys}`
+    var link = `${mirror_api}/search?offset=${options.offset || 0}&amount=${options.amount || 20}&mode=${options.mode || 0}&query=${querys}`
     if (options.status != "NaN") {
     	link += `&status=${options.status || 0}`
     }
@@ -180,7 +180,6 @@ async function search(options, offset=0, r=false) {
     for (let beatmap of res) {
         const diffsHTML = [];
         // Bubble sort to sort diffs.
-        var temp;
         const diffs = beatmap.ChildrenBeatmaps;
         diffs.sort(function(a, b){return a.DifficultyRating-b.DifficultyRating});
         const date = new Date(beatmap.LastUpdate).toUTCString
@@ -190,7 +189,7 @@ async function search(options, offset=0, r=false) {
         if (beatmapAudios.filter(o => o.id == beatmap.SetID).length == 0) {
             beatmapAudios.push({
                 id: beatmap.SetID,
-                audio: new Audio(`https://b.ppy.sh/preview/${beatmap.SetID}.mp3`),
+                audio: new Audio(`https://catboy.best/api/preview/audio/${beatmap.ChildrenBeatmaps[0].BeatmapID}`),
                 playing: false
             });
         };

@@ -90,7 +90,7 @@ func registerSubmit(c *gin.Context) {
 
 	// recaptcha verify
 	if config.RecaptchaPrivate != "" && !recaptchaCheck(c) {
-		registerResp(c, errorMessage{T(c, "Captcha is invalid.")})
+		registerResp(c, errorMessage{T(c, "Captcha check failed, please try again.")})
 		return
 	}
 

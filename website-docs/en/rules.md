@@ -5,6 +5,8 @@ old_id: 9
 
 # The rules of RealistikOsu
 
+- **Exploiting any tablet drivers "features" how some people would say (eg. anti-chatter) is strictly prohibited and will result in 3rd strike in Punishment System** (read more about it below.)
+
 - The usage of any external modifications that alter the behaviour of the client (such as cheating software, custom clients) is strictly prohibited.
 
 - The creation of alternate accounts (multiaccounting) is prohibited and will result in the banning of the multiaccount and the restriction of your main account.
