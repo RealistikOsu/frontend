@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"net/url"
 
-	"github.com/gin-gonic/gin"
 	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/gin-gonic/gin"
 )
 
 // TODO: replace with simple ResponseInfo containing userid
@@ -28,8 +28,9 @@ func userProfile(c *gin.Context) {
  	if error != nil {
  		c.Error(error)
  	}
+	 
 	err := db.QueryRow("SELECT id, username, privileges, frozen FROM users WHERE username_safe IN (?) OR id IN (?) AND "+ctx.OnlyUserPublic()+" LIMIT 1", common.SafeUsername(u), u).Scan(&userID, &username, &privileges, &frozen)
-	if err != nil || err != sql.ErrNoRows {
+	if err != nil && err != sql.ErrNoRows {
 		c.Error(err)
 	}
 	

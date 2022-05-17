@@ -1,0 +1,11 @@
+.pinned-popup {
+    position: absolute;
+    height: 35px;
+    top: calc(100% - (35px * 1.5));
+    width: 80%;
+    left: calc(10%);
+}
+
+.pinnedtbl {
+    margin-bottom: 50px !important;
+}

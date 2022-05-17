@@ -550,9 +550,10 @@ function recentFilter(recent) {
 
 function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
-	var best = defaultScoreTable.clone(true).addClass("purple");
-	var recent = defaultScoreTable.clone(true).addClass("blue").attr('id', 'recent-table');
-	var first = defaultScoreTable.clone(true).addClass("red");
+	var pinned = defaultScoreTable.clone(true).addClass("t-pinned orange");
+	var best = defaultScoreTable.clone(true).addClass("t-best purple");
+	var recent = defaultScoreTable.clone(true).addClass("t-recent blue").attr('id', 'recent-table');
+	var first = defaultScoreTable.clone(true).addClass("t-first red");
 
 	recentFilter(recent);
 	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green profile-table' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
@@ -570,17 +571,31 @@ function initialiseScores(el, mode) {
 				)
 			)
 		)
+	
+	pinned.attr("data-type", "pinned");
 	best.attr("data-type", "best");
 	recent.attr("data-type", "recent");
 	first.attr("data-type", "first");
 	mostPlayedBeatmapsTable.attr("data-type", "most-played");
 	first.addClass("no bottom margin");
-	el.append($("<div id='scores-container' class='ui segments no bottom margin' />").append(
-		$("<div class='ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
-		$("<div class='ui segment' />").append('<h4 id="mostplayed-text" class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
-		$("<div class='ui segment' />").append('<h4 id="recenttable-text" class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
-		$("<div class='ui segment' />").append('<h4 id="firstplace-text" class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
+	
+	for (const i in currentPage) {
+		for (const j in currentPage[i]) {
+			for (const k of Object.keys(currentPage[i][j])) {
+				currentPage[i][j][k] = 0;
+			}
+		}
+	}
+
+	el.html($("<div id='scores-container' class='ui segments no bottom margin' />").append(
+		$("<div class='t-pinned ui segment' style='display: none' />").append('<h4 class="ui horizontal divider header"><i class="star icon"></i>Pinned Scores</h4>', pinned),
+		$("<div class='t-best ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
+		$("<div class='t-most ui segment' />").append('<h4 id="mostplayed-text" class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
+		$("<div class='t-recent ui segment' />").append('<h4 id="recenttable-text" class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
+		$("<div class='t-first ui segment' />").append('<h4 id="firstplace-text" class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
 	));
+
+	loadScoresPage("pinned", mode);
 	loadScoresPage("best", mode);
 	loadScoresPage("recent", mode);
 	loadScoresPage("first", mode);
@@ -604,110 +619,228 @@ function loadMoreMostPlayed() {
 	loadMostPlayedBeatmaps(mode);
 }
 // currentPage for each mode
-var currentPage = {
-	0: {
-		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
-	},
-	1: {
-		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
-	},
-	2: {
-		0: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		1: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		2: { best: 0, recent: 0, mostPlayed: 0, first: 0 },
-		3: { best: 0, recent: 0, mostPlayed: 0, first: 0 }
-	}
-};
+var currentPage = [
+	[
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 }
+	],
+	[
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 }
+	],
+	[	
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
+		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 }
+	]
+];
 
 var scoreStore = {};
 const DIFF_MAX_LEN = 32;
-function loadScoresPage(type, mode) {
+
+async function loadScoresPage(type, mode) {
 	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=" + type + "] tbody");
 	var page = ++currentPage[preferRelax][mode][type];
+
 	console.log("loadScoresPage with", {
 		page: page,
 		type: type,
 		mode: mode,
 		rx: preferRelax
 	});
-	var limit = type === 'best' ? 10 : 5;
 
+	var limit = type === 'best' ? 10 : 5;
 	params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID }
+
 	if ($('#filter-failed').prop('checked') && type === "recent") {
 		params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID, filter: "recent" }
 	}
 
-	api("users/scores/" + type, params, function (r) {
-		if (r.scores == null) {
-			disableLoadMoreButton(type, mode);
-			return;
+	fetch(`/api/v1/users/scores/${type}?mode=${params.mode}&p=${params.p}&l=${params.l}&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r => 
+		buildPlays(r, type, mode, table, page, limit)	
+	);
+}
+
+function buildPlays(r, type, mode, table, page, limit) {
+	if (r.scores == null && params.p <= 1) {
+		$(".t-pinned").hide()
+	} else if (type == "pinned") {
+		$(".t-pinned").show()
+	}
+
+	if (r.scores == null) {
+		disableLoadMoreButton(type, mode);
+		return;
+	}
+
+	if (type == "first") {
+		//screw jqery, webjs god
+		document.getElementById("firstplace-text").innerHTML = '<i class="trophy icon"></i>' + T("First Places") + ` (${r.total})`;
+	}
+
+	r.scores.forEach(function (v, idx) {
+		// Filter dupes, XXX: temponary fix
+		if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx-1].beatmap_md5) return;
+
+		scoreStore[v.id] = v;
+		var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
+		var scoreRankIcon = `<a style="margin-right: 0.2em !important;" class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")}">${scoreRank}</a>`
+		var rowColor = '';
+		// Please at least credit if you steal this :(
+		if (v.completed < 2) {
+			var StyleCol = "#6b201f"; // jajajaja
+		} else {
+			var StyleCol = "#212121";
 		}
-		if (type == "first") {
-			//screw jqery, webjs god
-			document.getElementById("firstplace-text").innerHTML = '<i class="trophy icon"></i>' + T("First Places") + ` (${r.total})`;
+
+		if (type === 'recent') {
+			rowColor = v.completed === 3 ? 'positive' : v.completed < 2 ? 'error' : '';
 		}
-		r.scores.forEach(function (v, idx) {
 
-			// Filter dupes, XXX: temponary fix
-			if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx-1].beatmap_md5) return;
+		// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
+		let song_name_f = v.beatmap.song_name;
+		let fufrieu = song_name_f.split("[");
+		let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
+		let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
+		let failedClass = v.completed < 2 ? "score-failed-recent" : "";
+		let apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
 
-			scoreStore[v.id] = v;
-			var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
-			var scoreRankIcon = `<a style="margin-right: 0.2em !important;" class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")}">${scoreRank}</a>`
-			var rowColor = '';
-			// Please at least credit if you steal this :(
-			if (v.completed < 2) {
-				var StyleCol = "#6b201f"; // jajajaja
-			} else {
-				var StyleCol = "#212121";
-			}
+		if (diff_name.length > DIFF_MAX_LEN) {
+			// Heck. Gotta reconstruct the bmap name.
+			v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
+		}
 
-			if (type === 'recent') {
-				rowColor = v.completed === 3 ? 'positive' : v.completed < 2 ? 'error' : '';
-			}
+		const lookinAtMyProfile = currentUserID == userID && v.completed != 0;
+		const dlText = !lookinAtMyProfile ? "Get" : "";
 
-			// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
-			let song_name_f = v.beatmap.song_name;
-			let fufrieu = song_name_f.split("[");
-			let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
-			let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
-			let failedClass = v.completed < 2 ? "score-failed-recent" : "";
-			let apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
-
-			if (diff_name.length > DIFF_MAX_LEN) {
-				// Heck. Gotta reconstruct the bmap name.
-				v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
-			}
-
-			table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg"+apiImageParams+") no-repeat right !important; background-size: cover !important;' />").append(
-				$(
-					"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
-					escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
-					"<div class='subtitle'><time class='new timeago' datetime='" + v.time + "'>" + v.time + "</time></div></td>"
-				),
-				$("<td><b>" + ppOrScore(v.pp, v.score, v.beatmap.ranked) + "</b> " + weightedPP(type, page, idx, v.pp) + (v.completed == 3 ? "<br>" + downloadStar(v.id) : "") + "</td>")
-			));
-		});
-		$(".new.timeago").timeago().removeClass("new");
-		$(".new.score-row").click(viewScoreInfo).removeClass("new");
-		$(".new.downloadstar").click(function (e) {
-			e.stopPropagation();
-		}).removeClass("new");
-		var enable = true;
-		if (r.scores.length !== limit)
-			enable = false;
-		disableLoadMoreButton(type, mode, enable);
+		table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg"+apiImageParams+") no-repeat right !important; background-size: cover !important;' />").append(
+			$(
+				"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
+				escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
+				"<div class='subtitle'><time class='new timeago' datetime='" + v.time + "'>" + v.time + "</time></div></td>"
+			),
+			$("<td><b>" + ppOrScore(v.pp, v.score, v.beatmap.ranked) + "</b> " + weightedPP(type, page, idx, v.pp) + `<div class="dl-pin">${v.completed == 3 ? downloadStar(v.id)+dlText : ""} ${lookinAtMyProfile ? pinScore(v.id, escapeHTML(acc_song_name)) : ""}</div>` + "</td>")
+		));
 	});
+	$(".new.timeago").timeago().removeClass("new");
+	$(".new.score-row").click(viewScoreInfo).removeClass("new");
+	$(".new.downloadstar").click(function (e) {
+		e.stopPropagation();
+	}).removeClass("new");
+	var enable = true;
+	if (r.scores.length !== limit)
+		enable = false;
+	disableLoadMoreButton(type, mode, enable);	
 }
+
+function fastloadPinned(mode) {
+	const table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=pinned] tbody");
+
+	table.html(null);
+	currentPage[preferRelax][mode].pinned = 1;
+	params.p = 1;
+
+
+	fetch(`/api/v1/users/scores/pinned?mode=${params.mode}&p=${params.p}&l=5&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r => 
+		buildPlays(r, "pinned", mode, table, 1, 5)	
+	);
+}
+
 function downloadStar(id) {
-	return "<a href='/web/replays/" + id + "' class='new downloadstar'><i class='star icon'></i>" + T("Get") + "</a>";
+	return "<a href='/web/replays/" + id + "' class='new downloadstar'><i class='download icon'></i></a>";
 }
+
+function pinScore(id, bmapTitle) {
+	// beatmap title is only required for ui reasons
+	// all we really need is the id
+
+	return `
+		<a href="javascript:postPin(${id}, '${bmapTitle}')" class="new downloadstar">
+			<i class="pin icon"></i>
+		</a>
+	`;
+}
+
+async function postPin(id, bmapTitle) {
+	const score = await fetch(`/api/v1/users/scores/pinned/info?id=${id}`).then(o => o.json());
+	const pinned = score.code == 200;
+
+	score.pinned.pinned_at = new Date(score.pinned.pinned_at * 1000).toISOString();
+
+	const els = [
+		$("<tr />").append(
+			$(`<td>Beatmap</td>`),
+			$(`<td>${bmapTitle}</td>`),
+		)
+	];
+
+	const data = {
+		"Pinned": pinned ? "Yes" : "No",
+		"Pin Date": pinned ? 
+				`<time class="new timeago" datetime="${score.pinned.pinned_at}">${score.pinned.pinned_at}</time>`
+				: "Never"
+	}
+
+	$.each(data, (key, value) => {
+		els.push(
+			$("<tr />").append(
+				$("<td>" + T(key) + "</td>"),
+				$("<td>" + value + "</td>")
+			)
+		);
+	});
+
+	$("#score-data-table tr").remove();
+	$(".pinned-popup").remove();
+	$("#score-data-table").append(
+		els,
+		`<a href="javascript:${pinned ? "Unpin" : "Pin"}(${id})" class="pinned-popup ui button ${pinned ? "red" : "blue"} inverted">${pinned ? "Unpin" : "Pin"} Score!</a>`
+	);
+
+	$("#score-data-table").addClass("pinnedtbl");
+	$(".new.timeago").timeago().removeClass("new");
+	$(".ui.modal").modal("show");
+}
+
+async function Pin(id) {
+	const req = await fetch(`/api/v1/users/scores/pinned?score_id=${id}&rx=${params.rx || 0}`, {
+		method: "POST"
+	}).then(o => o.json());
+
+	if (req.code != 200) {
+		showMessage("error", "Error pinning score. Please report this to a RealistikOsu developer!");
+		return;
+	}
+
+	$(".message.success").remove();
+	$(".ui.modal").modal("hide");
+
+	showMessage("success", "Pinned!");
+	fastloadPinned(params.mode);
+}
+
+async function Unpin(id) {
+	const req = await fetch(`/api/v1/users/scores/pinned/delete?score_id=${id}`, {
+		method: "POST"
+	}).then(o => o.json());
+
+	if (req.code != 200) {
+		showMessage("error", "Error unpinning score. Please report this to a RealistikOsu developer!");
+		return;
+	}
+
+	$(".message.success").remove();
+	$(".ui.modal").modal("hide");
+
+	showMessage("success", "Unpinned!");
+	fastloadPinned(params.mode);
+}
+
 function weightedPP(type, page, idx, pp) {
 	if (type != "best" || pp == 0)
 		return "";
@@ -835,7 +968,9 @@ function viewScoreInfo() {
 			)
 		);
 	});
-
+	
+	$(".pinned-popup").remove();
+	$("#score-data-table").removeClass("pinnedtbl");
 	$("#score-data-table tr").remove();
 	$("#score-data-table").append(els);
 	$(".ui.modal").modal("show");
