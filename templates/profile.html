@@ -65,6 +65,7 @@
 	}
 </style>
 <link rel="stylesheet" href="/static/profiles/profile.css">
+<link rel="stylesheet" href="/static/profiles/comments.css">
 <div class="ui container">
 	{{ if .UserID }}
 		{{ $realistik := eq .UserID 1000 }}
@@ -77,6 +78,7 @@
 				window.preferRelax = {{ $relax }};
 				window.favouriteMode = {{ $favouritemode }};
 				window.userID = {{ .id }};
+				window.userProfileName = {{ .username }};
 				window.followers = {{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .allFriended }} {{ end }};
 				//swap them round on mobile so the order isnt weird for them
 				document.addEventListener('DOMContentLoaded', (event) => {
@@ -409,6 +411,37 @@
 				</div>
 			</div>
 		{{ end }}
+
+		<div id="comments">
+			<h4 class="ui horizontal divider header">
+				Comments (<span id="total-comments">????</span>)
+			</h4>
+	
+			{{ if .Context.User.Username }}
+				<div class="ui grid">
+					<div class="two wide column">
+						<img src="https://a.ussr.pl/{{ .Context.User.ID }}">
+					</div>
+					<div class="fourteen wide column">
+						<textarea id="comment-text" placeholder="Write a comment..." maxlength="380"></textarea>
+						<span id="comment-max">0/380</span>
+						<button id="comment-submit" class="disabled ui button inverted pink" onclick="post()">Comment</button>
+					</div>
+				</div>
+			{{ else }}
+				<div class="ui segment comment-login">
+					<div class="ui icon message black ds">
+						<i class="lock icon"></i>
+						<p>Please login to submit a comment!</p>
+					</div>
+				</div>
+			{{ end }}
+			<div id="user-comments">
+				<div id="comments-list" class="ui comments"></div>
+				<button id="comment-load" onclick="moreComments(true)" class="ui button inverted purple">Load</button>
+			</div>
+		</div>
+		<script src="/static/profiles/comments.js"></script>
 	{{ end }}
 	<script>
 		function copyToTray(userDiscord) {
