@@ -80,6 +80,8 @@
 				window.userID = {{ .id }};
 				window.userProfileName = {{ .username }};
 				window.followers = {{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .allFriended }} {{ end }};
+				window.hasAdmin = {{ hasAdmin $global.Context.User.Privileges }};
+
 				//swap them round on mobile so the order isnt weird for them
 				document.addEventListener('DOMContentLoaded', (event) => {
 					if (MobileCheck()) {
@@ -438,7 +440,7 @@
 			{{ end }}
 			<div id="user-comments">
 				<div id="comments-list" class="ui comments"></div>
-				<button id="comment-load" onclick="moreComments(true)" class="ui button inverted purple">Load</button>
+				<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load</button>
 			</div>
 		</div>
 		<script src="/static/profiles/comments.js"></script>

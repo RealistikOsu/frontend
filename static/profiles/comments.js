@@ -4,54 +4,79 @@
 // TODO: show message for disabled comments
 // TODO: Let admin, op, and profile owner delete comments
 
-const cparams = {
+let commentsCache = [];
+let cparams = {
     p: 1,
     l: 5,
 };
 
-const updateMax = function () {
-    document.getElementById(
-        "comment-max"
-    ).innerHTML = `${this.value.length}/380`;
+const vd = {
+    max: "comment-max",
+    submit: "comment-submit",
+    comments: "comments",
+    list: "comments-list",
+    load: "comment-load",
+    text: "comment-text",
+    total: "total-comments",
+};
 
+const updateMax = function () {
+    vd.max.innerHTML = `${this.value.length}/380`;
     if (this.value.length < 3) {
-        document.getElementById("comment-submit").classList.add("disabled");
+        vd.submit.classList.add("disabled");
         return;
     }
 
-    document.getElementById("comment-submit").classList.remove("disabled");
+    vd.submit.classList.remove("disabled");
 };
 
-function addComment(id, username, message, postedAt, before = false) {
-    const list = document.getElementById("comments-list");
-    const posted = new Date(postedAt * 1000).toISOString().slice(0, 10);
+const updateList = () => {
+    vd.list.innerHTML = null;
 
-    const html = `
-        <div class="ui comments">
-            <div class="comment">
-                <a class="avatar">
-                    <img src="https://a.ussr.pl/${id}" />
-                </a>
-                <div class="content">
-                    <a class="author" href="/u/${id}">${escapeHTML(
-        username
-    )}</a>
-                    <div class="metadata">
-                        <div class="date">${posted}</div>
+    // don't you just LOVE js
+    commentsCache = [...new Set(commentsCache.map(JSON.stringify))]
+        .map(JSON.parse)
+        .sort((a, b) => b.postedAt - a.postedAt);
+
+    // prettier-ignore
+    for (const { userid, username, message, postedAt, id } of commentsCache) {
+        const posted = new Date(postedAt * 1000).toISOString().slice(0, 10);
+        const canDelete =
+            window.hasAdmin || // if admin
+            (window.userID == window.currentUserID && window.currentUserID != 0) || // if profile is mine
+            (userid == window.currentUserID && window.currentUserID != 0); // if comment id matches mine
+
+        vd.list.innerHTML += `
+            <div class="ui comments">
+                <div class="comment">
+                    <a class="avatar">
+                        <img src="https://a.ussr.pl/${userid}" />
+                    </a>
+                    <div class="content">
+                        <a class="author" href="/u/${userid}">
+                            ${escapeHTML(username)}
+                        </a>
+                        <div class="metadata">
+                            <div class="date">${posted}</div>
+                        </div>
+                        <div class="text">${escapeHTML(message)}</div>
+                        <div class="actions">
+                            <a class="delete ${
+                                canDelete ? "" : "c-hidden"
+                            }" href="javascript:deleteComment(${id})">Delete</a>
+                        </div>
                     </div>
-                    <div class="text">${escapeHTML(message)}</div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
+    }
+};
 
-    list.innerHTML = before ? html + list.innerHTML : list.innerHTML + html;
-}
-
-async function moreComments(add = false) {
-    if (add) cparams.p++;
+async function moreComments(page = 0) {
     const res = await fetch(
-        `/api/v1/users/comments?id=${userID}&p=${cparams.p}&l=${cparams.l}`
+        `/api/v1/users/comments?id=${userID}&p=${page || cparams.p++}&l=${
+            cparams.l
+        }`
     ).then((o) => o.json());
 
     if (res.code != 200) {
@@ -62,19 +87,21 @@ async function moreComments(add = false) {
     }
 
     if (!res.comments || res.comments.length < cparams.l) {
-        document.getElementById("comment-load").classList.add("disabled");
-
+        vd.load.classList.add("disabled");
         if (!res.comments) return;
     }
 
     for (const comment of res.comments) {
-        addComment(
-            comment.op,
-            comment.username,
-            comment.message,
-            comment.posted_at
-        );
+        commentsCache.push({
+            userid: comment.op,
+            username: comment.username,
+            message: comment.message,
+            postedAt: comment.posted_at,
+            id: comment.id,
+        });
     }
+
+    updateList();
 }
 
 async function info() {
@@ -82,24 +109,18 @@ async function info() {
         (o) => o.json()
     );
 
-    document.getElementById("total-comments").innerHTML = res.total;
-
+    vd.total.innerHTML = res.total;
     return res.disabled;
 }
 
 async function post() {
-    const total = document.getElementById("total-comments");
-    const text = document.getElementById("comment-text");
-
-    if (text.value.length < 3 || text.value > 380) {
+    if (vd.text.value.length < 3 || vd.text.value > 380) {
         showMessage("error", "Invalid comment. Text too big/small.");
         return;
     }
 
-    document.getElementById("comments").classList.add("comment-loading");
-
     const data = await fetch(`/api/v1/users/comments?id=${userID}`, {
-        body: text.value,
+        body: vd.text.value,
         method: "POST",
     }).then((o) => o.json());
 
@@ -110,23 +131,18 @@ async function post() {
         );
     }
 
-    document.getElementById("comments-list").innerHTML = null;
-    document.getElementById("comment-max").innerHTML = "0/380";
-    document.getElementById("comment-submit").classList.add("disabled");
-    document.getElementById("comment-load").classList.remove("disabled");
-    document.getElementById("comments").classList.remove("comment-loading");
-
-    cparams.p = 1;
-    text.value = "";
-    total.innerHTML = parseInt(total.innerHTML) + 1;
-
-    moreComments();
+    vd.text.value = null;
+    moreComments(1);
 }
 
 onload = async () => {
+    for (const [k, v] of Object.entries(vd)) {
+        vd[k] = document.getElementById(v);
+    }
+
     if (!(await info())) {
         if (currentUserID != 0) {
-            document.getElementById("comment-text").oninput = updateMax;
+            vd.text.oninput = updateMax;
         }
 
         return moreComments();
