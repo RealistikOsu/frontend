@@ -5,6 +5,7 @@
 // TODO: Let admin, op, and profile owner delete comments
 
 let commentsCache = [];
+let removed = 0;
 let cparams = {
     p: 1,
     l: 5,
@@ -132,7 +133,33 @@ async function post() {
     }
 
     vd.text.value = null;
+    vd.submit.classList.add("disabled");
+    vd.total.innerHTML = parseInt(vd.total.innerHTML) + 1;
     moreComments(1);
+}
+
+async function deleteComment(id) {
+    if (!confirm("Are you sure?")) return;
+
+    const data = await fetch(`/api/v1/users/comments/delete?id=${id}`, {
+        method: "POST",
+    }).then((o) => o.json());
+
+    if (data.code != 200) {
+        return showMessage(
+            "error",
+            "Error removing comment. Please report this to a RealistikOsu developer!"
+        );
+    }
+
+    commentsCache.splice(commentsCache.map((o) => o.id).indexOf(id), 1);
+    vd.total.innerHTML = parseInt(vd.total.innerHTML) - 1;
+    
+    if (++removed >= 5) {
+        cparams.p--;
+    }
+
+    updateList();
 }
 
 onload = async () => {
