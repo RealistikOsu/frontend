@@ -415,33 +415,47 @@
 		{{ end }}
 
 		<div id="comments">
-			<h4 class="ui horizontal divider header">
-				Comments (<span id="total-comments">????</span>)
-			</h4>
-	
-			{{ if .Context.User.Username }}
-				<div class="ui grid">
-					<div class="two wide column">
-						<img src="https://a.ussr.pl/{{ .Context.User.ID }}">
+			{{ with (.Get "users/comments/info?id=%d" .UserID) }}
+				<h4 class="ui horizontal divider header">
+					Comments (<span id="total-comments">{{ if .disabled }}0{{ else }}{{ .total }}{{ end }}</span>)
+				</h4>
+
+				{{ if .disabled }}
+					<div class="ui segment comment-login">
+						<div class="ui icon message black ds">
+							<i class="lock icon"></i>
+							<p>This user has disabled comments!</p>
+						</div>
 					</div>
-					<div class="fourteen wide column">
-						<textarea id="comment-text" placeholder="Write a comment..." maxlength="380"></textarea>
-						<span id="comment-max">0/380</span>
-						<button id="comment-submit" class="disabled ui button inverted pink" onclick="post()">Comment</button>
+				{{ else }}
+					{{ if $global.Context.User.Username }}
+						<div class="ui grid">
+							<div class="two wide column">
+								<img src="https://a.ussr.pl/{{ $global.Context.User.ID }}">
+							</div>
+							<div class="fourteen wide column">
+								<textarea id="comment-text" placeholder="Write a comment..." maxlength="380"></textarea>
+								<span id="comment-max">0/380</span>
+								<button id="comment-submit" class="disabled ui button inverted pink" onclick="post()">Comment</button>
+							</div>
+						</div>
+					{{ else }}
+						<div class="ui segment comment-login">
+							<div class="ui icon message black ds">
+								<i class="lock icon"></i>
+								<p>Please login to submit a comment!</p>
+							</div>
+						</div>
+					{{ end }}
+					
+					<div id="user-comments">
+						<div id="comments-list" class="ui comments"></div>
+						<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load</button>
 					</div>
-				</div>
-			{{ else }}
-				<div class="ui segment comment-login">
-					<div class="ui icon message black ds">
-						<i class="lock icon"></i>
-						<p>Please login to submit a comment!</p>
-					</div>
-				</div>
+				{{ end }}
 			{{ end }}
-			<div id="user-comments">
-				<div id="comments-list" class="ui comments"></div>
-				<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load</button>
-			</div>
+
+			
 		</div>
 		<script src="/static/profiles/comments.js"></script>
 	{{ end }}

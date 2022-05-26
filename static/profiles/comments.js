@@ -2,7 +2,6 @@
 
 // TODO: settings to disable comments
 // TODO: show message for disabled comments
-// TODO: Let admin, op, and profile owner delete comments
 
 let commentsCache = [];
 let removed = 0;
@@ -110,7 +109,6 @@ async function info() {
         (o) => o.json()
     );
 
-    vd.total.innerHTML = res.total;
     return res.disabled;
 }
 
