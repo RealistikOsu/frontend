@@ -1,8 +1,5 @@
 "use strict";
 
-// TODO: settings to disable comments
-// TODO: show message for disabled comments
-
 let commentsCache = [];
 let removed = 0;
 let cparams = {
