@@ -1,0 +1,39 @@
+#comments {
+    margin-top: 20px;
+}
+
+#comment-text {
+    width: 100%;
+    height: 70%;
+    background-color: #212121;
+    border: none;
+    padding: 10px;
+    resize: none;
+}
+
+#comment-submit {
+    margin-top: 10px;
+    float: right;
+}
+
+.comment-login * {
+    display: block !important;
+    text-align: center !important;
+    color: #fff;
+}
+
+#comment-load {
+    float: right;
+}
+
+#user-comments {
+    margin-bottom: 50px;
+}
+
+.comment-loading {
+    opacity: 0.4;
+}
+
+.c-hidden {
+    display: none !important;
+}
