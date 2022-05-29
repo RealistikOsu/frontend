@@ -1,8 +1,7 @@
-// code that is executed on every user profile
 $(document).ready(function () {
 	var wl = window.location;
 	var newPathName = wl.pathname;
-	// clanID is defined in profile.html
+	// clanID is defined in clan.html
 	if (newPathName.split("/")[2] != clanID) {
 		newPathName = "/c/" + clanID;
 	}
@@ -124,44 +123,43 @@ function initialiseStats(el, mode) {
 }
 
 function loadStats(mode) {
-    var table = $("#stats-zone div[data-mode=" + mode + "][data-rx=" + relax + "] tbody");
+    const table = document.querySelector('#stats-zone div[data-mode="' + mode + '"][data-rx="' + relax + '"] tbody')
 
     api("clans/stats", {
         id: clanID,
         m: mode,
         rx: relax
     }, function (r) {
-        table.append($(
-            `<td></td>
+        table.innerHTML += `<td></td>
             <tr>
                 <td><b>Global Rank</b></td>
-                <td class="right aligned">#${r.rank}</td>
+                <td class="right aligned">#${addCommas(r.rank)}</td>
             </tr>
             <tr>
                 <td><b>PP</b></td>
-                <td class="right aligned">${r.chosen_mode.pp}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.pp)}</td>
             </tr>
             <tr>
                 <td><b>Ranked Score</b></td>
-                <td class="right aligned">${r.chosen_mode.ranked_score}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.ranked_score)}</td>
             </tr>
             
             <tr>
                 <td><b>Total Score</b></td>
-                <td class="right aligned">${r.chosen_mode.total_score}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.total_score)}</td>
             </tr>
             <tr>
                 <td><b>Total Playcount</b></td>
-                <td class="right aligned">${r.chosen_mode.playcount}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.playcount)}</td>
             </tr>
             <tr>
                 <td><b>Total Replays Watched</b></td>
-                <td class="right aligned">${r.chosen_mode.replays_watched}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.replays_watched)}</td>
             </tr>
             <tr>
                 <td><b>Total Hits</b></td>
-                <td class="right aligned">${r.chosen_mode.total_hits}</td>
+                <td class="right aligned">${addCommas(r.chosen_mode.total_hits)}</td>
             </tr>`
-        ))
+        
     })
 }
