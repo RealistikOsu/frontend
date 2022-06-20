@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"zxq.co/x/rs"
 	"github.com/gin-gonic/gin"
+	"zxq.co/x/rs"
 )
 
 func setYCookie(userID int, c *gin.Context) {
@@ -59,7 +59,6 @@ func setCountry(c *gin.Context, user int) error {
 	if country == "" || len(country) != 2 {
 		return nil
 	}
-	db.Exec("UPDATE users_stats SET country = ? WHERE id = ?", country, user)
-	db.Exec("UPDATE rx_stats SET country = ? WHERE id = ?", country, user)
+	db.Exec("UPDATE users SET country = ? WHERE id = ?", country, user)
 	return nil
 }

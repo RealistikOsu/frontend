@@ -2,15 +2,16 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/RealistikOsu/RealistikAPI/common"
 	"zxq.co/x/rs"
 )
 
@@ -45,14 +46,12 @@ func loginSubmit(c *gin.Context) {
 		Clan            int
 		ClanOwner       int
 	}
-	err := db.QueryRow(`
-	SELECT 
-		u.id, u.password_md5,
-		u.username, u.password_version,
-		s.country, u.privileges, u.flags
-	FROM users u
-	INNER JOIN users_stats s ON s.id = u.id
-	WHERE u.`+param+` = ? LIMIT 1`, strings.TrimSpace(u)).Scan(
+	err := db.QueryRow(fmt.Sprintf(`
+    SELECT 
+        id, password_md5,
+        username, password_version,
+        country, privileges, flags
+    FROM users WHERE %s = ? LIMIT 1`, param), strings.TrimSpace(u)).Scan(
 		&data.ID, &data.Password,
 		&data.Username, &data.PasswordVersion,
 		&data.Country, &data.pRaw, &data.Flags,
@@ -108,7 +107,7 @@ func loginSubmit(c *gin.Context) {
 
 	sess := getSession(c)
 
-	if data.Privileges & common.UserPrivilegePendingVerification > 0 {
+	if data.Privileges&common.UserPrivilegePendingVerification > 0 {
 		setYCookie(data.ID, c)
 		addMessage(c, warningMessage{T(c, "You will need to verify your account first.")})
 		sess.Save()
@@ -116,7 +115,7 @@ func loginSubmit(c *gin.Context) {
 		return
 	}
 
-	if data.Privileges & common.UserPrivilegeNormal == 0 {
+	if data.Privileges&common.UserPrivilegeNormal == 0 {
 		simpleReply(c, errorMessage{T(c, "You are not allowed to login. This means your account is either banned or locked.")})
 		return
 	}
