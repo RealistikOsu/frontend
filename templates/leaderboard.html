@@ -120,7 +120,7 @@ KyutGrill=leaderboard2.jpg
 						<a :data-tooltip="countryName(user.country)" :href="'/leaderboard?c='+user.country">
 							<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
 						</a>
-						<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'rx='+relaxInt" style="color: #ffffff;">
+						<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
 							<% user.username %>
 						</a>
 					</div>
