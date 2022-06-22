@@ -346,30 +346,6 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, "https://discord.gg/8ySdzhyMtt")
 	})
 
-	r.POST("/mergers/tanuki", func(c *gin.Context) {
-		ctx := getContext(c)
-		username := c.PostForm("username")
-		passwd := c.PostForm("password")
-
-		rd.Publish("merger:merge_user:1", fmt.Sprintf("%s/|/%s/|/%d", username, passwd, ctx.User.ID))
-
-		// sleep for 200ms
-		time.Sleep(200 * time.Millisecond)
-		c.Redirect(302, "/mergers/tanuki")
-	})
-
-	r.POST("/mergers/katsumi", func(c *gin.Context) {
-		ctx := getContext(c)
-		username := c.PostForm("username")
-		passwd := c.PostForm("password")
-
-		rd.Publish("merger:merge_user:2", fmt.Sprintf("%s/|/%s/|/%d", username, passwd, ctx.User.ID))
-
-		// sleep for 200ms
-		time.Sleep(200 * time.Millisecond)
-		c.Redirect(302, "/mergers/katsumi")
-	})
-
 	loadSimplePages(r)
 
 	r.NoRoute(notFound)

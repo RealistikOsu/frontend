@@ -37,3 +37,17 @@
 .c-hidden {
     display: none !important;
 }
+
+#comments img {
+    width: 100px;
+}
+
+@media screen and (max-width: 900px) {
+    #comments .two {
+        display: none !important;
+    }
+
+    #comments .fourteen {
+        width: 100% !important;;
+    }
+}
