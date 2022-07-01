@@ -53,22 +53,27 @@
 					</form>
 				</div>
 				<div class="ui right aligned segment">
-					<button tabindex="5" class="ui button inverted blue" type="submit" form="register-form">{{ .T "Submit" }}</button>
+					<button tabindex="5" class="ui button inverted blue" type="submit" form="register-form" id="THESUBMIT">{{ .T "Submit" }}</button>
 				</div>
 			</div>
 		</div>
 		<script language='javascript' type='text/javascript'>
 		    function check(input) {
+				const submit_btn = document.getElementById("THESUBMIT")
 				if (input.value != document.getElementById('password').value) {
 					if (!window.isDisplayed) {
 						showMessage("warning", "Both password values must match!");
 						window.isDisplayed = true;
+	
+						submit_btn.disabled = true;
 					}
 		        } else {
 					const elements = document.getElementsByClassName("ui icon message black warning");
 					while (elements.length > 0) elements[0].remove();
 					window.isDisplayed = false;
-				}
+
+					submit_btn.disabled = false;
+		        }
 		    }
 		</script>
 	{{ end }}
