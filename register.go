@@ -111,9 +111,11 @@ func registerSubmit(c *gin.Context) {
 		return
 	}
 
-	res, err := db.Exec(`INSERT INTO users(username, username_safe, password_md5, salt, email, register_datetime, privileges, password_version)
-							  VALUES (?,        ?,             ?,            '',   ?,     ?,                 ?,          2);`,
-		username, safeUsername(username), pass, c.PostForm("email"), time.Now().Unix(), common.UserPrivilegePendingVerification)
+	// Generate a random api key
+
+	res, err := db.Exec(`INSERT INTO users(username, username_safe, password_md5, salt, email, register_datetime, privileges, password_version, api_key)
+							  VALUES (?,        ?,             ?,            '',   ?,     ?,                 ?,          2, ?);`,
+		username, safeUsername(username), pass, c.PostForm("email"), time.Now().Unix(), common.UserPrivilegePendingVerification, randSeq(64))
 	if err != nil {
 		registerResp(c, errorMessage{T(c, "Whoops, an error slipped in. You might have been registered, though. I don't know.")})
 		return
