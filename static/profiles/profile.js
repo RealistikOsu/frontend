@@ -280,20 +280,11 @@ function formatOnlineStatusBeatmap(a) {
 
 function loadOnlineStatus() {
 	// load in-game status through delta api
-	banchoAPI('clients/' + userID, {}, function (resp) {
-
-		var client = null;
-		resp.clients.forEach(function (el) {
-			if (el.type === 0 || client === null) {
-				client = el
-			}
-		});
-		if (client !== null) {
+	regularAPI('status/' + userID, {}, function (resp) {
+		if (resp.code === 200) {
 			var innerHtml, hexColour;
-			switch (client.type) {
-				case 0: {
 					// bancho
-					switch (client.action.text.id) {
+					switch (resp.action.id) {
 						case 1: {
 							// AFK
 							hexColour = "rgb(10, 10, 10)"
@@ -302,17 +293,17 @@ function loadOnlineStatus() {
 						case 2: {
 							// Playing
 							hexColour = "rgb(140, 160, 160)"
-							innerHtml = `<span class data-tooltip="Playing ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break
 						case 3: {
 							// Editing
 							hexColour = "rgb(160, 60, 60)"
-							innerHtml = `<span class data-tooltip="Editing ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 4: {
 							// Modding
 							hexColour = "rgb(60, 160, 60)"
-							innerHtml = `<span class data-tooltip="Modding ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 5: {
 							// In match
@@ -322,7 +313,7 @@ function loadOnlineStatus() {
 						case 12: {
 							// Playing multi
 							hexColour = "rgb(221, 190, 0)"
-							innerHtml = `<span class data-tooltip="Multiplaying ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						case 11: {
 							// In lobby
@@ -331,7 +322,7 @@ function loadOnlineStatus() {
 						}; break;
 						case 6: {
 							// Spectating.
-							innerHtml = `<span class data-tooltip="Spectating ${client.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
+							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						}; break;
 						default: {
 							// online
@@ -339,8 +330,7 @@ function loadOnlineStatus() {
 							innerHtml = `<span class data-tooltip="Online"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
 						};
 					}
-				}; break;
-			}
+			
 		} else {
 			// offline
 			// we wont pulse if they are offline.

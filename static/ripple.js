@@ -502,15 +502,11 @@ $(document)
     // Color navbar avatar (if we're logged in) based on our bancho status
     // (propritize bancho over irc)
     if (isLoggedIn()) {
-      banchoAPI('clients/' + currentUserID, {}, function(resp) {
+      regularAPI('status/' + currentUserID, {}, function(resp) {
         var onlineClass = "offline";
-        resp.clients.forEach(function(el) {
-          if (el.type === 0) {
-            onlineClass = "online";
-          } else if (el.type === 1 && onlineClass !== "online") {
-            onlineClass = "irc";
-          }
-        });
+        if (resp.code === 200) {
+          onlineClass = "online";
+        }
         $("#avatar").addClass(onlineClass);
       })
     }
