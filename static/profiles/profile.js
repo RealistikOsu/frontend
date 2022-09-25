@@ -279,9 +279,10 @@ function formatOnlineStatusBeatmap(a) {
 }
 
 function loadOnlineStatus() {
+	return
 	// load in-game status through delta api
 	regularAPI('status/' + userID, {}, function (resp) {
-		if (resp.code === 200) {
+		if (resp?.code === 200) {
 			var innerHtml, hexColour;
 					// bancho
 					switch (resp.action.id) {
@@ -335,7 +336,7 @@ function loadOnlineStatus() {
 			// offline
 			// we wont pulse if they are offline.
 			hexColour = "rgb(10, 10, 10)"
-			innerHtml = `<span class data-tooltip="Offline"><img alt="avatar" src="https://a.ussr.pl/${userID}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">`;
+			innerHtml = `<span class data-tooltip="Offline">`;
 		}
 
 		document.documentElement.style.setProperty('--pulse-color', hexColour);
