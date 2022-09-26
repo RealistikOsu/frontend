@@ -141,8 +141,8 @@ $(document).ready(function () {
 		i18next.on("loaded", function () {
 			i();
 		});
-	loadOnlineStatus();
-	setInterval(loadOnlineStatus, 10000);
+	//loadOnlineStatus();
+	//setInterval(loadOnlineStatus, 10000);
 });
 
 function updateChartData(mode, rx) {
