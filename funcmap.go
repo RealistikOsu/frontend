@@ -523,6 +523,16 @@ var funcMap = template.FuncMap{
 	"hhmm": func(seconds float64) string {
 		return fmt.Sprintf("%02dh %02dm", int(math.Floor(seconds/3600)), int(math.Floor(seconds/60))%60)
 	},
+	"mergerRequest": func(path string, qs ...interface{}) map[string]interface{} {
+		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:8922/"+path, qs...))
+		if err != nil {
+			return nil
+		}
+		x := make(map[string]interface{})
+		data, _ := ioutil.ReadAll(d.Body)
+		json.Unmarshal(data, &x)
+		return x
+	},
 }
 
 var localeLanguages = []string{"de", "pl", "it", "es", "ru", "fr", "nl", "ro", "fi", "sv", "vi", "th", "ko"}
