@@ -136,7 +136,7 @@
 			{{ if $global.Frozen }}
 				<div class="ui warning centered message black">
 					<div class="content">
-						{{ $global.T "<p>User is <b>frozen</b>. This means they have to provide a liveplay or else they will be automatically restricted</p>." | html }}
+						{{ $global.T "<p>User is <b>frozen</b>. This means they have to provide a liveplay or else they will be automatically restricted.</p>" | html }}
 					</div>
 				</div>
 			{{ else if has .privileges 1073741824 }}
