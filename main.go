@@ -356,7 +356,7 @@ func generateEngine() *gin.Engine {
 			return
 		}
 
-		username := c.PostForm("username")
+		username := safeUsername(c.PostForm("username"))
 		passwd := c.PostForm("password")
 		rosuId := ctx.User.ID
 

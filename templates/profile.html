@@ -105,6 +105,7 @@
 				{{ $restr := not (has .privileges 1) }}
 				{{ $disab := not (has .privileges 2) }}
 				{{ $pend  := has .privileges 1048576 }}
+				{{ $is_bot  := has .privileges 1073741824 }}
 				{{ if and $disab $restr }}
 					{{ if $pend }}
 						<div class="ui warning centered message black">
@@ -135,6 +136,12 @@
 					<div class="ui warning centered message black">
 						<div class="content">
 							{{ $global.T "<p>User is <b>frozen</b>. This means they have to provide a liveplay or else they will be automatically restricted</p>." | html }}
+						</div>
+					</div>
+				{{ else if $is_bot}}
+					<div class="ui warning centered message black">
+						<div class="content">
+							{{ $global.T "<p>This is a <b>bot account</b>. This means that it does not represent a player, but rather is meant to offer in-game functionality.</p>" | html }}
 						</div>
 					</div>
 				{{ end }}
