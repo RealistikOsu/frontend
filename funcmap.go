@@ -440,7 +440,7 @@ var funcMap = template.FuncMap{
 	},
 	// calculateDonorPrice calculates the price of x donor months in POUNDS I THINK.
 	"calculateDonorPrice": func(a float64) string {
-		return fmt.Sprintf("%.2f", math.Pow(a*30*0.2, 0.7))
+		return fmt.Sprintf("%.2f", math.Pow(a*3, 0.7))
 	},
 	// csrfGenerate creates a csrf token input
 	"csrfGenerate": func(u int) template.HTML {

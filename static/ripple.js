@@ -272,7 +272,7 @@ var singlePageSnippets = {
     rates = {"EUR":36542.86,"USD":39105.93};
     us.on('update', function() {
       var months = us.get();
-      var priceEUR = Math.pow(months * 30 * 0.2, 0.70);
+      var priceEUR = Math.pow(months * 3, 0.70);
       var priceBTC = priceEUR / rates.EUR;
       var priceUSD = priceBTC * rates.USD;
       $("#cost")
