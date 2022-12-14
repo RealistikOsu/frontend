@@ -61,8 +61,14 @@ Include=menu.html
                             {{ ieForm .Gin }}
                         </form>
                         <br>
-                        <button tabindex="5" class="ui inverted blue primary button" type="submit" form="register-form">{{ .T "Save" }}</button>
+                        <div class="ui divider"></div>
+					<div style="text-align: right">
+						<button tabindex="5" class="ui inverted blue primary button" type="submit" form="register-form">{{ .T "Save" }}</button>
+					</div>
+                        
                     </div>
+                </div>
+                <div class="ui segment">
                     <h3 class="ui header">{{ .T "Invite" }}</h3>
                     
                     <div class="ui two item menu" id="join-menu">
@@ -70,7 +76,9 @@ Include=menu.html
                                 <input class="item" type="text" value="https://ussr.pl/clans/invite/{{ .invite }}" href="https://ussr.pl/clans/invite/{{ .invite }}" style="background-color:rgba(0,0,0,.6)"></input>
                             {{ end }}
                         </div>
-                        <div class="ui buttons">
+                        <div class="ui divider"></div>
+					<div style="text-align: right">
+						<div class="ui buttons">
                             <form action="/settings/clan" method="POST">
                                 {{ ieForm .Gin }}
                                 <button type="submit" class="ui inverted right green button">
@@ -84,6 +92,7 @@ Include=menu.html
                                 </button>
                             </form>
                         </div>
+					</div>
                         {{ else }}
                             <font size="3">{{ $.T "You can only manage a clan if you own it!" }}</font>
                         {{ end }}
