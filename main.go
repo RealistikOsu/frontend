@@ -340,7 +340,7 @@ func generateEngine() *gin.Engine {
 	r.GET("/settings/discord-integration/unlink", discordUnlink)
 	r.GET("/settings/discord-integration/redirect", discordRedirCheck)
 
-	r.POST("/settings/clansettings", createInvite)
+	r.POST("/settings/clan", createInvite)
 	r.POST("settings/clansettings/k", clanKick)
 	r.GET("/clans/invite/:inv", clanInvite)
 	r.POST("/c/:cid", leaveClan)

@@ -14,7 +14,12 @@ NoCompile=true
 
 		{{ navbarItem .Path (.T "Discord Linking") "/settings/discord-integration" }}
 
-		{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
+		{{ $d := qb "SELECT 1 FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
+		{{ if $d }}
+			{{ navbarItem .Path (.T "Clan Settings") "/settings/clan" }}
+		{{ else }}
+			{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
+		{{ end }}
 
 		{{/* Stuff for donators */}}
 		{{/* if has .Context.User.Privileges 4 */}}

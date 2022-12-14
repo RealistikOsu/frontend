@@ -257,7 +257,7 @@ func createInvite(c *gin.Context) {
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
-	c.Redirect(302, "/settings/clansettings")
+	c.Redirect(302, "/settings/clan")
 }
 
 func clanInvite(c *gin.Context) {
@@ -353,7 +353,7 @@ func clanKick(c *gin.Context) {
 	rd.Publish("rosu:clan_update", c.PostForm("member"))
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
-	c.Redirect(302, "/settings/clansettings")
+	c.Redirect(302, "/settings/clan")
 }
 
 func resolveInvite(c string) int {
