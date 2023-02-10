@@ -178,7 +178,7 @@ func beatmapInfo(c *gin.Context) {
 }
 
 func getBeatmapData(b string) (beatmap Beatmap, err error) {
-	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&b=" + b)
+	resp, err := http.Get("http://80.65.211.47:8080/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&b=" + b)
 	if err != nil {
 		return beatmap, err
 	}
@@ -203,7 +203,7 @@ func getBeatmapData(b string) (beatmap Beatmap, err error) {
 
 func getBeatmapSetData(parentID string) (bset []Beatmap, err error) {
 	//rand.Seed(time.Now().Unix())
-	resp, err := http.Get("https://old.ppy.sh/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&s=" + parentID)
+	resp, err := http.Get("http://80.65.211.47:8080/api/get_beatmaps?k=" + API_KEYS[rand.Intn(len(API_KEYS))] + "&s=" + parentID)
 	if err != nil {
 		return bset, err
 	}

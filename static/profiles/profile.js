@@ -146,7 +146,14 @@ $(document).ready(function () {
 });
 
 function updateChartData(mode, rx) {
-	fetch(`https://api.ussr.pl/users/rank_graph?id=${userID}&relax=${rx}&mode=${mode}`)
+
+	if (rx == 1) {
+		mode += 4
+	} else if (rx == 2) {
+		mode += 7
+	}
+
+	fetch(`https://ussr.pl/api/v1/profile-history/rank?user_id=${userID}&mode=${mode}`)
 		.then(res => res.json())
 		.then((out) => {
 			let node = document.getElementById("graphNoData");
@@ -154,17 +161,24 @@ function updateChartData(mode, rx) {
 				node.parentNode.removeChild(node);
 			}
 
-			window.chart.data.labels = createLabels(out.data)
-			window.chart.data.datasets[0].data = out.data;
-			window.chart.options.scales.yAxes[0].ticks.min = Math.min(...out.data);
-			window.chart.options.scales.yAxes[0].ticks.max = Math.max(...out.data);
+			console.log(out)
+
+			window.graphPoints = []
+			if (out.status != "error") {
+				window.graphPoints = out.data.captures.map((x) => x.overall);
+			}
+
+			window.chart.data.labels = createLabels(window.graphPoints)
+			window.chart.data.datasets[0].data = window.graphPoints;
+			window.chart.options.scales.yAxes[0].ticks.min = Math.min(...window.graphPoints);
+			window.chart.options.scales.yAxes[0].ticks.max = Math.max(...window.graphPoints);
 			window.chart.update();
 
-			if (!out.data.length > 0) {
+			if (out.status == "error") {
 				var element = document.getElementById("GraphSegment");
 				let msg = document.createElement("h3")
 				msg.setAttribute("id", "graphNoData");
-				msg.append("No data to display!")
+				msg.append("No graph data to display!")
 				element.append(msg)
 				return
 			}
@@ -174,7 +188,7 @@ function updateChartData(mode, rx) {
 }
 
 function createLabels(data) {
-	var labels = ["now"]
+	var labels = ["Today"]
 	for (var i = 1; i < data.length; i++) {
 		if (i == 1) {
 			labels.push(`1 day ago`)
@@ -186,7 +200,14 @@ function createLabels(data) {
 }
 
 function initialiseChart(mode, rx) {
-	fetch(`https://api.ussr.pl/users/rank_graph?id=${userID}&relax=${rx}&mode=${mode}`)
+
+	if (rx == 1) {
+		mode += 4
+	} else if (rx == 2) {
+		mode += 7
+	}
+
+	fetch(`https://ussr.pl/api/v1/profile-history/rank?user_id=${userID}&mode=${mode}`)
 		.then(res => res.json())
 		.then((out) => {
 			var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
@@ -196,12 +217,19 @@ function initialiseChart(mode, rx) {
 				node.parentNode.removeChild(node);
 			}
 
+			console.log(out)
+
+			window.graphPoints = []
+			if (out.status != "error") {
+				window.graphPoints = out.data.captures.map((x) => x.overall);
+			}
+
 			var data = {
-				labels: createLabels(out.data),
+				labels: createLabels(window.graphPoints),
 				datasets: [{
 					fill: false,
 					label: "Global Rank",
-					data: out.data,
+					data: window.graphPoints,
 					lineTension: 0.3,
 					borderWidth: 3.5,
 					//backgroundColor: 'rgba(15, 151, 255, 0.73)',
@@ -231,8 +259,8 @@ function initialiseChart(mode, rx) {
 							ticks: {
 								beginAtZero: true,
 								reverse: true,
-								min: Math.min(...out.data),
-								max: Math.max(...out.data),
+								min: Math.min(...window.graphPoints),
+								max: Math.max(...window.graphPoints),
 								userCallback: function (label, index, labels) {
 									// when the floored value is the same as the value we have a whole number
 									if (Math.floor(label) === label) {
@@ -259,15 +287,14 @@ function initialiseChart(mode, rx) {
 				}
 			});
 
-			if (!out.data.length > 0) {
+			if (out.status == "error") {
 				var element = document.getElementById("GraphSegment");
 				let msg = document.createElement("h3")
 				msg.setAttribute("id", "graphNoData");
-				msg.append("No data to display!")
+				msg.append("No graph data to display!")
 				element.append(msg)
 				return
 			}
-
 		})
 		.catch(err => { throw err });
 }
