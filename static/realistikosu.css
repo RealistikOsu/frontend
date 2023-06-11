@@ -11,8 +11,7 @@
 */
 
 /* Custom Font Imports */
-@import url('https://fonts.googleapis.com/css2?family=KoHo:wght@300&family=Niramit&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Raleway:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 .rank-sh, .rank-ssh { color:#CDE7E7; }
 .rank-s, .rank-ss { color:#FC2; }
@@ -53,7 +52,8 @@
 }
 
 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    color: rgb(148 163 184);
 }
 
 .container-bar {
@@ -90,7 +90,16 @@ a:hover {
 }
 
 * {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+b {
+    font-weight: 600;
+}
+
+.active {
+    font-weight: 600 !important;
 }
 
 body {
@@ -98,9 +107,9 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6, .header .ui.header {
+/* h1, h2, h3, h4, h5, h6, .header .ui.header {
     font-family: 'KoHo', sans-serif;
-}
+} */
 
 .ripple.logo {
 	padding-top: 4px;
@@ -795,14 +804,17 @@ img.locked-achievement:hover {
 	font-size: 25px; color: white;
 }
 .footer-bg {
-    background: #212121;
-    height: 180px;
+    background: rgb(24, 24, 24);
+    height: 3.5em;
     margin: 10px 0 -30px!important;
-    padding: 25px 0 0;
+    padding: 15px 20px;
     text-align: center;
     flex: 0 0 auto;
     left: 0;
     bottom: 0;
+    align-items: center;
+    color: #FFF;
+    display: flex;
 }
 .ui.stackable.four.grid{
 	margin-top: 3px;
@@ -1362,4 +1374,11 @@ td:last-child {
 .noUi-connect {
     background: #54C8FF !important;
     box-shadow: 0 0 0 2px #54C8FF inset !important;
+}
+
+.item {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
 }

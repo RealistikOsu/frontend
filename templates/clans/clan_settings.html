@@ -1,17 +1,15 @@
 {{/* prettier-ignore-start */}}
 {{/*###
-Handler=/settings/clan
-TitleBar=Clan
+Handler=/clan/manage
+TitleBar=Manage Clan
 Settings KyutGrill=settings2.jpg
-Include=menu.html
 */}}
 {{/* prettier-ignore-end */}}
 {{ define "tpl" }}
   {{ $ := . }}
   <div class="ui container">
     <div class="ui stackable grid">
-      {{ template "settingsSidebar" . }}
-      <div class="twelve wide column">
+      <div class="centered twelve wide column">
         <div class="ui segment">
           {{ $d := qb "SELECT user, clan, perms FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
           {{ $g := or $d.clan.Int -1 }}
