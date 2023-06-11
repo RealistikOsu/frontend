@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/RealistikOsu/FrontendPriv/services"
+	"github.com/RealistikOsu/frontend/services"
 	"github.com/thehowl/cieca"
 	"zxq.co/x/rs"
 )

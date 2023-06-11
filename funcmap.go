@@ -15,9 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RealistikOsu/FrontendPriv/modules/bbcode"
-	"github.com/RealistikOsu/FrontendPriv/modules/doc"
-	fasuimappings "github.com/RealistikOsu/FrontendPriv/modules/fa-semantic-mappings"
+	"github.com/RealistikOsu/frontend/modules/bbcode"
+	"github.com/RealistikOsu/frontend/modules/doc"
+	fasuimappings "github.com/RealistikOsu/frontend/modules/fa-semantic-mappings"
 	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"

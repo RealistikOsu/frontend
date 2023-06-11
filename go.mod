@@ -1,4 +1,4 @@
-module github.com/RealistikOsu/FrontendPriv
+module github.com/RealistikOsu/frontend
 
 go 1.17
 

@@ -17,9 +17,9 @@ import (
 
 	"math/rand"
 
-	"github.com/RealistikOsu/FrontendPriv/routers/pagemappings"
-	"github.com/RealistikOsu/FrontendPriv/services"
-	"github.com/RealistikOsu/FrontendPriv/services/cieca"
+	"github.com/RealistikOsu/frontend/routers/pagemappings"
+	"github.com/RealistikOsu/frontend/services"
+	"github.com/RealistikOsu/frontend/services/cieca"
 	"github.com/fatih/structs"
 	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sessions"

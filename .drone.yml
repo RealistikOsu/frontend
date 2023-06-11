@@ -1,6 +1,6 @@
 workspace:
   base: /go
-  path: src/github.com/RealistikOsu/FrontendPriv
+  path: src/github.com/RealistikOsu/frontend
 
 pipeline:
   build:
