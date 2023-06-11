@@ -6,7 +6,7 @@
 	<img navbar class="navbar-image" id="navimg" src="/static/images/navbar.png">
 	<div class="ui container responsive">
 		<div class="item">
-			<b><a href="/" title="{{ .T "Home page" }}"><img class="ripple logo" alt="RealistikOsu!" style="max-height: 35px;" src="/static/images/new-logo.svg"></a></b>
+			<a href="/" title="{{ .T "Home Page" }}"><img class="ripple logo" alt="Realistik!" style="max-height: 35px;" src="/static/images/new-logo.svg"></a>
 		</div>
 		{{ if $isRAP }}
 			{{/*
@@ -16,44 +16,48 @@
 				the current RAP's sidebar.
 			*/}}
 		{{ else }}
+			{{ navbarItem .Path (.T "Leaderboard") "/leaderboard" }}
 			<div class="ui dropdown item">
-				<span class="text">
-					<i class='fa-solid fa-trophy'></i>&nbsp; {{ .T "Leaderboard" }}
-				</span>
+				<span>{{ .T "Clan" }}</span>
 				<div class="menu">
-					{{ navbarItem .Path (.T "PP/Score Leaderboard") "/leaderboard" }}
-					{{ navbarItem .Path (.T "Clan Leaderboard") "/clanboard" }}
+					{{ if .Context.User.Username }}
+						{{ $isClan := qb "SELECT user, clan FROM user_clans WHERE user = ?" .Context.User.ID }}
+						{{ $clanOwner := qb "SELECT 1 FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
+						{{ if $isClan }}
+							{{ navbarItem .Path (.T "My Clan") ($isClan.clan | printf "/c/%s") }}
+							{{ if $clanOwner }}
+								{{ navbarItem .Path (.T "Manage Clan") "/clan/manage" }}
+							{{ end }}
+						{{ else }}
+							{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
+						{{ end }}
+					{{ end }}
+					{{ navbarItem .Path (.T "Leaderboard") "/clanboard" }}
 				</div>
 			</div>
-			{{ navbarItem .Path (.T "Score Feed" | printf "<i class='fa-solid fa-rss'></i>&nbsp; %s") "/scores" }}
 			<div class="ui dropdown item">
-				<span class="text">
-					<i class="fa-solid fa-circle-info"></i>&nbsp; {{ .T "Help" }}
-				</span>
+				<span>{{ .T "Support" }}</span>
 				<div class="menu">
-					{{ navbarItem .Path (.T "About") "/about" }}
 					{{ navbarItem .Path (.T "Rules") "/doc/rules" }}
-					{{ navbarItem .Path (.T "Server Switcher (Deprecated)") "/static/ROS.exe" }}
+					{{ navbarItem .Path (.T "Documentation") "/doc" }}
+					{{ navbarItem .Path (.T "Connection Guide") "/connect" }}
 					{{ navbarItem .Path (.T "Our Team") "/team" }}
 				</div>
 			</div>
-			{{ if .Context.User.Username }}
-				<div class="ui dropdown item">
-					<span class="text">
-						<i class="fa-solid fa-layer-group"></i>&nbsp; {{ .T "Beatmaps" }}
-					</span>
-					<div class="menu">
-						{{ navbarItem .Path (.T "Request Beatmap Ranking") "/rank_request" }}
-						{{ navbarItem .Path (.T "Beatmaps Listing") "/bmaps_listing" }}		
-					</div>
+			<div class="ui dropdown item">
+				<span>{{ .T "Beatmaps" }}</span>
+				<div class="menu">
+					{{ navbarItem .Path (.T "Beatmap Listing") "/beatmap_listing" }}
+					{{ if .Context.User.Username }}
+						{{ navbarItem .Path (.T "Request Beatmap") "/rank_request" }}
+					{{ end }}
 				</div>
-				{{ navbarItem .Path (.T "Donate" | printf "<i class='fa-solid fa-heart'></i>&nbsp; %s") "/donate" }}
-			{{ end }}
-			{{ if $isAdmin }}
-				{{ navbarItem .Path (.T "Admin Panel" | printf "<i class='fa-solid fa-toolbox'></i>&nbsp; <b>%s</b>") "https://old.ussr.pl" }}
-			{{ end }}
+			</div>
 		{{ end }}
 		<div class="firetrucking-right-menu">
+			{{ if .Context.User.Username }}
+				{{ navbarItem .Path (.T "❤ Support us!") "/donate" }}
+			{{ end }}
 			<div class="item">
 				<div class="ui search" id="user-search">
 					<div class="ui icon input">
@@ -64,11 +68,17 @@
 			</div>
 			{{ if .Context.User.Username }}
 				<div class="ui dropdown item">
-					<img id="avatar" class="ui avatar image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
+					<div style="display: flex; gap: 9px; align-items: center;">
+						<span>{{ .T "Hi" }} <b>{{ .Context.User.Username }}</b></span>
+						<img id="avatar" class="ui avatar image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
+					</div>
 					<div class="menu">
 						{{ navbarItem .Path (.T "Profile") (printf "/u/%d" .Context.User.ID) }}
 						{{ navbarItem .Path (.T "Friends") "/friends" }}
 						{{ navbarItem .Path (.T "Settings") "/settings" }}
+						{{ if $isAdmin }}
+							{{ navbarItem .Path (.T "Admin Panel" | printf "<b>%s</b>") "https://old.ussr.pl" }}
+						{{ end }}
 						{{ navbarItem .Path (.T "Log out") (printf "/logout?k=%s" (.Session.Get "logout")) }}
 					</div>
 				</div>
