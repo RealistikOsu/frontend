@@ -660,8 +660,8 @@ body.ds .white.background {
 code {
 	padding: 2px 4px;
 	font-size: 90%;
-	color: #c7254e;
-	background-color: #f9f2f4;
+	color: #fff;
+    background-color: #0f0f0f;
 	border-radius: 4px;
 	font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 }
