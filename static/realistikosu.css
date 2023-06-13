@@ -1406,3 +1406,33 @@ td:last-child {
         margin-top: 6px !important;
     }
 }
+
+.lb-username {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.lb-country {
+    display: flex !important;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+@media only screen and (max-width: 767px) {
+    .lb-username {
+        justify-content: center;
+    }
+}
+
+.l-player.index-1 {
+    background: linear-gradient(-45deg, rgb(46, 46, 46) 92%, rgb(251, 189, 8) 100%);
+}
+
+.l-player.index-2 {
+    background: linear-gradient(-45deg, rgb(46, 46, 46) 92%, rgb(118, 118, 118) 100%);
+}
+
+.l-player.index-3 {
+    background: linear-gradient(-45deg, rgb(46, 46, 46) 92%, rgb(165, 103, 63) 100%);
+}

@@ -111,16 +111,14 @@ KyutGrill=leaderboard2.jpg
 			</tr>
 		</thead>
 		<tbody id="table-scores">
-			<tr class="l-player" v-for="(user, index) in data">
-				<td class="center aligned">
+			<tr :class="'l-player index-'+(index + 1 + (50 * (page - 1)))" v-for="(user, index) in data">
+				<td :class="(mobileCheck==false ? 'center aligned' : '')">
 					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
-					<div style="display: inline; white-space:nowrap">
-						<a :data-tooltip="countryName(user.country)" :href="'/leaderboard?c='+user.country">
-							<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
-						</a>
-						<a title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
+					<div class="lb-username">
+						<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
+						<a class="link-text" title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
 							<% user.username %>
 						</a>
 					</div>
@@ -144,6 +142,26 @@ KyutGrill=leaderboard2.jpg
                 </td>
 			</tr>
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="5">
+					<div class="simplepag">
+						<div class="ui left floated pagination menu">
+							<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&p='+(page-1)+'&c='+country" :class="'icon item '+((page - 1) == 0 ? 'disabled' : '')"
+					            @click="loadLeaderboardData(sort, mode, relax, page - 1, country)">
+					            <i class="left chevron icon"></i>
+					        </a>
+						</div>
+						<div class="ui right floated pagination menu">
+							<a :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&p='+addOne(page)+'&c='+country" :class="'icon item '+(data.length != 50 ? 'disabled' : '')"
+					            @click="loadLeaderboardData(sort, mode, relax, addOne(page), country)">
+					            <i class="right chevron icon"></i>
+					        </a>
+						</div>
+					</div>
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 	<div class="ui modal">
 		<div class="content">
@@ -151,7 +169,7 @@ KyutGrill=leaderboard2.jpg
 				{{ range countryList 500 }}
 					{{ $short := . }}
 					{{ with country . true }}
-						<div :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{$short}}'" class="ui clickable column lb-country" @click="loadLeaderboardData(sort, mode, relax, 1, '{{$short}}')">{{ . }}</div>
+						<div :href="'/leaderboard?m='+mode+'&sort='+sort+'&rx='+relax+'&c={{$short}}'" class="ui clickable column lb-country link-text" @click="loadLeaderboardData(sort, mode, relax, 1, '{{$short}}')">{{ . }}</div>
 					{{ end }}
 				{{ end }}
 			</div>
