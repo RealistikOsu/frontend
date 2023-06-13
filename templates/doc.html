@@ -15,7 +15,7 @@ HugeHeadingRight=true
 				{{ if . }}
 					<ul class="ui list">
 						{{ range . }}
-							<li><a href="/doc/{{ .Slug }}">{{ .Title }}</a></li>
+							<li><a class="link-text" href="/doc/{{ .Slug }}"><b>{{ .Title }}</b></a></li>
 						{{ end }}
 					</ul>
 				{{ else }}
