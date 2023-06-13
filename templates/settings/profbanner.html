@@ -10,7 +10,7 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
 <div class="ui container">
 	<div class="ui stackable grid">
 		{{ template "settingsSidebar" . }}
-		<div class="twelve wide column">
+		<div class="twelve wide column {{ if not $isSupporter }}center aligned{{ end }}" {{ if not $isSupporter }}style="align-self: center !important;"{{ end }}>
 			<div class="ui {{ if $isSupporter }}center aligned{{ end }} segment">
 				{{ if not $isSupporter }}
 				{{ template "supporter_only" . }}

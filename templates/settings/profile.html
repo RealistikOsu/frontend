@@ -15,12 +15,12 @@ MinPrivileges=2
 					{{ $d := .Get "users/self/settings" }}
 					<h3 class="ui header">{{ .T "General" }}</h3>
 					<div class="field">
-						<label><a href="https://discord.gg/8ySdzhyMtt">{{ .T "Username" }}</a></label>
+						<label><a class="link-text" href="https://ussr.pl/discord"><b>{{ .T "Username" }}</b></a></label>
 						<input type="text" value="{{ .Context.User.Username }}" disabled>
 					</div>
 					<div class="field">
 						<label>
-							<a href="/settings/password">{{ .T "Email address" }}</a>
+							<a class="link-text" href="/settings/password"><b>{{ .T "Email address" }}</b></a>
 						</label>
 						<input type="email" value="{{ $d.email }}" placeholder="{{ .T "Email address" }}" required disabled>
 					</div>
