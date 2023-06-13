@@ -1,5 +1,5 @@
 .map{
-    border-radius: .28571429rem;
+    border-radius: 1rem;
     width:100%;
     min-height:145px;
     display:inline-block;
@@ -20,7 +20,7 @@ i.icon.download:before{
     color: #fff!important;
 }
 .status{
-    border-radius: .28571429rem;
+    border-radius: 1rem;
     font-weight:500;
     z-index:3;
     position:absolute;
@@ -144,6 +144,14 @@ i.icon.download:before{
     overflow:hidden;
     display:flex;
     align-items:center
+}
+
+#mode-button {
+    border-radius: 500rem;
+}
+
+#status-button {
+    border-radius: 500rem;
 }
 
 .map * {
