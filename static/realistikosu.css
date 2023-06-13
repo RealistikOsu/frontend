@@ -1183,18 +1183,11 @@ td [data-tooltip] {
 }
 
 .navbar-image {
-    -webkit-transition: opacity, margin-top .3s ease;
-    -moz-transition: opacity, margin-top .3s ease;
-    -o-transition: opacity, margin-top .3s ease;
-    transition: opacity, margin-top .3s ease;
     position: absolute;
-    max-width: 100.3%;
+    left: 0;
+    top: 0;
+    width: 100%;
     filter: hue-rotate(-130deg);
-}
-@media(max-height: 717px) {
-    .navbar-image {
-        max-width: 101%;
-    }
 }
 
 .landing-graph__area {
