@@ -23,12 +23,12 @@ MinPrivileges=2
 				<div class="progress2 progress-moved" style="position: relative; top: 5px;--bar-percentage: {{ $perc }}%;">
                   <div class="progress-bar2"></div>
 	            </div>
-	            <p style="position: relative; top: 6px;right:-257px;">{{ $perc }}%</p>
+	            <p style="position: relative; display: flex; justify-content: end; margin-top: 5px;">{{ $perc }}%</p>
 			</div>
 			{{ if .can_submit }}
 				<form class="ui form" id="b-form" style="position: relative; top: 5px;">
 					<div class="ui fluid action input">
-						<input tabindex="1" type="text" placeholder="eg. https://ussr.pl/beatmaps/1918979" id="beatmap" required>
+						<input style="border-top-left-radius: 1rem !important;border-bottom-left-radius: 1rem !important;" tabindex="1" type="text" placeholder="eg. https://ussr.pl/beatmaps/1918979" id="beatmap" required>
 						{{ $f }}
 						<button tabindex="2" class="ui button inverted blue">
 							{{ $.T "Submit" }}
