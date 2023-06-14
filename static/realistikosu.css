@@ -53,14 +53,14 @@
 }
 
 .link-text:not(.ui.button):not(.item) {
-    color: #FFFFFF;
-    transition-duration: 150ms !important;
-    transition-timing-function: cubic-bezier(0, 0, 0.2, 1) !important;
+    color: #FFFFFF !important;
+    transition: 0.2s ease !important;
 }
 
 .link-text:not(.ui.button):not(.item):hover {
     text-decoration: none;
-    opacity: 0.6;
+    color: #FFFFFF !important;
+    opacity: 0.6 !important;
 }
 
 .container-bar {
@@ -1427,9 +1427,21 @@ td:last-child {
     align-items: center;
 }
 
+.clan.icon {
+    margin-right: 1rem;
+    object-fit: cover;
+    overflow: auto;
+    width: 120px !important;
+    height: 120px !important;
+}
+
 @media only screen and (max-width: 767px) {
     .lb-username {
         justify-content: center;
+    }
+
+    .clan.icon {
+        margin-right: 7rem;
     }
 }
 

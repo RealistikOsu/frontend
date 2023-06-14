@@ -30,11 +30,14 @@ Include=clan_members.html
 					</div>
 				{{ end }}
 				<div class="table element">
+					<div class="subtitle">
+						{{ $global.T "[%s]" (.tag | htmlescaper) | html }}
+					</div>
 					<h1 class="ui header">
 						{{ $global.T "%s" .name | html }}
 					</h1>
 					<div class="subtitle">
-						{{ $global.T "(%s)" (.tag | htmlescaper) | html }}
+						{{ $global.T "%s" (.description | htmlescaper) | html }}
 					</div>
 				</div>
 			</div>
@@ -51,14 +54,16 @@ Include=clan_members.html
 				<a id="click{{ $v }}" class="item {{ if eq $k (int $mode) }}active{{ end }}" data-mode="{{ $k }}" href="/c/{{ $id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
 			{{ end }}
 		</div>
-
 		<div class="ui segment">
 				<div class="ui two column divided stackable grid">
 					<div class="row">
 						<div class="column">
-							{{ $global.T "%s" (.description | htmlescaper) | html }}
+							<h3 class="ui horizontal divider header">
+								<i class="bar chart icon"></i>
+								{{ $global.T "Clan Statistics" }}
+							</h3>
+							
 		{{ end }}
-							<br><br>
 							<div id="stats-zone">
 								<table class="ui very basic two column compact table nopad">
 									<tbody>
@@ -114,10 +119,7 @@ Include=clan_members.html
 				</div>
 				<div class="ui aligned segment">
 					<h1 class="ui heading">{{ .T "Members" }}</h1>
-					<p>
-						{{ .T "The members of the clan." }}<br>
-					</p>
-						{{ template "clanMembers" (.Get "clans/members?id=%d&r=%d" .ClanID 1) }}
+					{{ template "clanMembers" (.Get "clans/members?id=%d&r=%d" .ClanID 1) }}
 				</div>
 			</div>
 		{{ end }}
