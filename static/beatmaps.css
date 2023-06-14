@@ -147,11 +147,11 @@ i.icon.download:before{
 }
 
 #mode-button {
-    border-radius: 500rem;
+    border-radius: 1rem;
 }
 
 #status-button {
-    border-radius: 500rem;
+    border-radius: 1rem;
 }
 
 .map * {
