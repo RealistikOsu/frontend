@@ -90,19 +90,19 @@ Include=clan_members.html
 												<form id="register-form" class="ui form" method="post" action="/c/{{ .ClanID }}">
 													{{ ieForm .Gin }}
 												</form>
-												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.5)" type="submit" form="register-form">{{ .T "Disband Clan" }}</button></div>
+												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.5); width: 100%;" type="submit" form="register-form">{{ .T "Disband Clan" }}</button></div>
 											{{ else }}
 												<form id="register-form" class="ui form" method="post" action="/c/{{ .ClanID }}">
 													{{ ieForm .Gin }}
 												</form>
-												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.3)" type="submit" form="register-form">{{ .T "Leave Clan" }}</button></div>
+												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.3); width: 100%;" type="submit" form="register-form">{{ .T "Leave Clan" }}</button></div>
 											{{ end }}
 										{{ else }}
-											<div class="ui one item menu" id="join-menu"><a class="item" style="background-color:rgba(255,0,0,.3)">Already joined a clan</a></div>
+											<div class="ui one item menu" id="join-menu"><span class="item" style="background-color:rgba(255,0,0,.3); width: 100%;">Already joined a clan</span></div>
 										{{ end }}
 									{{ end }}
 							{{ else }}
-								<div class="ui one item menu" id="join-menu"><a class="item" href="/login" style="background-color:rgba(0,128,255,.3)">Please login to join a clan</a></div>
+								<div class="ui one item menu" id="join-menu"><a class="item" href="/login" style="background-color:rgba(0,128,255,.3); width: 100%;">Please login to join a clan</a></div>
 							{{ end }}
 								<h1 class="ui heading">{{ .T "Clan Owner" }}</h1>
 								<p>
