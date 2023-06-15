@@ -1168,6 +1168,16 @@ td [data-tooltip] {
     transform: translateY(-50%);
 }
 
+[data-tooltip]::before {
+    background: #141414 !important;
+}
+
+[data-tooltip]::after {
+    background: #141414 !important;
+    padding: 0.6rem 1.2rem !important;
+    border: none !important;
+}
+
 :root {
     --pulse-color: green;
 }
