@@ -101,7 +101,7 @@ KyutGrill=leaderboard2.jpg
 			</tr>
 			<tr>
 				<th class="t-heading center aligned">Rank</th>
-				<th id="t-player" :class="'t-heading t-player'+(mobileCheck==true ? 'center aligned' : '')">Player Name</th>
+				<th id="t-player" :class="'t-heading t-player'+(mobileCheck()==true ? 'center aligned' : '')">Player Name</th>
 				<th v-if="sort == 'pp' || sort == 'score'" class="t-heading center aligned">
 					<% (sort=='pp' ? "Performance Points" : "" ) %>
 					<% (sort=='score' ? "Score" : "" ) %>
@@ -112,7 +112,7 @@ KyutGrill=leaderboard2.jpg
 		</thead>
 		<tbody id="table-scores">
 			<tr :class="'l-player index-'+(index + 1 + (50 * (page - 1)))" v-for="(user, index) in data">
-				<td :class="(mobileCheck==false ? 'center aligned' : '')">
+				<td :class="(mobileCheck()==false ? 'center aligned' : '')">
 					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
