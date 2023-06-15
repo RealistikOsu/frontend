@@ -116,12 +116,12 @@ KyutGrill=leaderboard2.jpg
 					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
-					<div class="lb-username">
-						<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
-						<a class="link-text" title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
+					<a class="link-text" title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
+						<div class="lb-username">
+							<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
 							<% user.username %>
-						</a>
-					</div>
+						</div>
+					</a>
 				</td>
 				<td class="center aligned" v-if="sort == 'pp'">
 					<b><% addCommas(user.chosen_mode.pp) %>pp</b>
@@ -165,7 +165,7 @@ KyutGrill=leaderboard2.jpg
 	</table>
 	<div class="ui modal">
 		<div class="content">
-			<div class="ui four column grid">
+			<div :class="'ui ' + (mobileCheck() == false ? 'four' : 'two') + ' column grid'">
 				{{ range countryList 500 }}
 					{{ $short := . }}
 					{{ with country . true }}
