@@ -29,7 +29,7 @@
 		<link rel="stylesheet" type="text/css" href="/static/realistikosu.css">
 		<!-- <link rel="stylesheet" type="text/css" href="/static/flags.css"> -->
 		<!--LOADING BARZZZ-->
-		<script src="/static/js/pace.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 		<link href="/static/css/loadingbar.css" rel="stylesheet" />
 		<script src="/static/dist.min.js"></script>
 		
@@ -46,7 +46,7 @@
 			{{ end }}>
 			{{ template "navbar" . }}
 			{{ if not .DisableHH }}
-				<div class="huge heading {{ if .HeadingOnRight }}right{{ end }} dropped">
+				<div class="huge heading {{ if .HeadingOnRight }}right{{ end }} dropped" style="position: relative; z-index: -1">
 					<div id="snow-container" style="background-image: url('{{ if .KyutGrillAbsolute }}{{ .KyutGrill }}{{ else }}/static/headers/{{ or .KyutGrill "default.jpg" }}{{ end }}'); filter: blur(4px); z-index: 0;background-repeat: no-repeat;background-position: center bottom;background-size: cover;">
 						<div>
 							<div class="snow large"></div>
@@ -133,8 +133,8 @@
 
 		<div class="footer-bg">
 			<div class="ui container centered">
-				© 2023 Realistik! Not affiliated with "ppy" and "osu!" in any way.
-				<a href="https://github.com/RealistikOsu"><i class="fa-brands fa-github"></i> Github</a>
+				© 2023 RealistikOsu! Not affiliated with "ppy" and "osu!" in any way.
+				<a href="https://github.com/RealistikOsu" class="link-text"><b><i class="fa-brands fa-github"></i> Github</b></a>
 			</div>
 		</div>
 		{{/* If we got some more scripts to print, print'em */}}

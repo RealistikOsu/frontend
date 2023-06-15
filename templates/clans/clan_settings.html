@@ -98,42 +98,41 @@ Settings KyutGrill=settings2.jpg
           </div>
             <div class="ui segment">
               <h3 class="ui header">{{ .T "Invite" }}</h3>
-
-              <div class="ui two item menu" id="join-menu">
-                {{ with .Get "clans/getinvite?id=%d" .Context.User.ID }}
-                  <input
-                    class="item"
-                    type="text"
-                    value="https://ussr.pl/clans/invite/{{ .invite }}"
-                    href="https://ussr.pl/clans/invite/{{ .invite }}"
-                    style="background-color: rgba(0, 0, 0, 0.6)" />
-                {{ end }}
-              </div>
-              <div class="ui divider"></div>
-              <div class="ui grid" style="justify-content: right">
-                <div class="row">
-                  <form action="/settings/clan" method="POST">
-                    {{ ieForm .Gin }}
-                    <div
-                      class="five wide column right floated"
-                      style="margin-right: 1em">
-                      <button
-                        type="submit"
-                        class="ui inverted right green button">
-                        {{ $.T "Generate a new invite!" }}
-                      </button>
-                    </div>
-                  </form>
-                  <form action="/c/{{ $o }}" method="POST">
-                    {{ ieForm .Gin }}
-                    <div class="five wide column right floated">
-                      <button
-                        type="submit"
-                        class="ui inverted right red button">
-                        {{ $.T "Disband Clan!" }}
-                      </button>
-                    </div>
-                  </form>
+              <div class="ui segment">
+                <div style="background: transparent;" class="ui two item menu" id="join-menu">
+                  {{ with .Get "clans/getinvite?id=%d" .Context.User.ID }}
+                    <input
+                      class="item"
+                      type="text"
+                      value="https://ussr.pl/clans/invite/{{ .invite }}"
+                      href="https://ussr.pl/clans/invite/{{ .invite }}"
+                      style="background-color: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255,255,255,.20); border-radius: 1rem;" />
+                  {{ end }}
+                </div>
+                <div class="ui divider"></div>
+                <div style="display: flex;justify-content: end;align-content: center;">
+                    <form action="/settings/clan" method="POST">
+                      {{ ieForm .Gin }}
+                      <div
+                        class="five wide column right floated"
+                        style="margin-right: 0.5em">
+                        <button
+                          type="submit"
+                          class="ui inverted right green button">
+                          {{ $.T "Generate a new invite!" }}
+                        </button>
+                      </div>
+                    </form>
+                    <form action="/c/{{ $o }}" method="POST">
+                      {{ ieForm .Gin }}
+                      <div class="five wide column right floated">
+                        <button
+                          type="submit"
+                          class="ui inverted right red button">
+                          {{ $.T "Disband Clan!" }}
+                        </button>
+                      </div>
+                    </form>
                 </div>
               </div>
             </div>

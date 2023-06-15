@@ -14,13 +14,6 @@ NoCompile=true
 
 		{{ navbarItem .Path (.T "Discord Linking") "/settings/discord-integration" }}
 
-		{{ $d := qb "SELECT 1 FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
-		{{ if $d }}
-			{{ navbarItem .Path (.T "Clan Settings") "/settings/clan" }}
-		{{ else }}
-			{{ navbarItem .Path (.T "Create Clan") "/clans/create" }}
-		{{ end }}
-
 		{{/* Stuff for donators */}}
 		{{/* if has .Context.User.Privileges 4 */}}
 		
@@ -39,7 +32,7 @@ NoCompile=true
             {{ .T "This feature is restricted to RealistikOsu supporters only..." }}
         </div>
         <p>
-            {{ .T "<a href='/donate'>Purchase supporter</a> to access this feature along with countless other features!" | html }}
+            {{ .T "<a class='link-text' href='/donate'><b>Purchase supporter</b></a> to access this feature along with countless other features!" | html }}
         </p>
     </div>
     <i class="blue lock icon"></i>

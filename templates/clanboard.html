@@ -79,12 +79,12 @@ KyutGrill=leaderboard2.jpg
 			</tr>
 		</thead>
 		<tbody>
-			<tr class="l-player" v-for="(clan, index) in data">
-				<td class="center aligned">
-					#<% clan.rank %>
+			<tr :class="'l-player index-'+(index + 1 + (50 * (page - 1)))" v-for="(clan, index) in data">
+				<td :class="(mobileCheck==false ? 'center aligned' : '')">
+					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
-					<a title='View Clan' :href="'/c/'+clan.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
+					<a title='View Clan' :href="'/c/'+clan.id+'?m='+modeInt+'&rx='+relaxInt" class="link-text">
 						<% clan.name %>
 					</a>
 				</td>
@@ -104,6 +104,26 @@ KyutGrill=leaderboard2.jpg
                 </td>
 			</tr>
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="5">
+					<div class="simplepag">
+						<div class="ui left floated pagination menu">
+							<a :href="'/clanboard?mode='+mode+'&rx='+relax+'&p='+(page-1)" :class="'icon item '+((page - 1) == 0 ? 'disabled' : '')"
+					            @click="loadClanboardData(mode, relax, page - 1)">
+					            <i class="left chevron icon"></i>
+					        </a>
+						</div>
+						<div class="ui right floated pagination menu">
+							<a :href="'/clanboard?mode='+mode+'&rx='+relax+'&p='+addOne(page)" :class="'icon item '+(data.length != 50 ? 'disabled' : '')"
+					            @click="loadClanboardData(mode, relax, addOne(page))">
+					            <i class="right chevron icon"></i>
+					        </a>
+						</div>
+					</div>
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 </div>
 <script src="/static/vue/pages/clanboard.js"></script>

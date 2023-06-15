@@ -5,12 +5,12 @@ const searchSettings = {
     mode: 0,
     status: 1,
     offset: 0,
-    amount:20
+    amount: 20
 };
 
 let beatmapTimer;
 
-const mirror_api = "https://catboy.best/api"; // we rlly do need our own
+const mirror_api = "https://osu.direct/api"; // we rlly do need our own
 
 function buttons() {
     const modes = document.querySelectorAll("#mode-button");
@@ -18,7 +18,7 @@ function buttons() {
     let typeTimer;
 
     for (let elm of modes) {
-        elm.addEventListener("click", function() {
+        elm.addEventListener("click", function () {
             for (let others of modes) {
                 others.classList.remove("clicked");
             };
@@ -29,9 +29,9 @@ function buttons() {
             search(searchSettings, 0, false);
         });
     };
-    
+
     for (let elm of status) {
-        elm.addEventListener("click", function() {
+        elm.addEventListener("click", function () {
             for (let others of status) {
                 others.classList.remove("clicked");
             };
@@ -84,11 +84,11 @@ function toggleBeatmap(id, elm) {
                         }
                     `;
                     if (audio.currentTime == audio.duration) {
-                    	// Beatmap has finished playing.
-                    	audio.currentTime = 0;
-			            beatmapAudios[i].playing = false;
-                    	elm.innerHTML = '<i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i>';
-                		elm.parentElement.classList.remove("musicPlaying");
+                        // Beatmap has finished playing.
+                        audio.currentTime = 0;
+                        beatmapAudios[i].playing = false;
+                        elm.innerHTML = '<i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i>';
+                        elm.parentElement.classList.remove("musicPlaying");
                     }
                 }, 1);
             } else {
@@ -107,9 +107,9 @@ function toggleBeatmap(id, elm) {
     };
 };
 
-async function search(options, offset=0, r=false) {
+async function search(options, offset = 0, r = false) {
     //console.log(`searching mode ${options.mode} with a status of ${options.status} and query ${options.terms}`);
-  
+
     const querys = encodeURI(document.querySelector("#searchTerms").value) || "";
     const Mode = ["osu", "taiko", "fruits", "mania"];
     const Status = {
@@ -133,10 +133,11 @@ async function search(options, offset=0, r=false) {
     const sources = [
         { name: "RealistikOsu", mirror: "https://ussr.pl/d/" },
         { name: "Beatconnect", mirror: "https://beatconnect.io/b/" },
-        { name: "Mino", mirror: "https://catboy.best/d/" }
+        { name: "Mino", mirror: "https://catboy.best/d/" },
+        { name: "osu.direct", mirror: "https://osu.direct/d/" },
     ];
 
-    options.offset = (r ? options.offset+offset : 0);
+    options.offset = (r ? options.offset + offset : 0);
     if (!r) document.querySelector("#maps").innerHTML = null;
 
     /*
@@ -159,9 +160,15 @@ async function search(options, offset=0, r=false) {
         color: rgb(5, 5, 5);
     */
 
-    var link = `${mirror_api}/search?offset=${options.offset || 0}&amount=${options.amount || 20}&mode=${options.mode || 0}&query=${querys}`
+    var link = `${mirror_api}/search?offset=${options.offset || 0}&amount=${options.amount || 20}&query=${querys}`
+    if (options.mode != "NaN" && options.mode == "") {
+        link += `&mode=`
+    } else if (options.mode != "NaN") {
+        link += `&mode=${options.mode || 0}`
+    }
+
     if (options.status != "NaN") {
-    	link += `&status=${options.status || 0}`
+        link += `&status=${options.status || 0}`
     }
 
     try {
@@ -171,7 +178,7 @@ async function search(options, offset=0, r=false) {
         showMessage("error", "There has been an error while searching for beatmaps! Please notify a RealistikOsu developer!");
         return;
     }
-    
+
 
     // adding time :(
     //console.log(querys);
@@ -181,7 +188,7 @@ async function search(options, offset=0, r=false) {
         const diffsHTML = [];
         // Bubble sort to sort diffs.
         const diffs = beatmap.ChildrenBeatmaps;
-        diffs.sort(function(a, b){return a.DifficultyRating-b.DifficultyRating});
+        diffs.sort(function (a, b) { return a.DifficultyRating - b.DifficultyRating });
         const date = new Date(beatmap.LastUpdate).toUTCString
         let mapSection = "";
 
@@ -189,34 +196,34 @@ async function search(options, offset=0, r=false) {
         if (beatmapAudios.filter(o => o.id == beatmap.SetID).length == 0) {
             beatmapAudios.push({
                 id: beatmap.SetID,
-                audio: new Audio(`https://catboy.best/api/preview/audio/${beatmap.ChildrenBeatmaps[0].BeatmapID}`),
+                audio: new Audio(`https://b.ppy.sh/preview/${beatmap.SetID}.mp3`),
                 playing: false
             });
         };
-        
+
         mapSection += `
             <div class="eight wide column">
                 <div class="map">
                     <div class="map-header">
-                        <a href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">
+                        <a href="/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">
                             <img src="https://assets.ppy.sh/beatmaps/${beatmap.SetID}/covers/cover.jpg" alt="">
                         </a>
                     </div>
                     <button class="beatmapPlay" onclick="toggleBeatmap(${beatmap.SetID}, this)"><i class="fa fa-play" style="font-size:48px;border-radius: 70%;"></i></button>
                     <div class="status">
-                        <a style="color: white;">${Status[beatmap.RankedStatus]}</a>
+                        <span style="color: white; cursor: default">${Status[beatmap.RankedStatus]}</span>
                     </div>
                     <div class="name">
-                        <a class="bnName" href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">${beatmap.Title}</a>
+                        <a class="bnName" href="/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">${beatmap.Title}</a>
                     </div>
                     <div class="artist">${beatmap.Artist}</div>
-                    <div class="creator">by <a href="https://osu.ppy.sh/u/${encodeURI(beatmap.Creator)}">${beatmap.Creator}</a></div>
+                    <div class="creator">by <a class="link-text" href="https://osu.ppy.sh/u/${encodeURI(beatmap.Creator)}"><b>${beatmap.Creator}</b></a></div>
                     <div class="downloadlist">
         `;
 
         for (let source of sources) {
             mapSection += `
-                <a title="Download beatmap (${source.name})" href="${source.mirror+String(beatmap.SetID)}" class="download">
+                <a title="Download beatmap (${source.name})" href="${source.mirror + String(beatmap.SetID)}" class="download">
                    <i class="fa fa-download" style="color:white;"></i>
                 </a>
             `;

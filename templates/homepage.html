@@ -50,36 +50,25 @@ KyutGrill=homepage2.jpg
 		<div class="main-block">
 			<div class="woman"></div>
 			<div class="main-content content">
-				<div class="status">
-					<span>
-						<span style="color: #4287f5;" class="counter-text"> {{ .T "%s" (rediget "ripple:registered_users")}} </span> total users
-					</span>
-					<span style="margin-left: 16px;">
-						<span class="counter-text" style="color: #0f97ff;"> {{ .T "%s" (rediget "ripple:online_users")}} </span> online users
-					</span>
-				</div>
 				<br>
 				<span class="text-lg">
 					RealistikOsu!
 				</span>
 				<span class="text-sm">
-					<b>Welcome to RealistikOsu!</b>
-	
-	
-					RealistikOsu is a custom server for the rhythm game osu!, featuring tons of unique features! 
+					RealistikOsu! is a custom server for the rhythm game osu!, featuring tons of unique features!
 					We provide an nice, safe, unique place for everyone to enjoy, providing a wide variety of new 
 					experiences and features. We have anything ranging from custom map ranking and clans to dedicated 
 					leaderboards and PP systems for the mods of Relax and Autopilot and our feature set grows daily! 
+					<br />
 					Why hesitate? Join RealistikOsu now!
 				</span>
 				<div class="buttons">
 					{{ if not .Context.User.ID }}
-						<a href="/register" class="ui button inverted pink">Register</a>
-						<a href="/about" class="ui button inverted green" style="margin-left: 6px;">About Us</a>
+						<a href="/register" class="ui button blue home-btn">Register Now!</a>
 					{{ else }}
-						<a href="/u/{{ .Context.User.ID }}" class="ui button inverted pink">Profile</a>
-						<a href="/connect" class="ui button inverted blue" style="margin-left: 6px;">Connection Methods</a>
+						<a href="/u/{{ .Context.User.ID }}" class="ui button blue home-btn">Your Profile</a>
 					{{ end }}
+					<a href="/connect" class="ui button inverted home-btn">How to connect?</a>
 				</div>
 				<div class="js-landing-graph" style="left: 0;"></div>
 			</div>
@@ -112,7 +101,7 @@ KyutGrill=homepage2.jpg
 						<div class="twelve wide column">
 							{{ $newest := (qb "SELECT id, username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
 							<p class="status-head" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
-								<a href="/u/{{ $newest.id }}" style="color: inherit;">{{ $newest.username }}</a>
+								<a href="/u/{{ $newest.id }}" style="color: inherit;" class="link-text">{{ $newest.username }}</a>
 							</p>
 							<p class="status-footer">{{ .T "Latest Player" }}</p>
 						</div>
@@ -150,7 +139,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.vn.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/u/{{ .data.vn.user_id }}">{{ .data.vn.username }}</a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/u/{{ .data.vn.user_id }}" class="link-text"><b>{{ .data.vn.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Score" }}</p>
 							</div>
 						</div>
@@ -164,7 +153,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.rx.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/rx/u/{{ .data.rx.user_id }}">{{ .data.rx.username }}</a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/rx/u/{{ .data.rx.user_id }}" class="link-text"><b>{{ .data.rx.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
 							</div>
 						</div>
@@ -178,7 +167,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.ap.pp }}pp</p>
-								<p class="status-head" style="font-size: 10px!important;">{{ $glob.T "Done by " }}<a href="/ap/u/{{ .data.ap.user_id }}">{{ .data.ap.username }}</a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/ap/u/{{ .data.ap.user_id }}" class="link-text"><b>{{ .data.ap.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
 							</div>
 						</div>
