@@ -110,6 +110,18 @@ i.icon.download:before{
     align-items: center;
     text-align: center;
 }
+
+@media only screen and (max-width: 767px) {
+    .wow-links {
+        display: grid;
+        justify-content: stretch;
+    }
+
+    .wow-links > a {
+        padding: 10px;
+    } 
+}
+
 .wow-links>a{
     color: #fff !important;
     margin-right: 12px;

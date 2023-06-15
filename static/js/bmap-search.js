@@ -205,7 +205,7 @@ async function search(options, offset = 0, r = false) {
             <div class="eight wide column">
                 <div class="map">
                     <div class="map-header">
-                        <a href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">
+                        <a href="/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">
                             <img src="https://assets.ppy.sh/beatmaps/${beatmap.SetID}/covers/cover.jpg" alt="">
                         </a>
                     </div>
@@ -214,7 +214,7 @@ async function search(options, offset = 0, r = false) {
                         <span style="color: white; cursor: default">${Status[beatmap.RankedStatus]}</span>
                     </div>
                     <div class="name">
-                        <a class="bnName" href="https://ussr.pl/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">${beatmap.Title}</a>
+                        <a class="bnName" href="/b/${beatmap.ChildrenBeatmaps[0].BeatmapID}">${beatmap.Title}</a>
                     </div>
                     <div class="artist">${beatmap.Artist}</div>
                     <div class="creator">by <a class="link-text" href="https://osu.ppy.sh/u/${encodeURI(beatmap.Creator)}"><b>${beatmap.Creator}</b></a></div>
