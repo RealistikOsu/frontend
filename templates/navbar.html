@@ -2,9 +2,8 @@
 {{ $isRAP   := and (hasAdmin .Context.User.Privileges) (isRAP .Path) }}
 {{ $isAdmin := hasAdmin .Context.User.Privileges }}
 {{ $ds      := band .ClientFlags 1 }}
-<div class="ui secondary fixed-height stackable white background main menu no margin bottom{{ if .DisableHH }} dropped{{ end }}" id="navbar">
-	<img class="navbar-image" id="navimg" src="/static/images/navbar.png">
-	<div class="ui container responsive">
+<div class="ui secondary fixed-height white background main menu no margin bottom {{ if not .DisableHH }}clear-navbar navbar-sticky-container{{ else }}normal-navbar{{ end }}" id="navbar">
+	<div class="ui container">
 		<div class="item">
 			<a href="/" title="{{ .T "Home Page" }}">
 				<svg class="ripple logo" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 252 102">
@@ -74,6 +73,12 @@
 			{{ if .Context.User.Username }}
 				{{ navbarItem .Path (.T "❤ Support us!") "/donate" }}
 			{{ end }}
+			<a class="item mobile">
+				<input type="checkbox" id="toggle-mobile-navbar" onclick="toggleMobileNavbar()">
+				<label for="toggle-mobile-navbar" class="ui icon button black">
+					<i id="mobile-navbar-icon" class="bars icon"></i>
+				</label>
+			</a>
 			<div class="item">
 				<div class="ui search" id="user-search">
 					<div class="ui icon input">
@@ -104,5 +109,186 @@
 			{{ end }}
 		</div>
 	</div>
+	<div class="mobile-navbar-menu">
+		<div class="mobile-profile-container">
+			<div class="user-content">
+				{{ if .Context.User.Username }}
+				<a href="/u/{{ .Context.User.ID }}" class="link-text">
+					<img id="avatar" class="ui avatar medium image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
+					<span>{{ .T "Hi" }} <b>{{ .Context.User.Username }}!</b></span>
+				</a>
+				{{ else }}
+				<img id="avatar" class="ui avatar medium image" src="{{ config "AvatarURL" }}/999">
+				<span>{{ .T "Hi" }} <b>{{ .T "Guest" }}!</b></span>
+				{{ end }}
+			</div>
+			{{ if not .Context.User.Username }}
+			<div class="right-buttons">
+				{{ navbarItem .Path (.T "Log in") "/login" }}
+				{{ navbarItem .Path (.T "Register") "/register" }}
+			</div>
+			{{ end }}
+		</div>
+		<div class="navbar-links-container">
+			<div class="ui search" id="user-search">
+				<div class="ui icon input" style="width: 100%">
+					<input class="prompt" type="text" placeholder="{{ .T "Looking for someone?" }}" id="user-search-input" style="border-radius: 1rem;">
+					<i class="search link icon" style="color: white;"></i>
+				</div>
+			</div>
+			{{ if .Context.User.Username }}
+				<a class="mobile-navbar-item link-text" href="/friends">
+					<span>{{ .T "Friends" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				<a class="mobile-navbar-item link-text" href="/settings">
+					<span>{{ .T "Settings" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				{{ if $isAdmin }}
+					<a class="mobile-navbar-item link-text" href="https://old.ussr.pl">
+						<span>{{ .T "Admin Panel" }}</span>
+						<i class="fas fa-angle-right"></i>
+					</a>
+				{{ end }}
+			{{ end }}
+			<a class="mobile-navbar-item link-text" href="/leaderboard">
+				<span>{{ .T "Leaderboard" }}</span>
+				<i class="fas fa-angle-right"></i>
+			</a>
+			<a class="mobile-navbar-item link-text" onclick="openMobileDropdown('clan')">
+				<span><b>Clan</b></span>
+				<i class="fas fa-angle-down" id="dropdown-icon-clan"></i>
+			</a>
+			<div id="dropdown-clan" class="mobile-navbar-dropdown mobile-dropdown-disabled">
+				{{ if .Context.User.Username }}
+					{{ $isClan := qb "SELECT user, clan FROM user_clans WHERE user = ?" .Context.User.ID }}
+					{{ $clanOwner := qb "SELECT 1 FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
+					{{ if $isClan }}
+						<a class="mobile-navbar-item link-text" href="{{ $isClan.clan | printf "/c/%s" }}">
+							<span>{{ .T "My Clan" }}</span>
+							<i class="fas fa-angle-right"></i>
+						</a>
+						{{ if $clanOwner }}
+							<a class="mobile-navbar-item link-text" href="/clan/manage">
+								<span>{{ .T "Manage Clan" }}</span>
+								<i class="fas fa-angle-right"></i>
+							</a>
+						{{ end }}
+					{{ else }}
+						<a class="mobile-navbar-item link-text" href="/clans/create">
+							<span>{{ .T "Create Clan" }}</span>
+							<i class="fas fa-angle-right"></i>
+						</a>
+					{{ end }}
+				{{ end }}
+				<a class="mobile-navbar-item link-text" href="/clanboard">
+					<span>{{ .T "Leaderboard" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+			</div>
+
+			<a class="mobile-navbar-item link-text" onclick="openMobileDropdown('support')">
+				<span><b>Support</b></span>
+				<i class="fas fa-angle-down" id="dropdown-icon-support"></i>
+			</a>
+			<div id="dropdown-support" class="mobile-navbar-dropdown mobile-dropdown-disabled">
+				<a class="mobile-navbar-item link-text" href="/doc/rules">
+					<span>{{ .T "Rules" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				<a class="mobile-navbar-item link-text" href="/doc">
+					<span>{{ .T "Documentation" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				<a class="mobile-navbar-item link-text" href="/connect">
+					<span>{{ .T "Connection Guide" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				<a class="mobile-navbar-item link-text" href="/discord">
+					<span>{{ .T "Discord" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				<a class="mobile-navbar-item link-text" href="/team">
+					<span>{{ .T "Our Team" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+			</div>
+
+			<a class="mobile-navbar-item link-text" onclick="openMobileDropdown('beatmaps')">
+				<span><b>Beatmaps</b></span>
+				<i class="fas fa-angle-down" id="dropdown-icon-beatmaps"></i>
+			</a>
+			<div id="dropdown-beatmaps" class="mobile-navbar-dropdown mobile-dropdown-disabled">
+				<a class="mobile-navbar-item link-text" href="/beatmap_listing">
+					<span>{{ .T "Beatmap Listing" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+				{{ if .Context.User.Username }}
+					<a class="mobile-navbar-item link-text" href="/rank_request">
+						<span>{{ .T "Request Beatmap" }}</span>
+						<i class="fas fa-angle-right"></i>
+					</a>
+				{{ end }}
+			</div>
+			{{ if .Context.User.Username }}
+				<a class="mobile-navbar-item link-text" href="/logout?k={{ .Session.Get "logout" }}">
+					<span>{{ .T "Logout" }}</span>
+					<i class="fas fa-angle-right"></i>
+				</a>
+			{{ end }}
+		</div>
+	</div>
+
+	<script>
+		function toggleMobileNavbar() {
+			var toggle = $("#toggle-mobile-navbar")
+			var menu = $(".mobile-navbar-menu")
+			var icon = $("#mobile-navbar-icon")
+
+			var action = toggle.attr('checked')
+
+			menu.toggleClass("show-mobile-navbar", action)
+			icon.toggleClass("close", action)
+			icon.toggleClass("bars", action)
+
+			var nav = $(".clear-navbar");
+			nav.toggleClass('mobile-navbar-open', action);
+
+			var nav = $(".normal-navbar");
+			nav.toggleClass('mobile-navbar-open', action);
+		}
+
+		function openMobileDropdown(name) {
+			var dropdown = $("#dropdown-" + name)
+			var icon = $("#dropdown-icon-" + name)
+
+			var action = dropdown.hasClass("mobile-dropdown-disabled")
+
+			if (action) {
+				dropdown.slideDown(200, () => {
+					dropdown.removeClass("mobile-dropdown-disabled")
+					icon.removeClass("fa-angle-down").addClass("fa-angle-up");
+				});
+			} else {
+				dropdown.slideUp(200, () => {
+					dropdown.addClass("mobile-dropdown-disabled");
+					icon.removeClass("fa-angle-up").addClass("fa-angle-down");
+				});
+			}
+		}
+		
+		$(function () {
+			$(document).scroll(function () {
+				var toggle = $("#toggle-mobile-navbar")
+
+				var nav = $(".clear-navbar");
+				nav.toggleClass('scrolled', $(this).scrollTop() > 0 && !toggle.attr('checked'));
+
+				var nav = $(".normal-navbar");
+				nav.toggleClass('scrolled', $(this).scrollTop() > 0 && !toggle.attr('checked'));
+			});
+		});
+	</script>
 </div>
 {{ end }}
