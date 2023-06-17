@@ -427,7 +427,7 @@ margin-bottom: 5px;
 }
 @media (max-width: 700px) {
 	.huge.heading {
-		height: 100px;
+		height: 130px;
 	}
 	.huge.heading h1 {
 		font-size: 24pt;
@@ -436,7 +436,7 @@ margin-bottom: 5px;
 }
 @media (min-width: 700px) {
 	.huge.heading {
-		height: 175px;
+		height: 220px;
 	}
 	.huge.heading h1 {
 		font-size: 40pt;
@@ -537,10 +537,10 @@ a.inherit:hover {
 
 
 .white.background {
-    background-color: #0f97ff !important;
+    /* background-color: #0f97ff !important; */
 }
 body.ds .white.background {
-    background-color: #0f97ff !important;
+    /* background-color: #0f97ff !important; */
 }
 
 .user.avatar {
@@ -1205,6 +1205,7 @@ td [data-tooltip] {
     left: 0;
     top: 0;
     width: 100%;
+    height: 61.1px !important;
     filter: hue-rotate(-130deg);
 }
 
@@ -1486,4 +1487,191 @@ td:last-child {
 
 .cls-1 > tspan {
     font-family: Comfortaa-Bold, Comfortaa !important;
+}
+
+#navbar .item.mobile {
+    display: none;
+}
+
+#toggle-mobile-navbar {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+
+    .mobile-navbar-menu {
+        display: block !important;
+        position: absolute;
+        z-index: 1000;
+
+        overflow-x: auto;
+        white-space: nowrap;
+
+        background: #1B1C1D;
+        margin-top: 61.1px;
+        width: 100%;
+
+        height: 100vh;
+
+        right: -100%;
+
+        transition: right 500ms ease;
+    }
+
+    .firetrucking-right-menu {
+        display: flex;
+        margin-left: auto;
+    }
+
+    #navbar {
+        padding: 0.5rem 1rem !important;
+    }
+
+    #navbar .item {
+        display: none;
+    }
+
+    #navbar .item:first-child {
+        display: block;
+    }
+
+    #navbar .item.mobile {
+        display: block !important;
+    }
+
+    .mobile-navbar-menu .item {
+        display: block !important;
+    }
+
+    .show-mobile-navbar {
+        right: 0 !important;
+        transition: right 200ms ease;
+    }
+
+    .mobile-navbar-menu {
+        color: #fff !important;
+        position: absolute;
+        top: 0;
+    }
+
+    .mobile-profile-container {
+        display: flex !important;
+        justify-content: space-between;
+
+        padding: 1rem;
+        background-color:rgb(46, 46, 46);
+        font-size: 1.2rem;
+    }
+
+    .mobile-profile-container .right-buttons {
+        display: flex !important;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .mobile-profile-container img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .mobile-profile-container .right-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .navbar-links-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .mobile-navbar-item {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mobile-navbar-item:hover {
+        cursor: pointer;
+    }
+
+    .mobile-navbar-dropdown {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0rem 0.5rem;
+        width: 100%;
+    }
+
+    .mobile-dropdown-disabled {
+        display: none;
+    }
+}
+
+.mobile-navbar-open {
+    background-color: #548ACA !important;
+    opacity: 1 !important;
+    transition: background-color 200ms linear;
+}
+
+.mobile-navbar-menu {
+    display: none;
+}
+
+.mobile-navbar-menu .mobile-profile-container {
+    display: none;
+}
+
+.navbar-sticky-container {
+    position: fixed !important;
+    top: 0;
+    width: 100%;
+    margin: 0 !important;
+    z-index: 1000;
+}
+
+.clear-navbar {
+    background-color: transparent;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    transition: background-color 200ms linear;
+}
+
+.normal-navbar {
+    background-color: #548ACA !important;
+    position: sticky !important;
+    top: 0 !important;
+    margin: 0 !important;
+    width: 100%;
+    z-index: 1000;
+    transition: opacity 200ms linear;
+}
+
+.normal-navbar.scrolled {
+    opacity: 0.9;
+    transition: opacity 200ms linear;
+}
+
+
+.clear-navbar.scrolled {
+    background-color: #548ACA !important;
+    opacity: 0.9;
+    transition: background-color 200ms linear;
+}
+
+#snow-container {
+    height: 100% !important;
+}
+
+#navbar {
+    height: 61.1px !important;
+    max-height: 61.1px !important;
 }
