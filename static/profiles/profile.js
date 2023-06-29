@@ -899,45 +899,6 @@ function disableLoadMoreButton(type, mode, enable) {
 	else button.addClass("disabled");
 }
 
-
-function getScoreModsHtml(e, t) {
-	var n = [];
-	return 512 == (512 & e) && (e &= -65), 16384 == (16384 & e) && (e &= -33), modsHtml.forEach(function (t, i) {
-		(e & 1 << i) > 0 && n.push(t)
-	}), n.length > 0 ? (t ? "" : "+ ") + n.join(" ") : t ? T("") : ""
-}
-
-var modsHtml = [
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png'>",
-	"TD",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hard-rock.52c35a3a.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_relax.dbcfb8d8.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>",
-	"AU",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_autopilot.31c6ca71.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png'>",
-	"K4",
-	"K5",
-	"K6",
-	"K7",
-	"K8",
-	"K9",
-	"RN",
-	"LM",
-	"K9",
-	"K0",
-	"K1",
-	"K3",
-	"K2"
-]
-
 function timeSince(date) {
 
 	var seconds = Math.floor((new Date() - date) / 1000);
@@ -983,7 +944,7 @@ function viewScoreInfo() {
 		"Max Combo": addCommas(s.max_combo) + "/" + addCommas(s.beatmap.max_combo) + "x" + (s.full_combo || s.max_combo > 0.97 * (s.beatmap.max_combo)
 			&& s.count_miss == 0 ? " " + T("(FC)") : ""),
 		"Difficutly": `${s.beatmap.difficulty2[modesShort[s.play_mode]].toFixed(2)}` + ' <i class="fas fa-star"></i>',
-		"Mods": getScoreModsHtml(s.mods, true),
+		"Mods": getScoreMods(s.mods, true),
 		"Passed": T(s.completed >= 2 ? "Yes" : "No"),
 		"Personal Best": T(s.completed === 3 ? "Yes" : "No")
 	};
