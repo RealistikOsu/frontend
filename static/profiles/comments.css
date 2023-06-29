@@ -31,6 +31,7 @@
 
 #user-comments {
     margin-bottom: 50px;
+    margin-top: 20px;
 }
 
 .comment-loading {
@@ -41,8 +42,10 @@
     display: none !important;
 }
 
-#comments img {
-    width: 100px;
+#comments .avatar img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
 }
 
 @media screen and (max-width: 900px) {

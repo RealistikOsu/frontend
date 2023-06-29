@@ -15,10 +15,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/RealistikOsu/frontend/modules/bbcode"
 	"github.com/RealistikOsu/frontend/modules/doc"
 	fasuimappings "github.com/RealistikOsu/frontend/modules/fa-semantic-mappings"
-	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -429,6 +429,14 @@ var funcMap = template.FuncMap{
 		data, _ := ioutil.ReadAll(d.Body)
 		json.Unmarshal(data, &x)
 		return x
+	},
+	"isOnline": func(userID int) bool {
+		d, err := http.Get(fmt.Sprintf(config.BanchoAPI + "/api/status/" + strconv.Itoa(userID)))
+		if err != nil {
+			return false
+		}
+
+		return d.StatusCode == 200
 	},
 	// styles returns playstyle.Styles
 	"styles": func() []string {

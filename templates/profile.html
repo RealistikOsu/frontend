@@ -1,69 +1,6 @@
 {{ define "tpl" }}
 {{ $isLinked := qb "SELECT discord_id FROM discord_oauth WHERE user_id = ?" .UserID }}
 {{ $discordID := $isLinked.discord_id.String }}
-<style>
-	.discord-btn {
-		position: relative;
-		display: inline-block;
-		background: none;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		border: none;
-		font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;
-		font-weight: 400;
-		line-height: 18px;
-		padding: 0 20px;
-		cursor: pointer;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		text-align: center;
-		-webkit-transition: all .17s ease-out;
-		transition: all .17s ease-out;
-		white-space: nowrap;
-		color: #fff;
-		font-size: 15px;
-		padding: 5px 16px;
-		border-radius: 50px;
-		background: #5865F2;
-	}
-
-	.discord-btn:hover {
-		background: #3C45A5;
-	}
-
-	.discord-btn-container {
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		display: -webkit-box;
-		display: -ms-flexbox;
-		display: flex;
-		-webkit-box-orient: horizontal;
-		-webkit-box-direction: normal;
-		-ms-flex-direction: row;
-		flex-direction: row;
-		-webkit-box-pack: center;
-		-ms-flex-pack: center;
-		justify-content: center;
-		-webkit-box-align: center;
-		-ms-flex-align: center;
-		align-items: center;
-		-ms-flex-wrap: wrap;
-		flex-wrap: wrap;
-		height: 100%;
-		position: relative;
-	}
-
-	.discord-btn-content {
-		-webkit-transition: all .17s ease-out;
-		transition: all .17s ease-out;
-	}
-
-	.underlined:hover {
-		text-decoration: underline;
-	}
-</style>
 <link rel="stylesheet" href="/static/profiles/profile.css">
 <link rel="stylesheet" href="/static/profiles/comments.css">
 <div class="ui container">
@@ -81,6 +18,46 @@
 				window.userProfileName = {{ .username }};
 				window.followers = {{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .allFriended }} {{ end }};
 				window.hasAdmin = {{ hasAdmin $global.Context.User.Privileges }};
+				window.graphType = "rank";
+
+				// Credits: @lenforiee
+				function resizeUsername() {
+					var username = document.querySelector('#username-span');
+					var container = document.querySelector('#username-container');
+					var clanName = document.querySelector('#clan-span');
+
+					var widthContainer = container.offsetWidth;
+					var widthUsername = username.offsetWidth;
+
+					if (clanName) {
+						widthUsername += clanName.offsetWidth;
+					}
+
+					
+					while (widthUsername >= widthContainer) {
+						console.log(widthUsername, widthContainer)
+
+						var fontSizeUsername = parseInt(window.getComputedStyle(username).fontSize);
+						console.log(fontSizeUsername)
+						username.style.fontSize = (fontSizeUsername - 1) + 'px';
+
+						if (clanName) {
+							var fontSizeClan = parseInt(window.getComputedStyle(clanName).fontSize);
+							console.log(fontSizeClan)
+							clanName.style.fontSize = (fontSizeClan - 1) + 'px';
+						}
+
+						widthUsername = username.offsetWidth;
+						if (clanName) {
+							widthUsername += clanName.offsetWidth;
+						}
+					}
+				}
+
+				events = ["load", "resize"];
+				for (var i = 0; i < events.length; i++) {
+					window.addEventListener(events[i], resizeUsername);
+				}
 
 				//swap them round on mobile so the order isnt weird for them
 				document.addEventListener('DOMContentLoaded', (event) => {
@@ -92,6 +69,8 @@
 						right.innerHTML = left.innerHTML
 						left.innerHTML = RightText;
 					}
+
+
 				})
 			</script>
 			{{ if after .silence_info.end }}
@@ -159,12 +138,57 @@
 					{{ with $global.Get "users/userpage?id=%.0f" .id }}
 						{{ if .userpage }}
 							{{ with parseUserpage .userpage }}
-								<div class="ui raised segment twemoji" id="userpage-content">
-									{{ html . }}
+								<div class="ui raised segment twemoji" style="padding: 1em 0;">
+									<h4 class="ui horizontal divider header" style="padding: 0 1em;">
+										<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+											<i class="fa-solid fa-address-card"></i>
+											{{ $global.T "me!" }}
+										</div>
+									</h4>
+									<div id="userpage-content">
+										{{ html . }}
+									</div>
 								</div>
 							{{ end }}
 						{{ end }}
 					{{ end }}
+					<div
+						class="ui segment"
+						id="profile-history-content">
+						<h4 class="ui horizontal divider header">
+							<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+								<i class="fa-solid fa-chart-line"></i>
+								{{ $global.T "Profile Graph" }}
+							</div>
+						</h4>
+						<div class="ui small buttons">
+							<button
+							class="ui button black active"
+							id="chart-btn-rank"
+							onclick="changeChart('rank')">
+							{{ $global.T "Rank" }}
+							</button>
+							<button
+							class="ui black button"
+							id="chart-btn-pp"
+							onclick="changeChart('pp')">
+							{{ $global.T "PP" }}
+							</button>
+						</div>
+						<div id="profile-history-graph" style="display: none;"></div>
+						<div id="profile-history-not-found" style="display: none; text-align: center;">
+							<div class="ui icon message" style="background: rgb(34, 33, 33)">
+							<div class="content">
+								<div class="header">
+								{{ $global.T "No graph data found" }}
+								</div>
+								<p>
+								{{ $global.T "No graph data found for this user" }}
+								</p>
+							</div>
+							</div>
+						</div>
+					</div>
 					<div id="scores-zone">
 						{{ range _range 4 }}
 							<div data-mode="{{ . }}" data-rx="0" {{ if _or (ne . (int $favouritemode)) (ne 0 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
@@ -181,8 +205,8 @@
 					</div>
 				</div>
 				<div class="six wide column" id="right">
-					<div style="margin: 0 !important;padding: 0;text-align: center;" class="ui top attached segment auto">
-						<div style="margin: 0;filter: blur(5p);">
+					<div style="margin: 0 !important;padding: 0;" class="ui top attached segment auto">
+						<div style="margin: 0;">
 						{{ if $.ProfileBackground }}
 							<div style="background-image: url({{ $.ProfileBackground }});min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
 						{{ else if $.ProfileColour }}
@@ -190,103 +214,120 @@
 						{{ else }}
 							<div style="background-image: url(/static/image/banner_bg.png);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
 						{{ end }}
-								<div style="padding: 2px;font-size: 25px;background-color: #0000009c;display: flex;justify-content: center;">
+								<div class="profile-ranks">
 									{{ range $kp, $vp := (slice .stats.vn .stats.rx .stats.ap) }}
 										{{ range $k, $v := (slice $vp.std $vp.taiko $vp.ctb $vp.mania) }}
-											<span data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
-												{{ if eq (int $v.global_leaderboard_rank) (int 1) }}
-													<i class="trophy line small circular icon yellow"></i>
-												{{ else if eq (int $v.global_leaderboard_rank) (int 2)}}
-													<i class="trophy line small circular icon grey"></i>
-												{{ else if eq (int $v.global_leaderboard_rank) (int 3)}}
-													<i class="trophy line small circular icon brown"></i>
-												{{ else }}
-													<i class="trophy line small circular icon"></i>
-												{{ end }}
-											</span>
-											<span data-rx="{{ $kp }}" style="margin-top:8px;" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}>
-												{{ with and $v $v.global_leaderboard_rank }}
-													#{{ . }}
-												{{ else }}
-													{{ $global.T "-" }}
-												{{ end }}
-											</span>
+											<div id="global-rank-{{ $kp }}-{{ $k }}" data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }} class="profile-global-rank">
+												<span>
+													{{ if eq (int $v.global_leaderboard_rank) (int 1) }}
+														<i class="globe line small icon yellow"></i>
+													{{ else if eq (int $v.global_leaderboard_rank) (int 2)}}
+														<i class="globe line small icon grey"></i>
+													{{ else if eq (int $v.global_leaderboard_rank) (int 3)}}
+														<i class="globe line small icon brown"></i>
+													{{ else }}
+														<i class="globe line small icon"></i>
+													{{ end }}
+												</span>
+												<span>
+													{{ with and $v $v.global_leaderboard_rank }}
+														#{{ . }}
+													{{ else }}
+														{{ $global.T "-" }}
+													{{ end }}
+												</span>
+											</div>
+											<div data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}  class="profile-country-rank">
+												<img class="nopad" src="/static/images/new-flags/flag-{{ stringLower $user.country }}.svg" width="20">
+												<span>
+													{{ with and $v $v.country_leaderboard_rank }}
+														#{{ . }}
+													{{ else }}
+														{{ $global.T "-" }}
+													{{ end }}
+												</span>
+											</div>
 										{{ end }}
 									{{ end }}
 								</div>
 							</div>
 						</div>
-						<!--Profile image-->
-						<!-- We will use delta api here so well just create div with id and allow js to do a job. -->
-						<div id="avatar-canvas">
-							<img alt="avatar" src="https://a.ussr.pl/{{ $user.id }}" style="border-radius: 100%;width: 125px;margin-top: -6rem; box-shadow: 0px 0px 15px #000000;">
-							</div>
-						<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
-						At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
-						I have a very distinct code style.
-						Plus your implementations did not remove the rosu specific theme aspects, meaning they were
-						direct copies without adaptations for your site.
-						-->
-						<!--Bottom part-->
-						<div style="margin-top: 1rem;margin-bottom: 1rem;">
-
-							<h1 id="rainbow" class="ui header">
-								<span id="highlight" style="font-size: 40px;font-weight:normal;">
-									<div id="nickname" style="display: inline-block;">
-										{{ .username }}
-									</div>
-									<a style="display: inline-block;" data-tooltip="{{ countryReadable .country }}" href="/leaderboard?c={{ .country }}">
-										<img style="margin-bottom: -0.14em" src="/static/images/new-flags/flag-{{ stringLower .country }}.svg" width="35">
-									</a>
-								</span>
-							</h1>
-							{{ $oof := . }}
-							{{ if ne $oof.clan.name "" }}
-								<a href="/c/{{ $oof.clan.id }}" style="color: #ffffff;"><span style="font-size: 20px;">{{ $global.T "%s" ($oof.clan.name) }}</span></a>
-							{{ end }}
-
-							{{ if _or (has .privileges 8) (has .privileges 4) }}
-								<script>
-									if (!MobileCheck()) {
-										{{ if (has .privileges 8) }}
-											document.getElementById('nickname').style['background-image'] = "url(/static/image/rainbow.webp)";
-										{{ else }}
-											document.getElementById('nickname').style['background-image'] = "url(/static/image/supporter.gif)";
+						<div class="profile-metadata-container">
+							<div class="profile-upper-container">
+								<img alt="avatar" class="avatar-canvas" src="https://a.ussr.pl/{{ $user.id }}">
+								<div class="badge-container">
+									{{ if .badges }}
+										{{ range .badges }}
+											<span class data-tooltip="{{ .name }}">
+												<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+											</span>
 										{{ end }}
-										document.getElementById('nickname').style["background-clip"] = "text";
-										document.getElementById('nickname').style["-webkit-background-clip"] = "text";
-										document.getElementById('nickname').style.color = "transparent";
-									}
-								</script>
-							{{ end }}
-							<!--BADGES!!! THIS WILL BE HELL PLEASE HELP.-->
-							<div class="" style="font-size: 2rem;margin-top: 11px;">
-								{{ if .badges }}
-									{{ range .badges }}
-										<span class data-tooltip="{{ .name }}" data-inverted="">
-											<i class="{{ faIcon .icon }} small icon circular"></i>
-										</span>
 									{{ end }}
-								{{ end }}
-								{{ if .custom_badge  }}
-									{{ with .custom_badge }}
-										<span class data-tooltip="{{ .name }}" data-inverted="">
-											<i class="{{ faIcon .icon }} small icon circular"></i>
-										</span>
+									{{ if .custom_badge  }}
+										{{ with .custom_badge }}
+											<span class data-tooltip="{{ .name }}">
+												<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+											</span>
+										{{ end }}
 									{{ end }}
-								{{ end }}
+								</div>
 							</div>
-							<!--Cool Buttons for cool stuff.-->
-							<div style="margin: 10px">
-								{{ if and (ne $global.Context.User.ID $global.UserID) (ne $global.Context.User.ID 0) }}
-									<a class="ui button inverted loading" id="add-friend-button"></a>
-								{{ end }}
-								{{ if hasAdmin $global.Context.User.Privileges }}
-									<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted">Edit User</a>
-								{{ end }}
-								{{ if eq $global.UserID $global.Context.User.ID }}
-									<a href="/settings/avatar" class="ui button inverted purple">Change Avatar</a>
-								{{ end }}
+							<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
+							At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
+							I have a very distinct code style.
+							Plus your implementations did not remove the rosu specific theme aspects, meaning they were
+							direct copies without adaptations for your site.
+							-->
+							<!--Bottom part-->
+							<div style="margin-top: 1rem;margin-bottom: 1rem;padding: 1rem;background: #1B1B1C;border-radius: 1rem;">
+
+								<h1 class="ui header" style="font-size: 30px;font-weight:normal;margin-bottom: 0.5rem;">
+									<div style="display:flex;align-items: center;gap:6px;white-space:nowrap;" id="username-container">
+										{{ if ne .clan.name "" }}
+											<a href="/c/{{ .clan.id }}" class="link-text" style="font-size:27px"><b id="clan-span">{{ $global.T "%s" (.clan.tag) }}</b></a>
+										{{ end }}
+										<span id="username-span">{{ .username }}<span>
+									</div>
+								</h1>
+
+								<div class="profile-country-online">
+									<div class="profile-country-flag">
+										<img class="nopad" src="/static/images/new-flags/flag-{{ stringLower .country }}.svg" width="27">
+										<span>{{ countryReadable .country }}</span>
+									</div>
+									<div class="profile-online-status">
+										{{ if isOnline (int $user.id) }}
+											<i class="green circle icon"></i>
+											<span>{{ $global.T "Online" }}</span>
+										{{ else }}
+											<i class="red circle icon"></i>
+											<span>{{ $global.T "Offline" }}</span>
+										{{ end }}
+									</div>
+								</div>
+								<div class="ui divider" style="margin: 1rem 0.1rem auto auto !important;"></div>
+								<div class="profile-misc-information" style="display: flex;gap: 5px;justify-content: space-between;">
+									<div>
+										{{ if $isLinked }}
+											{{ with dcAPI $discordID }}
+												{{ if .data.username }}
+													<br>{{ $global.T "Discord: <b>@%s</b>" .data.username | html }}
+												{{ end }}
+											{{ end }}
+										{{ end }}
+										<br>{{ $global.T "Join Date: <b>%s</b>" (time $user.registered_on) | html }}
+										<br>{{ $global.T "Last Seen: <b>%s</b>" (time $user.latest_activity) | html }}
+										{{ with playstyle $user.play_style $global }}<br>{{ $global.T "Playing with: <b>%s</b>" . | html }}{{ end }}
+									</div>
+									<div style="width: 24%;margin-top: 20px;display: flex;flex-flow: column-reverse;gap:5px">
+										{{ if and (ne $global.Context.User.ID $global.UserID) (ne $global.Context.User.ID 0) }}
+											<a class="ui button inverted loading" id="add-friend-button" style="border-radius: 1rem;display: flex;gap: 5px;justify-content: center;height: 30px;align-items: center;"></a>
+										{{ end }}
+										{{ if hasAdmin $global.Context.User.Privileges }}
+											<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted" style="border-radius: 1rem;display: flex;gap: 5px;justify-content: center;height: 30px;align-items: center;" title="Edit user"><i class="fas fa-edit"></i></a>
+										{{ end }}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -300,121 +341,92 @@
 							<a id="click{{ $v }}" class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/u/{{ $user.id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
 						{{ end }}
 					</div>
-					<div class="ui segment" style="padding-top: 1px;">
-						<br>{{ $global.T "<i class='fas fa-sign-in-alt'></i> They joined <b>%s</b>" (time $user.registered_on) | html }}
-						<br>{{ $global.T "<i class='fas fa-sign-out-alt'></i> Last seen <b>%s</b>" (time $user.latest_activity) | html }}
-						<br>{{ with playstyle $user.play_style $global }}{{ $global.T "<i class='fas fa-mouse'></i> They play with <b>%s</b>" . | html }}{{ end }}
-						{{ if $isLinked }}
-							{{ with dcAPI $discordID }}
-								<h4 class="ui horizontal divider header" style="margin: 6px;">Linked Accounts</h4>
-								<div style="justify-content: center; display: flex;">
-										<span onmouseover="ensureSpan()" id="clipboard-dc" data-tooltip="Copy to clipboard.">
-										<a onclick="copyToTray('{{ .data.username }}#{{ .data.discriminator }}')">
-											<div class="discord-btn">
-												<div class="discord-btn-container" style="flex: 1 1 auto;">
-													<span class="discord-btn-content">
-														<i aria-hidden="true" class="fab fa-discord"></i>
-														<span class="underlined">{{ .data.username }}#{{ .data.discriminator }}</span>
-													</span>
-												</div>
-											</div>
-										</a>
-									</span>
-								</div>
-							{{ end }}
-						{{ end }}
-
-					</div>
-					<!--Rank Graph-->
-					<div class="ui segment" id="GraphSegment">
-						{{ range $rxk, $rxv := (slice .stats.vn .stats.rx .stats.ap) }}
-							{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
-								<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
-									<div style="display: flex;justify-content: left;">
-										<div class="realistik-thingies">
-                                            <div style="position: relative;width: 120%;top: 9px;" class="ui table score-table purple"></div>
-                                            <b>PP</b>
-											{{ with .pp }}
-												<p>{{ humanize . }}</p>
-											{{ else }}
-												<p>{{ $global.T "-" }}</p>
-											{{ end }}
-                                        </div>
-			                        	<div class="realistik-thingies" style="position: relative;margin-left: 30px">
-			                        		<div class="ui table score-table blue" style="position: relative;width: 100%;top: 9px;"></div>
-			                          		<b>Global Ranking</b>
-			                          		{{ with .global_leaderboard_rank }}
-			                          			<p>#{{ . }}</p>
-											{{ else }}
-												<p>{{ $global.T "-" }}</p>
-			                          		{{ end }}
-			                          	</div>
-			                          	<div class="realistik-thingies" style="position: relative;margin-left: 30px">
-			                          		<div class="ui table score-table green" style="position: relative;width: 100%;top: 9px"></div>
-			                          		<b>Country Ranking</b>
-			                          		{{ with .country_leaderboard_rank }}
-			                          			<p>#{{ . }}</p>
-											{{ else }}
-												<p>{{ $global.T "-" }}</p>
-			                          		{{ end }}
-			                          	</div>
-			                        </div>
-		                    	</div>
-		                    {{ end }}
-		                {{ end }}
-						<canvas id="ProfileGraph" height="130" style="margin-top: 15px"></canvas>
-					</div>
 					<div class="ui segment">
 						{{ range $rxk, $rxv := (slice .stats.vn .stats.rx .stats.ap) }}
 							{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
 								<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
-									<div style="display:flex;justify-content:center;">
-										<p style="position:relative; top: 11px;font-size:20px;">Level</p>
-										<div class="level-frame">{{ level .level }}</div>
-									</div>
-									<div class="container">
-					                    <div class="progress2 progress-moved" style="position: relative; top: 5px;--bar-percentage: {{ levelPercent .level }}%;">
-					                      <div class="progress-bar2"></div>
-					                    </div>
-					                    <p style="position: relative; display: flex; justify-content: end; margin-top: 5px;">{{ levelPercent .level }}%</p>
-					                </div>
-					                <div class="" style="margin-bottom: 1rem;"></div>
-									<table class="ui very basic two column compact table nopad">
+									<h4 class="ui horizontal divider header">
+										<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+											<i class="fa-solid fa-chart-simple"></i>
+											{{ $global.T "Statistics" }}
+										</div>
+									</h4>
+									<table class="ui very basic two column compact table nopad unstackable">
 										<tbody>
-											<tr>
-												<td><b>{{ $global.T "Accuracy" }}</b></td>
-												<td class="right aligned">{{ printf "%.2f" .accuracy }}%</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "PP" }}</b>
+													<span class="stats-mobile-view">{{ humanize .pp }}</spa>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .pp }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Maximum Combo" }}</b></td>
-												<td class="right aligned">{{ .max_combo }}</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Accuracy" }}</b>
+													<span class="stats-mobile-view">{{ printf "%.2f" .accuracy }}%</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ printf "%.2f" .accuracy }}%</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Ranked Score" }}</b></td>
-												<td class="right aligned">{{ humanize .ranked_score }}</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Maximum Combo" }}</b>
+													<span class="stats-mobile-view">{{ .max_combo }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ .max_combo }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Total Score" }}</b></td>
-												<td class="right aligned">{{ humanize .total_score }}</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Ranked Score" }}</b>
+													<span class="stats-mobile-view">{{ humanize .ranked_score }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .ranked_score }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Playcount" }}</b></td>
-												<td class="right aligned">{{ humanize .playcount }}</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Total Score" }}</b>
+													<span class="stats-mobile-view">{{ humanize .total_score }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .total_score }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Followers" }}</b></td>
-												<td class="right aligned">{{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .subscount }} {{ end }} </td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Playcount" }}</b>
+													<span class="stats-mobile-view">{{ humanize .playcount }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .playcount }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Replay Views" }}</b></td>
-												<td class="right aligned">{{ humanize .replays_watched }}</td>
+											{{ with $.Get "users/followers?userid=%d" $.UserID }}
+												<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+													<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+														<b>{{ $global.T "Followers" }}</b>
+														<span class="stats-mobile-view">{{ .subscount }}</span>
+													</td>
+													<td class="right aligned stats-desktop-view">{{ .subscount }}</td>
+												</tr>
+											{{ end }}
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Replay Views" }}</b>
+													<span class="stats-mobile-view">{{ humanize .replays_watched }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .replays_watched }}</td>
 											</tr>
-											<tr>
-												<td><b>{{ $global.T "Total Hits" }}</b></td>
-												<td class="right aligned">{{ humanize .total_hits }}</td>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Total Hits" }}</b>
+													<span class="stats-mobile-view">{{ humanize .total_hits }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .total_hits }}</td>
 											</tr>
 										</tbody>
 									</table>
+									<div style="text-align: center;margin-top: 10px;">
+										<div style="height: 10px; border-radius: 1rem; background: #000; display: block; position: relative; width: 100%;">
+											<div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: {{ levelPercent .level }}%"></div>
+											<div style="right: 0; position: absolute; top: 100%; margin-top: 2px">{{ levelPercent .level }}%</div>
+										</div>
+										<div style="font-size: 15px;margin-top: 5px;">{{ $global.T "Level" }} {{ level .level }}</div>
+									</div>
 								</div>
 							{{ end }}
 						{{ end }}
@@ -426,7 +438,10 @@
 		<div id="comments">
 			{{ with (.Get "users/comments/info?id=%d" .UserID) }}
 				<h4 class="ui horizontal divider header">
-					Comments (<span id="total-comments">{{ if .disabled }}0{{ else }}{{ .total }}{{ end }}</span>)
+					<div style="display: flex; align-items: center; font-weight: 600;">
+						<i class="fa-solid fa-comment" style="margin-right: 0.5em"></i>
+						Comments (<span id="total-comments" style="font-weight: 600;">{{ if .disabled }}0{{ else }}{{ .total }}{{ end }}</span>)
+					</div>
 				</h4>
 
 				{{ if .disabled }}
@@ -438,11 +453,9 @@
 					</div>
 				{{ else }}
 					{{ if $global.Context.User.Username }}
-						<div class="ui grid">
-							<div class="two wide column">
-								<img src="https://a.ussr.pl/{{ $global.Context.User.ID }}">
-							</div>
-							<div class="fourteen wide column">
+						<div style="display: flex;justify-content: center;gap: 20px;color: #fff;">
+							<div><img src="https://a.ussr.pl/{{ $global.Context.User.ID }}" style="  border-radius: 1rem;width: 90px;height: 90px;max-width: none;"></div>	
+							<div style="width: 100%">
 								<textarea id="comment-text" placeholder="Write a comment..." maxlength="380"></textarea>
 								<span id="comment-max">0/380</span>
 								<button id="comment-submit" class="disabled ui button inverted pink" onclick="post()">Comment</button>
@@ -459,37 +472,14 @@
 					
 					<div id="user-comments">
 						<div id="comments-list" class="ui comments"></div>
-						<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load</button>
+						<div style="display: flex;justify-content: center;align-content: center;" id="comment-load-container">
+							<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load more</button>
+						</div>
 					</div>
 				{{ end }}
 			{{ end }}
-
-			
 		</div>
 		<script src="/static/profiles/comments.js"></script>
 	{{ end }}
-	<script>
-		function copyToTray(userDiscord) {
-			var dummy = document.createElement("textarea");
-			// to avoid breaking orgain page when copying more words
-			// cant copy when adding below this code
-			// dummy.style.display = 'none'
-			document.body.appendChild(dummy);
-			
-			dummy.value = userDiscord;
-			dummy.select();
-			document.execCommand("copy");
-			document.body.removeChild(dummy);
-			document.getElementById("clipboard-dc").setAttribute("data-tooltip", "Copied to clipboard!");
-		}
-
-		function ensureSpan() {
-			data = document.getElementById("clipboard-dc").getAttribute("data-tooltip");
-
-			if (data == "Copied to clipboard!") {
-				document.getElementById("clipboard-dc").setAttribute("data-tooltip", "Copy to clipboard.");
-			}
-		}
-	</script>
 </div>
 {{ end }}

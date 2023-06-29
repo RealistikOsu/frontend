@@ -22,40 +22,25 @@ $(document).ready(function () {
 	else if (wl.pathname != newPathName)
 		window.history.replaceState('', document.title, newPathName + wl.search + wl.hash);
 	setDefaultScoreTable();
-	if (window.chart == null)
-		initialiseChart(favouriteMode, preferRelax);
+
 	// Credits to Akatsuki here :D
 	$("#rx-menu>.item").click(function (e) {
 		e.preventDefault();
 		if ($(this).hasClass("active"))
 			return;
 
+		if ($(this).hasClass("disabled"))
+			return;
+
 		preferRelax = $(this).data("rx");
-		$("#clickAutopilot").removeClass("disabled");
-		$("#clickRelax").removeClass("disabled");
 
-		$("#clickTaiko").removeClass("disabled");
-		$("#clickCatch").removeClass("disabled");
-		$("#clickMania").removeClass("disabled");
-
-		switch (preferRelax) {
-			case 1:
-				$("#clickMania").addClass("disabled");
-				break;
-			case 2:
-				$("#clickTaiko").addClass("disabled");
-				$("#clickCatch").addClass("disabled");
-				$("#clickMania").addClass("disabled");
-				break;
-		}
 		initialiseScores($("#scores-zone>div[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]"), favouriteMode)
-		updateChartData(favouriteMode, preferRelax);
+		initialiseChartGraph(graphType, true);
+		applyPeakRankLabel()
+		toggleModeAvailability(favouriteMode, preferRelax)
 		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
 		$("[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
 		$("#rx-menu>.active.item").removeClass("active");
-		var needsLoad = $("#scores-zone>[data-mode=" + favouriteMode + "][data-loaded=0][data-rx=" + preferRelax + "]");
-		if (needsLoad.length > 0)
-			initialiseScores(needsLoad, favouriteMode);
 		$(this).addClass("active");
 		window.history.replaceState('', document.title, `${wl.pathname}?mode=${favouriteMode}&rx=${preferRelax}${wl.hash}`)
 
@@ -65,70 +50,27 @@ $(document).ready(function () {
 		if ($(this).hasClass("active"))
 			return;
 
+		if ($(this).hasClass("disabled"))
+			return;
+
 		var m = $(this).data("mode");
-		$("#clickAutopilot").removeClass("disabled");
-		$("#clickRelax").removeClass("disabled");
 
-		$("#clickTaiko").removeClass("disabled");
-		$("#clickCatch").removeClass("disabled");
-		$("#clickMania").removeClass("disabled");
-
-		switch (m) {
-			case 1:
-				$("#clickAutopilot").addClass("disabled");
-				break;
-			case 2:
-				$("#clickAutopilot").addClass("disabled");
-				break;
-			case 3:
-				$("#clickRelax").addClass("disabled");
-				$("#clickAutopilot").addClass("disabled");
-				break;
-		}
 		favouriteMode = m;
 		initialiseScores($("#scores-zone>div[data-mode=" + favouriteMode + "][data-rx=" + preferRelax + "]"), favouriteMode)
-		updateChartData(favouriteMode, preferRelax);
+		initialiseChartGraph(graphType, true);
+		applyPeakRankLabel()
+		toggleModeAvailability(favouriteMode, preferRelax)
 		$("[data-mode]:not(.item):not([hidden])").attr("hidden", "");
 		$("[data-mode=" + m + "][data-rx=" + preferRelax + "]:not(.item)").removeAttr("hidden");
 		$("#mode-menu>.active.item").removeClass("active");
-		var needsLoad = $("#scores-zone>[data-mode=" + m + "][data-loaded=0][data-rx=" + preferRelax + "]");
-		if (needsLoad.length > 0)
-			initialiseScores(needsLoad, m);
 		$(this).addClass("active");
 		window.history.replaceState('', document.title, `${wl.pathname}?mode=${m}&rx=${preferRelax}${wl.hash}`);
 
 	});
-	// This is such a mess...
-	$("#clickAutopilot").removeClass("disabled");
-	$("#clickRelax").removeClass("disabled");
 
-	$("#clickTaiko").removeClass("disabled");
-	$("#clickCatch").removeClass("disabled");
-	$("#clickMania").removeClass("disabled");
-
-	switch (preferRelax) {
-		case 1:
-			$("#clickMania").addClass("disabled");
-			break;
-		case 2:
-			$("#clickTaiko").addClass("disabled");
-			$("#clickCatch").addClass("disabled");
-			$("#clickMania").addClass("disabled");
-			break;
-	}
-
-	switch (favouriteMode) {
-		case 1:
-			$("#clickAutopilot").addClass("disabled");
-			break;
-		case 2:
-			$("#clickAutopilot").addClass("disabled");
-			break;
-		case 3:
-			$("#clickRelax").addClass("disabled");
-			$("#clickAutopilot").addClass("disabled");
-			break;
-	}
+	initialiseChartGraph(graphType, false);
+	applyPeakRankLabel()
+	toggleModeAvailability(favouriteMode, preferRelax)
 
 	initialiseFriends();
 	// load scores page for the current favourite mode
@@ -141,55 +83,50 @@ $(document).ready(function () {
 		i18next.on("loaded", function () {
 			i();
 		});
-	//loadOnlineStatus();
-	//setInterval(loadOnlineStatus, 10000);
 });
 
-function updateChartData(mode, rx) {
-
-	if (rx == 1) {
-		mode += 4
-	} else if (rx == 2) {
-		mode += 7
+function applyPeakRankLabel() {
+	var modeVal = favouriteMode;
+	if (preferRelax == 1) {
+		modeVal += 4;
+	} else if (preferRelax == 2) {
+		modeVal += 7;
 	}
 
-	fetch(`https://ussr.pl/api/v1/profile-history/rank?user_id=${userID}&mode=${mode}`)
-		.then(res => res.json())
-		.then((out) => {
-			let node = document.getElementById("graphNoData");
-			if (node !== null && node.parentNode) {
-				node.parentNode.removeChild(node);
-			}
+	var rankLabel = $(`#global-rank-${preferRelax}-${favouriteMode}`)
+	if (!rankLabel) return
 
-			console.log(out)
+	api("profile-history/peak-rank", { user_id: userID, mode: modeVal }, (resp) => {
+		if (!resp.data) {
+			return
+		}
 
-			window.graphPoints = []
-			if (out.status != "error") {
-				window.graphPoints = out.data.captures.map((x) => x.overall);
-			}
+		var rank = addCommas(resp.data.rank)
+		var date = Date.parse(resp.data.captured_at)
 
-			window.chart.data.labels = createLabels(window.graphPoints)
-			window.chart.data.datasets[0].data = window.graphPoints;
-			window.chart.options.scales.yAxes[0].ticks.min = Math.min(...window.graphPoints);
-			window.chart.options.scales.yAxes[0].ticks.max = Math.max(...window.graphPoints);
-			window.chart.update();
+		// using en-gb because we want `09 Mar 2022` syntax.
+		var formatter = new Intl.DateTimeFormat('en-gb', { day: 'numeric', month: 'short', year: 'numeric' })
+		var formattedDate = formatter.format(date)
+		rankLabel.attr("data-tooltip", `Peak rank: #${rank} on ${formattedDate}`)
+	});
 
-			if (out.status == "error") {
-				var element = document.getElementById("GraphSegment");
-				let msg = document.createElement("h3")
-				msg.setAttribute("id", "graphNoData");
-				msg.append("No graph data to display!")
-				element.append(msg)
-				return
-			}
-
-		})
-		.catch(err => { throw err });
 }
 
-function createLabels(data) {
+
+function getCountryRank(idx) {
+	// country ranks are inconsistient because for now they are missing 1 day off
+
+	var rank = window.countryRankPoints[idx]
+	if (rank == undefined || rank == null) {
+		return "N/A"
+	}
+
+	return addCommas(rank)
+}
+
+function createLabels(dataLength) {
 	var labels = ["Today"]
-	for (var i = 1; i < data.length; i++) {
+	for (var i = 1; i < dataLength; i++) {
 		if (i == 1) {
 			labels.push(`1 day ago`)
 		} else {
@@ -199,104 +136,170 @@ function createLabels(data) {
 	return labels.reverse()
 }
 
-function initialiseChart(mode, rx) {
+function changeChart(type) {
+	if (graphType == type) return;
 
-	if (rx == 1) {
-		mode += 4
-	} else if (rx == 2) {
-		mode += 7
+	$(`#chart-btn-${graphType}`).removeClass("active");
+	$(`#chart-btn-${type}`).addClass("active");
+
+	graphType = type;
+	initialiseChartGraph(type, true);
+}
+
+
+function getGraphTooltip({ series, seriesIndex, dataPointIndex, w }) {
+	var prefix = graphType == "rank" ? "#" : ""
+	return ` 
+		<div 
+		class="apexcharts-tooltip-title" 
+		style="font-family: "Poppins", sans-serif; font-size: 12px;"
+		>${window.graphLabels[dataPointIndex]}</div>
+		<div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">
+		  <span class="apexcharts-tooltip-marker" style="background-color: ${graphColor};"></span>
+		  <div class="apexcharts-tooltip-text" style="font-family: "Poppins", sans-serif; font-size: 12px;">
+			<div class="apexcharts-tooltip-y-group">
+			  <span class="apexcharts-tooltip-text-y-label">${graphName}: </span>
+			  <span class="apexcharts-tooltip-text-y-value">${prefix}${addCommas(series[seriesIndex][dataPointIndex])}</span>
+			</div>
+			${graphType == 'rank' ? `<div class="apexcharts-tooltip-y-group">
+			  <span class="apexcharts-tooltip-text-y-label">Country Rank: </span>
+			  <span class="apexcharts-tooltip-text-y-value">#${getCountryRank(dataPointIndex)}</span>
+			</div>` : ''}
+			<div class="apexcharts-tooltip-goals-group">
+			  <span class="apexcharts-tooltip-text-goals-label"></span>
+			  <span class="apexcharts-tooltip-text-goals-value"></span>
+			</div>
+			<div class="apexcharts-tooltip-z-group">
+			  <span class="apexcharts-tooltip-text-z-label"></span>
+			  <span class="apexcharts-tooltip-text-z-value"></span>
+			</div>
+		  </div>
+		</div>
+	  `
+}
+
+function initialiseChartGraph(graphType, udpate) {
+	var modeVal = favouriteMode;
+	if (preferRelax == 1) {
+		modeVal += 4;
+	} else if (preferRelax == 2) {
+		modeVal += 7;
 	}
 
-	fetch(`https://ussr.pl/api/v1/profile-history/rank?user_id=${userID}&mode=${mode}`)
-		.then(res => res.json())
-		.then((out) => {
-			var graphCtx = document.getElementById('ProfileGraph').getContext('2d');
+	window.graphPoints = []
+	window.countryRankPoints = []
+	window.graphName = graphType == "pp" ? "Performance Points" : "Global Rank"
+	window.graphColor = graphType == "pp" ? '#e03997' : '#2185d0'
+	var yaxisReverse = graphType == "pp" ? false : true
 
-			let node = document.getElementById("graphNoData");
-			if (node !== null && node.parentNode) {
-				node.parentNode.removeChild(node);
-			}
+	api(`profile-history/${graphType}`, { user_id: userID, mode: modeVal }, (resp) => {
+		var chartCanvas = document.querySelector("#profile-history-graph");
+		var chartNotFound = document.querySelector("#profile-history-not-found");
 
-			console.log(out)
+		if (resp.status == "error") {
+			chartNotFound.style.display = "block";
+			chartCanvas.style.display = "none";
+			return;
+		}
 
-			window.graphPoints = []
-			if (out.status != "error") {
-				window.graphPoints = out.data.captures.map((x) => x.overall);
-			}
+		chartNotFound.style.display = "none";
+		chartCanvas.style.display = "block";
+		if (graphType === "rank") {
+			window.graphPoints = resp.data.captures.map((x) => x.overall);
+			window.countryRankPoints = resp.data.captures.map((x) => x.country);
+		} else {
+			window.graphPoints = resp.data.captures.map((x) => x.pp);
+		}
 
-			var data = {
-				labels: createLabels(window.graphPoints),
-				datasets: [{
-					fill: false,
-					label: "Global Rank",
-					data: window.graphPoints,
-					lineTension: 0.3,
-					borderWidth: 3.5,
-					//backgroundColor: 'rgba(15, 151, 255, 0.73)',
-					//borderWidth: 0,
-					borderColor: 'rgba(15, 151, 255, 0.73)',
-					//pointBorderWidth: 0,
-					pointRadius: 8,
-					pointBorderColor: 'transparent',
-					pointBackgroundColor: 'transparent',
-					pointHoverBackgroundColor: 'transparent',
-					pointHoverBorderColor: 'rgba(15, 151, 255, 0.73)',
-					pointHoverBorderWidth: 5,
-					pointHoverRadius: 8
-				}]
-			}
+		var minGraphOffset = Math.min(...window.graphPoints)
+		var maxGraphOffset = Math.max(...window.graphPoints)
+		var minMaxGraphOffset = minGraphOffset == maxGraphOffset ? 10 : 1
 
-			window.chart = new Chart(graphCtx, {
-				type: 'line',
-				data: data,
-				bezierCurve: false,
-				options: {
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: true,
-								reverse: true,
-								min: Math.min(...window.graphPoints),
-								max: Math.max(...window.graphPoints),
-								userCallback: function (label, index, labels) {
-									// when the floored value is the same as the value we have a whole number
-									if (Math.floor(label) === label) {
-										return label;
-									}
-
-								},
-							},
-							gridLines: {
-								display: false
-							}
-						}],
-						xAxes: [
-							{
-								ticks: {
-									display: false
-								},
-								gridLines: {
-									display: false
-								}
-							}
-						]
+		window.graphLabels = createLabels(window.graphPoints.length)
+		var options = {
+			series: [
+				{
+					name: graphName,
+					data: window.graphPoints
+				},
+			],
+			grid: {
+				show: true,
+				borderColor: '#383838',
+				position: 'back',
+				xaxis: {
+					lines: {
+						show: false
 					}
+				},
+				yaxis: {
+					lines: {
+						show: true
+					}
+				},
+			},
+			chart: {
+				height: 160,
+				type: 'line',
+				fontFamily: '"Poppins", sans-serif',
+				zoom: {
+					enabled: false
+				},
+				toolbar: {
+					show: false,
+				},
+				background: 'rgba(0,0,0,0)'
+			},
+			stroke: {
+				curve: 'smooth',
+				width: 4,
+			},
+			colors: [graphColor],
+			theme: {
+				mode: 'dark',
+			},
+			xaxis: {
+				labels: { show: false },
+				categories: window.graphLabels,
+				axisTicks: {
+					show: false,
+				},
+				tooltip: {
+					enabled: false,
 				}
-			});
+			},
+			yaxis: [
+				{
+					max: maxGraphOffset + minMaxGraphOffset,
+					min: minGraphOffset - minMaxGraphOffset,
+					reversed: yaxisReverse,
+					labels: { show: false },
+					tickAmount: 4,
+				},
+			],
+			tooltip: {
+				custom: getGraphTooltip,
+			},
+			markers: {
+				size: 0,
+				fillColor: graphColor,
+				strokeWidth: 0,
+				hover: { size: 7 }
+			},
+		};
 
-			if (out.status == "error") {
-				var element = document.getElementById("GraphSegment");
-				let msg = document.createElement("h3")
-				msg.setAttribute("id", "graphNoData");
-				msg.append("No graph data to display!")
-				element.append(msg)
-				return
+		if (udpate) {
+			if ("chart" in window) {
+				window.chart.updateOptions(options)
+			} else {
+				window.chart = new ApexCharts(chartCanvas, options);
+				window.chart.render();
 			}
-		})
-		.catch(err => { throw err });
+		} else {
+			window.chart = new ApexCharts(chartCanvas, options);
+			window.chart.render();
+		}
+	});
 }
 
 function formatOnlineStatusBeatmap(a) {
@@ -305,104 +308,67 @@ function formatOnlineStatusBeatmap(a) {
 	return escapeHTML(a.text)
 }
 
-function loadOnlineStatus() {
-	return
-	// load in-game status through delta api
-	regularAPI('status/' + userID, {}, function (resp) {
-		if (resp?.code === 200) {
-			var innerHtml, hexColour;
-					// bancho
-					switch (resp.action.id) {
-						case 1: {
-							// AFK
-							hexColour = "rgb(10, 10, 10)"
-							innerHtml = `<span class data-tooltip="AFK"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break
-						case 2: {
-							// Playing
-							hexColour = "rgb(140, 160, 160)"
-							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break
-						case 3: {
-							// Editing
-							hexColour = "rgb(160, 60, 60)"
-							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						case 4: {
-							// Modding
-							hexColour = "rgb(60, 160, 60)"
-							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						case 5: {
-							// In match
-							hexColour = "rgb(164, 108, 28)"
-							innerHtml = `<span class data-tooltip="In Multiplayer Match"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						case 12: {
-							// Playing multi
-							hexColour = "rgb(221, 190, 0)"
-							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						case 11: {
-							// In lobby
-							hexColour = "rgb(164, 108, 28)"
-							innerHtml = `<span class data-tooltip="In Multiplayer Lobby"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						case 6: {
-							// Spectating.
-							innerHtml = `<span class data-tooltip="${resp.action.text}"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						}; break;
-						default: {
-							// online
-							hexColour = "rgb(10, 29, 75)"
-							innerHtml = `<span class data-tooltip="Online"><img class="pulse-avatar" alt="avatar" src="https://a.ussr.pl/${userID}">`;
-						};
-					}
-			
-		} else {
-			// offline
-			// we wont pulse if they are offline.
-			hexColour = "rgb(10, 10, 10)"
-			innerHtml = `<span class data-tooltip="Offline">`;
-		}
-
-		document.documentElement.style.setProperty('--pulse-color', hexColour);
-		$('#avatar-canvas').html(innerHtml);
-	});
-}
-
 function loadMostPlayedBeatmaps(mode) {
-	var mostPlayedTable = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type='most-played']");
+	var mostPlayedTable = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] div[data-type='most-played']");
 	currentPage[preferRelax][mode].mostPlayed++
+
+	var mixedMode = favouriteMode;
+	if (preferRelax == 1) {
+		mixedMode += 4;
+	} else if (preferRelax == 2) {
+		mixedMode += 7;
+	}
+
 	api('users/most_played', { id: userID, mode: mode, p: currentPage[preferRelax][mode].mostPlayed, l: 5, rx: preferRelax }, function (resp) {
 		if (resp.beatmaps === null) {
+			mostPlayedTable.html(scoreNotFoundElement)
 			return;
 		}
 
-		document.getElementById("mostplayed-text").innerHTML = '<i class="play icon"></i>' + T("Most Played Beatmaps") + ` (${resp.total})`;
+		var label = $("#mostplayed-text-" + mixedMode)
+		label.empty()
+		label.html(`<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-play"></i> ${T("Most Played Beatmaps")} (${resp.total})</div>`)
+
 		resp.beatmaps.forEach(function (el, idx) {
-			mostPlayedTable.children('tbody').append(
-				$("<tr style='background: linear-gradient(90deg,#212121,#00000087,#212121), url(https://assets.ppy.sh/beatmaps/"+ el.beatmap.beatmapset_id +"/covers/cover.jpg) no-repeat right !important; background-size: cover !important;' />").append(
-					$("<td />").append(
-						//$("<h4 class='ui image header' />").append(
-						//$("<img src='https://assets.ppy.sh/beatmaps/" + el.beatmap.beatmapset_id + "/covers/list.jpg' class='ui mini rounded image'>"),
-						$("<div class='content' />").append(
-							$("<a href='/beatmaps/" + el.beatmap.beatmap_id + "' />").append(
-								$('<b />').text(el.beatmap.song_name)
-							)
-						)
-						//)
+			mostPlayedTable.children('.profile-scores-container').append(
+				$(`<div class="score-row score-row-most-played score-view-desktop" style='--gradient-colour: rgba(33, 33, 33, 0.8); --background-url: url("https://assets.ppy.sh/beatmaps/${el.beatmap.beatmapset_id}/covers/cover.jpg")' />`)
+					.append(
+						$(`<div class="score-row-info score-row-info-most-played" />`).append(
+							$("<div class='row-info-container row-info-container-most-played' />").append(
+								`<a class="link-text" href="/b/${el.beatmap.beatmap_id}">${escapeHTML(el.beatmap.song_name)}</a>`,
+							),
+						),
+						$("<div class='score-row-pp' />").append(
+							$("<div class='row-pp-pp' />").append(
+								$(`<b><span class="fas fa-play" /> ${el.playcount}</b>`)
+							),
+						),
 					),
-					$("<td class='right aligned' />").append(
-						$('<span style="margin-right: 5px;margin-top: 0.2em;"><span class="fas fa-play" /></span>'),
-						$('<b />').text(el.playcount)
-					)
-				)
+
+				$(`<div class="score-row-mobile score-row-most-played score-view-mobile" style='--gradient-colour: rgba(33, 33, 33, 0.8); --background-url: url("https://assets.ppy.sh/beatmaps/${el.beatmap.beatmapset_id}/covers/cover.jpg")' />`)
+					.append(
+						$("<div class='score-mobile-top' />").append(
+							$(`<div class="score-row-info-mobile score-row-info-most-played" />`).append(
+								$("<div class='row-info-container row-info-container-most-played row-info-container-most-played-mobile' />").append(
+									`<a class="link-text" href="/b/${el.beatmap.beatmap_id}">${escapeHTML(el.beatmap.song_name)}</a>`,
+								),
+							),
+						),
+						$("<div class='score-mobile-bottom' />").append(
+							$("<div class='score-row-pp-mobile' />").append(
+								$("<div class='row-pp-pp-mobile' />").append(
+									$(`<b><span class="fas fa-play" /> ${el.playcount}</b>`)
+								),
+							),
+						),
+					),
 			)
 		})
-		if (resp.beatmaps.length === 5) {
-			mostPlayedTable.find('.load-more').removeClass('disabled')
-		}
+		var enable = true;
+		var limit = 5;
+		if (resp.beatmaps.length !== limit)
+			enable = false;
+		disableLoadMoreButton("most-played", mode, enable);
 	})
 }
 
@@ -520,45 +486,35 @@ function friendClick() {
 
 var defaultScoreTable;
 function setDefaultScoreTable() {
-	defaultScoreTable = $("<table class='ui table score-table profile-table' />")
+	defaultScoreTable = $("<div class='profile-scores-segment' />")
 		.append(
-			$("<tbody />")
+			$("<div class='profile-scores-container' />")
 		)
 		.append(
-			$("<tfoot />").append(
-				$("<tr />").append(
-					$("<th colspan=2 />").append(
-						$("<div class='ui floated pagination' />").append(
-							$("<a class='ui button load-more-button inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreClick)
-						)
-					)
+			$("<div class='profile-scores-btn-container' />").append(
+				$("<div class='ui floated pagination' />").append(
+					$("<a class='ui button load-more-button inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreClick)
 				)
 			)
 		)
-		;
 }
 i18next.on('loaded', function (loaded) {
 	setDefaultScoreTable();
 });
 
 function recentOnClick() {
-	var value = $('#filter-failed').prop('checked')
-	$("#recent-table").remove()
-	var recent = defaultScoreTable.clone(true).addClass("blue").attr('id', 'recent-table');
-	recentFilter(recent)
-	recent.attr("data-type", "recent");
-	var howManyTimes = currentPage[preferRelax][favouriteMode]["recent"]
+	$("#recent-table > .profile-scores-container").empty();
+
+	var oldPagesCount = currentPage[preferRelax][favouriteMode]["recent"]
 	currentPage[preferRelax][favouriteMode]["recent"] = 0
 
-	$(recent).insertAfter("#recenttable-text")
-	$("#filter-failed").attr('checked', value);
-	for (let i = 0; i < howManyTimes; i++) {
+	for (let i = 0; i < oldPagesCount; i++) {
 		loadScoresPage("recent", favouriteMode);
 	}
 }
 
 function recentFilter(recent) {
-	$(recent).find(".load-more-button").parent().append(`
+	$(recent).find(".profile-scores-btn-container").prepend(`
 		<div class="ui checkbox">
 			<input onclick="recentOnClick()" id="filter-failed" type="checkbox">
 			<label>Hide failed scores.</label>
@@ -568,35 +524,23 @@ function recentFilter(recent) {
 
 function initialiseScores(el, mode) {
 	el.attr("data-loaded", "1");
-	var pinned = defaultScoreTable.clone(true).addClass("t-pinned orange");
-	var best = defaultScoreTable.clone(true).addClass("t-best purple");
-	var recent = defaultScoreTable.clone(true).addClass("t-recent blue").attr('id', 'recent-table');
-	var first = defaultScoreTable.clone(true).addClass("t-first red");
+	el.empty();
+	var pinned = defaultScoreTable.clone(true)
+	var best = defaultScoreTable.clone(true)
+	var recent = defaultScoreTable.clone(true).attr('id', 'recent-table')
+	var first = defaultScoreTable.clone(true)
+	var mostPlayed = defaultScoreTable.clone(true)
+	mostPlayed.find(".load-more-button").unbind().click(loadMoreMostPlayed);
 
 	recentFilter(recent);
-	var mostPlayedBeatmapsTable = $("<table class='ui table F-table green profile-table' data-mode='" + mode + "' data-rx='" + preferRelax + "' />")
-		.append(
-			$('<tbody />')
-		)
-		.append(
-			$("<tfoot />").append(
-				$("<tr />").append(
-					$("<th colspan=2 />").append(
-						$("<div class='ui floated pagination' />").append(
-							$("<a class='ui button load-more inverted violet disabled'>" + T("Load more") + "</a>").click(loadMoreMostPlayed)
-						)
-					)
-				)
-			)
-		)
-	
+
 	pinned.attr("data-type", "pinned");
 	best.attr("data-type", "best");
 	recent.attr("data-type", "recent");
 	first.attr("data-type", "first");
-	mostPlayedBeatmapsTable.attr("data-type", "most-played");
+	mostPlayed.attr("data-type", "most-played");
 	first.addClass("no bottom margin");
-	
+
 	for (const i in currentPage) {
 		for (const j in currentPage[i]) {
 			for (const k of Object.keys(currentPage[i][j])) {
@@ -605,13 +549,20 @@ function initialiseScores(el, mode) {
 		}
 	}
 
-	el.html($("<div id='scores-container' class='ui segments no bottom margin' />").append(
-		$("<div class='t-pinned ui segment' style='display: none' />").append('<h4 class="ui horizontal divider header"><i class="star icon"></i>Pinned Scores</h4>', pinned),
-		$("<div class='t-best ui segment' />").append('<h4 class="ui horizontal divider header"><i class="angle double up icon"></i>Best Scores</h4>', best),
-		$("<div class='t-most ui segment' />").append('<h4 id="mostplayed-text" class="ui horizontal divider header"><i class="play icon"></i>Most Played Beatmaps</h4>', mostPlayedBeatmapsTable),
-		$("<div class='t-recent ui segment' />").append('<h4 id="recenttable-text" class="ui horizontal divider header"><i class="history icon"></i>Recent Scores</h4>', recent),
-		$("<div class='t-first ui segment' />").append('<h4 id="firstplace-text" class="ui horizontal divider header"><i class="trophy icon"></i>First Places</h4>', first)
-	));
+	let mixedMode = favouriteMode;
+	if (preferRelax == 1) {
+		mixedMode += 4;
+	} else if (preferRelax == 2) {
+		mixedMode += 7;
+	}
+
+	el.append(
+		$("<div class='t-pinned ui segment' style='display: none' />").append('<h4 class="ui horizontal divider header"><div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-star"></i> Pinned Scores</div></h4>', pinned),
+		$("<div class='t-best ui segment' />").append('<h4 class="ui horizontal divider header"><div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-angles-up"></i> Best Scores</div></h4>', best),
+		$("<div class='t-most ui segment' />").append(`<h4 id="mostplayed-text-${mixedMode}" class="ui horizontal divider header"><div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-play"></i> Most Played Beatmaps</div></h4>`, mostPlayed),
+		$("<div class='t-recent ui segment' />").append(`<h4 class="ui horizontal divider header"><div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Scores</div></h4>`, recent),
+		$("<div class='t-first ui segment' />").append(`<h4 id="firstplace-text-${mixedMode}" class="ui horizontal divider header"><div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-trophy"></i> First Places</div></h4>`, first)
+	);
 
 	loadScoresPage("pinned", mode);
 	loadScoresPage("best", mode);
@@ -624,7 +575,7 @@ function loadMoreClick() {
 	if (t.hasClass("disabled"))
 		return;
 	t.addClass("disabled");
-	var type = t.parents("table[data-type]").data("type");
+	var type = t.parents("div[data-type]").data("type");
 	var mode = t.parents("div[data-mode]").data("mode");
 	loadScoresPage(type, mode);
 }
@@ -650,7 +601,7 @@ var currentPage = [
 		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
 		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 }
 	],
-	[	
+	[
 		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
 		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
 		{ pinned: 0, best: 0, recent: 0, mostPlayed: 0, first: 0 },
@@ -662,7 +613,7 @@ var scoreStore = {};
 const DIFF_MAX_LEN = 32;
 
 async function loadScoresPage(type, mode) {
-	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=" + type + "] tbody");
+	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] div[data-type=" + type + "] .profile-scores-container");
 	var page = ++currentPage[preferRelax][mode][type];
 
 	console.log("loadScoresPage with", {
@@ -675,14 +626,23 @@ async function loadScoresPage(type, mode) {
 	var limit = type === 'best' ? 10 : 5;
 	params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID }
 
-	if ($('#filter-failed').prop('checked') && type === "recent") {
-		params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID, filter: "recent" }
+	filterBool = $('#filter-failed').prop('checked')
+	if (filterBool && type == "recent") {
+		params.filter = "recent";
 	}
 
-	fetch(`/api/v1/users/scores/${type}?mode=${params.mode}&p=${params.p}&l=${params.l}&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r => 
-		buildPlays(r, type, mode, table, page, limit)	
+	fetch("https://ussr.pl" + `/api/v1/users/scores/${type}?mode=${params.mode}&p=${params.p}&l=${params.l}&rx=${params.rx}&id=${params.id}${params.filter ? `&filter=${params.filter}` : ''}`).then(o => o.json()).then(r =>
+		buildPlays(r, type, mode, table, page, limit)
 	);
 }
+
+const scoreNotFoundElement = `
+<div class="ui segment comment-login" style="border-radius: 1rem !important;">
+	<div class="ui icon message black ds" style="border-radius: 1rem;">
+		<p>No scores have been found :(</p>
+	</div>
+</div>
+`
 
 function buildPlays(r, type, mode, table, page, limit) {
 	if (r.scores == null && params.p <= 1) {
@@ -693,79 +653,146 @@ function buildPlays(r, type, mode, table, page, limit) {
 
 	if (r.scores == null) {
 		disableLoadMoreButton(type, mode);
+		table.html(scoreNotFoundElement);
 		return;
 	}
 
+	var mixedMode = favouriteMode;
+	if (preferRelax == 1) {
+		mixedMode += 4;
+	} else if (preferRelax == 2) {
+		mixedMode += 7;
+	}
+
+
 	if (type == "first") {
-		//screw jqery, webjs god
-		document.getElementById("firstplace-text").innerHTML = '<i class="trophy icon"></i>' + T("First Places") + ` (${r.total})`;
+		var label = $("#firstplace-text-" + mixedMode)
+		label.empty()
+		label.html('<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;"><i class="fa-solid fa-trophy"></i> ' + T("First Places") + ` (${r.total})</div>`);
 	}
 
 	r.scores.forEach(function (v, idx) {
 		// Filter dupes, XXX: temponary fix
-		if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx-1].beatmap_md5) return;
+		if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx - 1].beatmap_md5) return;
 
 		scoreStore[v.id] = v;
 		var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
-		var scoreRankIcon = `<a style="margin-right: 0.2em !important;" class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")}">${scoreRank}</a>`
-		var rowColor = '';
+		var scoreRankIcon = `<a class="score-rank rank-${scoreRank.toLowerCase().replace("+", "h")} profile-score-rank">${scoreRank}</a>`
+
 		// Please at least credit if you steal this :(
 		if (v.completed < 2) {
-			var StyleCol = "#6b201f"; // jajajaja
+			var styleColour = "rgba(107, 32, 31, 0.6)"; // jajajaja
 		} else {
-			var StyleCol = "#212121";
-		}
-
-		if (type === 'recent') {
-			rowColor = v.completed === 3 ? 'positive' : v.completed < 2 ? 'error' : '';
-		}
-
-		// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
-		let song_name_f = v.beatmap.song_name;
-		let fufrieu = song_name_f.split("[");
-		let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
-		let diff_name = fufrieu[1].substring(1, fufrieu[1].length - 1);
-		let failedClass = v.completed < 2 ? "score-failed-recent" : "";
-		let apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
-
-		if (diff_name.length > DIFF_MAX_LEN) {
-			// Heck. Gotta reconstruct the bmap name.
-			v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
+			var styleColour = "rgba(33, 33, 33, 0.8)";
 		}
 
 		const lookinAtMyProfile = currentUserID == userID && v.completed != 0;
-		const dlText = !lookinAtMyProfile ? "Get" : "";
+		const apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
 
-		table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/"+ v.beatmap.beatmapset_id +"/covers/cover.jpg"+apiImageParams+") no-repeat right !important; background-size: cover !important;' />").append(
-			$(
-				"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
-				escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
-				"<div class='subtitle'><time class='new timeago' datetime='" + v.time + "'>" + v.time + "</time></div></td>"
-			),
-			$("<td><b>" + ppOrScore(v.pp, v.score, v.beatmap.ranked) + "</b> " + weightedPP(type, page, idx, v.pp) + `<div class="dl-pin">${v.completed == 3 ? downloadStar(v.id)+dlText : ""} ${lookinAtMyProfile ? pinScore(v.id, escapeHTML(acc_song_name)) : ""}</div>` + "</td>")
-		));
-	});
-	$(".new.timeago").timeago().removeClass("new");
-	$(".new.score-row").click(viewScoreInfo).removeClass("new");
-	$(".new.downloadstar").click(function (e) {
-		e.stopPropagation();
-	}).removeClass("new");
+		table.append(
+			$(`<div class="score-row score-view-desktop" data-scoreid="${v.id}" style='--gradient-colour: ${styleColour}; --background-url: url("https://i0.wp.com/assets.ppy.sh/beatmaps/${v.beatmap.beatmapset_id}/covers/cover.jpg${apiImageParams}")' />`)
+				.append(
+					$("<div class='score-row-rank' />").append(scoreRankIcon),
+					$(`<div class="score-row-info" />`).append(
+						$("<div class='row-info-container' />").append(
+							`<a class="link-text" href="/b/${v.beatmap.beatmap_id}">${escapeHTML(v.beatmap.song_name)}</a>`,
+							"<br>",
+							`${addCommas(v.score)} / ${addCommas(v.max_combo)}x / <b>${getScoreMods(v.mods, true)}</b>`,
+							"<br>",
+							$("<div class='row-info-timeago' />").append(
+								$(`<time class="timeago" datetime="${v.time}">${v.time}</time>`),
+							),
+						),
+					),
+					$("<div class='score-row-pp' />").append(
+						$("<div class='row-pp-pp' />").append(
+							$(`<b>${ppOrScore(v.pp, v.score, v.beatmap.ranked)}</b>`)
+						),
+						$("<span class='row-pp-acc' />").append(
+							"accuracy: ",
+							$(`<b>${v.accuracy.toFixed(2)}%</b>`)
+						)
+					),
+					$("<div class='ui dropdown item score-row-options' />").append(
+						$('<i class="fa-solid fa-ellipsis-vertical"></i>'),
+						$("<div class='menu' />").append(
+							$(`<a class="item" data-scoreid="${v.id}" />`).append(
+								T("View Details")
+							).click(viewScoreInfo),
+							v.completed == 3 ? $(`<a class="item" href="/web/replays/${v.id}" />`).append(
+								T("Download Replay")
+							) : "",
+							(lookinAtMyProfile && v.completed >= 2) ? $(`<a class="item" href='javascript:postPin(${v.id}, "${escapeHTML(v.beatmap.song_name)}")' />`).append(
+								T("Pin Score")
+							) : ""
+						),
+					),
+				),
+
+			$(`<div class="score-row-mobile score-view-mobile" data-scoreid="${v.id}" style='--gradient-colour: ${styleColour}; --background-url: url("https://i0.wp.com/assets.ppy.sh/beatmaps/${v.beatmap.beatmapset_id}/covers/cover.jpg${apiImageParams}")' />`)
+				.append(
+					$("<div class='score-mobile-top' />").append(
+						$("<div class='score-row-rank-mobile' />").append(scoreRankIcon),
+						$(`<div class="score-row-info-mobile" />`).append(
+							$("<div class='row-info-container' />").append(
+								`<a class="link-text" href="/b/${v.beatmap.beatmap_id}">${escapeHTML(v.beatmap.song_name)}</a>`,
+								"<br>",
+								`${addCommas(v.score)} / ${addCommas(v.max_combo)}x / <b>${getScoreMods(v.mods, true)}</b>`,
+								"<br>",
+								$("<div class='row-info-timeago' />").append(
+									$(`<time class="timeago" datetime="${v.time}">${v.time}</time>`),
+								),
+							),
+						),
+					),
+					$("<div class='score-mobile-bottom' />").append(
+						$("<div class='score-row-pp-mobile' />").append(
+							$("<div class='row-pp-pp-mobile' />").append(
+								$(`<b>${ppOrScore(v.pp, v.score, v.beatmap.ranked)}</b>`)
+							),
+							$("<span class='row-pp-acc-mobile' />").append(
+								"accuracy: ",
+								$(`<b>${v.accuracy.toFixed(2)}%</b>`)
+							)
+						),
+						$("<div class='ui right pointing dropdown item score-row-options' />").append(
+							$('<i class="fa-solid fa-ellipsis-vertical"></i>'),
+							$("<div class='menu' />").append(
+								$(`<a class="item" data-scoreid="${v.id}" />`).append(
+									T("View Details")
+								).click(viewScoreInfo),
+								v.completed == 3 ? $(`<a class="item" href="/web/replays/${v.id}" />`).append(
+									T("Download Replay")
+								) : "",
+								(lookinAtMyProfile && v.completed >= 2) ? $(`<a class="item" href='javascript:postPin(${v.id}, "${escapeHTML(v.beatmap.song_name)}")' />`).append(
+									T("Pin Score")
+								) : ""
+							),
+						),
+					),
+				),
+		)
+	})
+
+	$('.score-row-options').dropdown();
+	$(".timeago").timeago()
+
 	var enable = true;
 	if (r.scores.length !== limit)
 		enable = false;
-	disableLoadMoreButton(type, mode, enable);	
+	disableLoadMoreButton(type, mode, enable);
 }
 
 function fastloadPinned(mode) {
-	const table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] table[data-type=pinned] tbody");
+	const table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] div[data-type=pinned] .profile-scores-container");
 
 	table.html(null);
 	currentPage[preferRelax][mode].pinned = 1;
 	params.p = 1;
 
 
-	fetch(`/api/v1/users/scores/pinned?mode=${params.mode}&p=${params.p}&l=5&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r => 
-		buildPlays(r, "pinned", mode, table, 1, 5)	
+	fetch("https://ussr.pl" + `/api/v1/users/scores/pinned?mode=${params.mode}&p=${params.p}&l=5&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r =>
+		buildPlays(r, "pinned", mode, table, 1, 5)
 	);
 }
 
@@ -785,7 +812,7 @@ function pinScore(id, bmapTitle) {
 }
 
 async function postPin(id, bmapTitle) {
-	const score = await fetch(`/api/v1/users/scores/pinned/info?id=${id}`).then(o => o.json());
+	const score = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned/info?id=${id}`).then(o => o.json());
 	const pinned = score.code == 200;
 
 	score.pinned.pinned_at = new Date(score.pinned.pinned_at * 1000).toISOString();
@@ -799,9 +826,9 @@ async function postPin(id, bmapTitle) {
 
 	const data = {
 		"Pinned": pinned ? "Yes" : "No",
-		"Pin Date": pinned ? 
-				`<time class="new timeago" datetime="${score.pinned.pinned_at}">${score.pinned.pinned_at}</time>`
-				: "Never"
+		"Pin Date": pinned ?
+			`<time class="new timeago" datetime="${score.pinned.pinned_at}">${score.pinned.pinned_at}</time>`
+			: "Never"
 	}
 
 	$.each(data, (key, value) => {
@@ -826,7 +853,7 @@ async function postPin(id, bmapTitle) {
 }
 
 async function Pin(id) {
-	const req = await fetch(`/api/v1/users/scores/pinned?score_id=${id}&rx=${params.rx || 0}`, {
+	const req = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned?score_id=${id}&rx=${params.rx || 0}`, {
 		method: "POST"
 	}).then(o => o.json());
 
@@ -843,7 +870,7 @@ async function Pin(id) {
 }
 
 async function Unpin(id) {
-	const req = await fetch(`/api/v1/users/scores/pinned/delete?score_id=${id}`, {
+	const req = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned/delete?score_id=${id}`, {
 		method: "POST"
 	}).then(o => o.json());
 
@@ -867,48 +894,10 @@ function weightedPP(type, page, idx, pp) {
 	return "<i title='Weighted PP, " + Math.round(perc * 100) + "%'>(" + wpp.toFixed(2) + "pp)</i>";
 }
 function disableLoadMoreButton(type, mode, enable) {
-	var button = $("#scores-zone div[data-mode=" + mode + "] table[data-type=" + type + "] .load-more-button");
+	var button = $("#scores-zone div[data-mode=" + mode + "] div[data-type=" + type + "] .load-more-button");
 	if (enable) button.removeClass("disabled");
 	else button.addClass("disabled");
 }
-
-function getScoreModsHtml(e, t) {
-	var n = [];
-	return 512 == (512 & e) && (e &= -65), 16384 == (16384 & e) && (e &= -33), modsHtml.forEach(function (t, i) {
-		(e & 1 << i) > 0 && n.push(t)
-	}), n.length > 0 ? (t ? "" : "+ ") + n.join(" ") : t ? T("") : ""
-}
-
-var modsHtml = [
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png'>",
-	"TD",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_hard-rock.52c35a3a.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_relax.dbcfb8d8.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png'>",
-	"AU",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_autopilot.31c6ca71.png'>",
-	"<img style='height: 18px;width: calc(18px*45/32)' src='https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png'>",
-	"K4",
-	"K5",
-	"K6",
-	"K7",
-	"K8",
-	"K9",
-	"RN",
-	"LM",
-	"K9",
-	"K0",
-	"K1",
-	"K3",
-	"K2"
-]
 
 function timeSince(date) {
 
@@ -939,7 +928,9 @@ function timeSince(date) {
 }
 
 function viewScoreInfo() {
+	console.log("viewScoreInfo")
 	var scoreid = $(this).data("scoreid");
+	console.log(scoreid)
 	if (!scoreid && scoreid !== 0) return;
 	var s = scoreStore[scoreid];
 	if (s === undefined) return;
@@ -953,7 +944,7 @@ function viewScoreInfo() {
 		"Max Combo": addCommas(s.max_combo) + "/" + addCommas(s.beatmap.max_combo) + "x" + (s.full_combo || s.max_combo > 0.97 * (s.beatmap.max_combo)
 			&& s.count_miss == 0 ? " " + T("(FC)") : ""),
 		"Difficutly": `${s.beatmap.difficulty2[modesShort[s.play_mode]].toFixed(2)}` + ' <i class="fas fa-star"></i>',
-		"Mods": getScoreModsHtml(s.mods, true),
+		"Mods": getScoreMods(s.mods, true),
 		"Passed": T(s.completed >= 2 ? "Yes" : "No"),
 		"Personal Best": T(s.completed === 3 ? "Yes" : "No")
 	};
@@ -986,7 +977,7 @@ function viewScoreInfo() {
 			)
 		);
 	});
-	
+
 	$(".pinned-popup").remove();
 	$("#score-data-table").removeClass("pinnedtbl");
 	$("#score-data-table tr").remove();
@@ -1100,10 +1091,12 @@ function getRank(gameMode, mods, acc, c300, c100, c50, cmiss) {
 }
 
 function ppOrScore(pp, score, ranked) {
-	const txt = ranked == 5 ? " <i class='heart icon small'></i>" : "pp";
+	const txt = ranked == 5 ? "pp <i class='heart icon small'></i>" : "pp";
 
-	if (pp != 0)
-		return addCommas(pp.toFixed(2)) + txt;
+	if (pp != 0) {
+		return addCommas(pp.toFixed(0)) + txt;
+	}
+
 	return addCommas(score);
 }
 
