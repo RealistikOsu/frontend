@@ -23,15 +23,15 @@
 		</script>
 
 		<link rel="stylesheet" type="text/css" href="/static/{{ if $ds }}dark/{{ end }}semantic.min.css?{{ unixNano }}">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href="/static/snow/snow.css">
-		<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 		<link rel="stylesheet" type="text/css" href="/static/realistikosu.css">
-		<!-- <link rel="stylesheet" type="text/css" href="/static/flags.css"> -->
 		<!--LOADING BARZZZ-->
 		<script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 		<link href="/static/css/loadingbar.css" rel="stylesheet" />
 		<script src="/static/dist.min.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 		
 		<meta name="theme-color" content="#0f97ff">
 		<meta name="msapplication-navbutton-color" content="#0f97ff">
@@ -65,7 +65,7 @@
 				</div>
 			{{ end }}
 
-			<div class="h-container">
+			<div class="h-container" {{ if .DisableHH }}style="padding-top: calc(61.6px + 1rem);"{{ end }}>
 				<div class="ui margined container" id="messages-container">
 				<noscript>
 					Please enable JavaScript... The modern web fully relies on it, as keeping it disabled makes you miss
