@@ -777,36 +777,6 @@ function buildPlays(r, type, mode, table, page, limit) {
 	$('.score-row-options').dropdown();
 	$(".timeago").timeago()
 
-	// 	// THIS IS RETARDED. IDK REGEX. WHY IS SONG_NAME ALL IN ONE???
-	// 	let song_name_f = v.beatmap.song_name;
-	// 	let fufrieu = song_name_f.split("[");
-	// 	let acc_song_name = fufrieu[0].substring(0, fufrieu[0].length - 1);
-	// 	let diff_name = fufrieu[1].substring(0, fufrieu[1].length - 1);
-	// 	let failedClass = v.completed < 2 ? "score-failed-recent" : "";
-	// 	let apiImageParams = v.completed < 2 ? "?filter=grayscale" : "";
-
-	// 	if (diff_name.length > DIFF_MAX_LEN) {
-	// 		// Heck. Gotta reconstruct the bmap name.
-	// 		v.beatmap.song_name = `${acc_song_name} [${diff_name.substring(0, DIFF_MAX_LEN - 3) + "..."}]`
-	// 	}
-
-	// 	table.append($("<tr class='new score-row " + rowColor + " " + failedClass + "' data-scoreid='" + v.id + "' style='background: linear-gradient(90deg," + StyleCol + ", #00000087," + StyleCol + "), url(https://i0.wp.com/assets.ppy.sh/beatmaps/" + v.beatmap.beatmapset_id + "/covers/cover.jpg" + apiImageParams + ") no-repeat right !important; background-size: cover !important;' />").append(
-	// 		$(
-	// 			"<td>" + (v.completed < 2 ? '' : scoreRankIcon) +
-	// 			escapeHTML(v.beatmap.song_name) + " <b>" + getScoreMods(v.mods) + "</b> <i>(" + v.accuracy.toFixed(2) + "%)</i><br />" +
-	// 			"<div class='subtitle'><time class='new timeago' datetime='" + v.time + "'>" + v.time + "</time></div></td>"
-	// 		),
-	// 		$("<td><b>" + ppOrScore(v.pp, v.score, v.beatmap.ranked) + "</b> " + weightedPP(type, page, idx, v.pp) + `<div class="dl-pin">${v.completed == 3 ? downloadStar(v.id) + dlText : ""} ${lookinAtMyProfile ? pinScore(v.id, escapeHTML(acc_song_name)) : ""}</div>` + "</td>")
-	// 	));
-
-	// });
-	// $(".new.timeago").timeago().removeClass("new");
-	// $(".new.score-row").click(viewScoreInfo).removeClass("new");
-	// $(".new.downloadstar").click(function (e) {
-	// 	e.stopPropagation();
-	// }).removeClass("new");
-
-
 	var enable = true;
 	if (r.scores.length !== limit)
 		enable = false;
