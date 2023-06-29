@@ -19,11 +19,11 @@ MinPrivileges=2
 			<h3 style="display: inline; font-weight: normal;">{{ $.T "Requests submitted" }}</h3><br>
 			<h4 style="display: inline; font-weight: normal;">{{ $.T "In the past 24 hours" }}</h4><br>
 			{{ $perc := perc .submitted .queue_size }}
-			<div class="ui container" style="width: 50%; margin-top: 8px; margin-bottom: 8px;">
-				<div class="progress2 progress-moved" style="position: relative; top: 5px;--bar-percentage: {{ $perc }}%;">
-                  <div class="progress-bar2"></div>
-	            </div>
-	            <p style="position: relative; display: flex; justify-content: end; margin-top: 5px;">{{ $perc }}%</p>
+			<div class="ui container" style="width: 50%; margin-top: 8px; margin-bottom: 30px;">
+				<div style="height: 10px; border-radius: 1rem; background: #000; display: block; position: relative; width: 100%;">
+					<div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: {{ $perc }}%"></div>
+					<div style="right: 0; position: absolute; top: 100%; margin-top: 2px">{{ $perc }}%</div>
+				</div>
 			</div>
 			{{ if .can_submit }}
 				<form class="ui form" id="b-form" style="position: relative; top: 5px;">
