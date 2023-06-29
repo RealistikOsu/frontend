@@ -37,7 +37,20 @@ const updateList = () => {
 
     // prettier-ignore
     for (const { userid, username, message, postedAt, id } of commentsCache) {
-        const posted = new Date(postedAt * 1000).toISOString().slice(0, 10);
+        const posted = new Date(postedAt * 1000)
+        const dateNow = new Date()
+
+        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(posted);
+        let yearNow = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(dateNow);
+
+        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(posted);
+        let day = new Intl.DateTimeFormat('en', { day: 'numeric' }).format(posted);
+
+        let hour = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric', hour12: true }).format(posted);
+        hour = hour.toLocaleLowerCase().replace(' ', ''); // steam style comments time.
+
+        let postDate = `${day} ${month}${year == yearNow ? '' : `, ${year}`} @ ${hour}`;
+
         const canDelete =
             window.hasAdmin || // if admin
             (window.userID == window.currentUserID && window.currentUserID != 0) || // if profile is mine
@@ -54,7 +67,7 @@ const updateList = () => {
                             ${escapeHTML(username)}
                         </a>
                         <div class="metadata">
-                            <div class="date">${posted}</div>
+                            <div class="date">${postDate}</div>
                         </div>
                         <div class="text">${escapeHTML(message)}</div>
                         <div class="actions">
@@ -85,6 +98,7 @@ async function moreComments(page = 0) {
 
     if (!res.comments || res.comments.length < cparams.l) {
         vd.load.classList.add("disabled");
+        $("#comment-load-container").css("display", "none")
         if (!res.comments) return;
     }
 
