@@ -72,6 +72,7 @@ $(document).ready(function () {
 	applyPeakRankLabel()
 	toggleModeAvailability(favouriteMode, preferRelax)
 
+	initialiseAchievements();
 	initialiseFriends();
 	// load scores page for the current favourite mode
 	var i = function () {
@@ -373,11 +374,17 @@ function loadMostPlayedBeatmaps(mode) {
 }
 
 function initialiseAchievements() {
-	api('users/achievements' + (currentUserID == userID ? '?all' : ''),
+	api('users/achievements',
 		{ id: userID }, function (resp) {
-			var achievements = resp.achievements;
-			// no achievements -- show default message
-			if (achievements.length === 0) {
+
+			var displayAchis;
+			if (currentUserID == userID) {
+				displayAchis = resp.achievements
+			} else {
+				displayAchis = resp.achievements.filter((x) => x.achieved)
+			}
+
+			if (displayAchis.length === 0) {
 				$("#achievements")
 					.append($("<div class='ui sixteen wide column'>")
 						.text(T("Nothing here. Yet.")));
@@ -387,23 +394,33 @@ function initialiseAchievements() {
 
 			var displayAchievements = function (limit, achievedOnly) {
 				var $ach = $("#achievements").empty();
-				limit = limit < 0 ? achievements.length : limit;
+				limit = limit < 0 ? displayAchis.length : limit;
 				var shown = 0;
-				for (var i = 0; i < achievements.length; i++) {
-					var ach = achievements[i];
+
+				for (var i = 0; i < displayAchis.length; i++) {
+					var ach = displayAchis[i];
+					console.log(ach)
 					if (shown >= limit || (achievedOnly && !ach.achieved)) {
 						continue;
 					}
 					shown++;
+
+					if (ach.achieved) {
+						var date = new Date(ach.info.time * 1000);
+						var formatter = new Intl.DateTimeFormat('en-gb', { day: 'numeric', month: 'short', year: 'numeric' })
+						var formattedDate = "Achieved on " + formatter.format(date)
+					} else {
+						var formattedDate = "Locked"
+					}
+
 					$ach.append(
 						$("<div class='ui two wide column'>").append(
-							$("<img src='https://s.ripple.moe/images/medals-" +
-								"client/" + ach.icon + ".png' alt='" + ach.name +
+							$("<img src='https://assets.ppy.sh/medals/web/" +
+								ach.file + ".png' alt='" + ach.name +
 								"' class='" +
 								(!ach.achieved ? "locked-achievement" : "achievement") +
 								"'>").popup({
-									title: ach.name,
-									content: ach.description,
+									html: `<div style="text-align: center"><b>${ach.name}</b> <br /> <span style="font-size: 13px !important">${ach.desc}</span> <br /><br /> <span style="font-size: 12px !important">${formattedDate}</span></div>`,
 									position: "bottom center",
 									distanceAway: 10
 								})
@@ -421,7 +438,7 @@ function initialiseAchievements() {
 			// it won't be used (no more achievements).
 			// otherwise, we simply remove the disabled class and add the click handler
 			// to activate it.
-			if (achievements.length <= 8) {
+			if (displayAchis.length <= 8) {
 				$("#load-more-achievements").remove();
 			} else {
 				$("#load-more-achievements")
