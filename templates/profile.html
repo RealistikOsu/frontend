@@ -196,6 +196,19 @@
 							<div data-mode="{{ . }}" data-rx="2" {{ if _or (ne . (int $favouritemode)) (ne 2 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
 						{{ end }}
 					</div>
+					<div class="ui segment sui">
+						<h4 class="ui horizontal divider header">
+							<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+								<i class="fa-solid fa-gamepad"></i> Achievements
+							</div>
+						</h4>
+						<div id="achievements" class="ui grid achivement-data" style="margin-bottom: 10px"></div>
+						<div class='profile-scores-btn-container'>
+							<div class='ui floated pagination'>
+								<a id="load-more-achievements" class='ui button load-more-button inverted violet disabled'>Load more</a>
+							</div>
+						</div>
+					</div>
 					<div class="ui modal">
 						<i class="close icon"></i>
 						<div class="content">

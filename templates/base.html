@@ -47,18 +47,7 @@
 			{{ template "navbar" . }}
 			{{ if not .DisableHH }}
 				<div class="huge heading {{ if .HeadingOnRight }}right{{ end }} dropped" style="position: relative; z-index: -1">
-					<div id="snow-container" style="background-image: url('{{ if .KyutGrillAbsolute }}{{ .KyutGrill }}{{ else }}/static/headers/{{ or .KyutGrill "default.jpg" }}{{ end }}'); filter: blur(4px) brightness(0.7); z-index: 0;background-repeat: no-repeat;background-position: center bottom;background-size: cover;">
-						<div>
-							<div class="snow large"></div>
-							<div class="snow large delayed"></div>
-							
-							<div class="snow medium"></div>
-							<div class="snow medium delayed"></div>
-							
-							<div class="snow small"></div>
-							<div class="snow small delayed"></div>
-						</div>
-					</div>
+					<div id="snow-container" style="background-image: url('{{ if .KyutGrillAbsolute }}{{ .KyutGrill }}{{ else }}/static/headers/{{ or .KyutGrill "default.jpg" }}{{ end }}'); filter: blur(4px) brightness(0.7); z-index: 0;background-repeat: no-repeat;background-position: center bottom;background-size: cover;"></div>
 					<div class="ui container" style="z-index: 1">
 						<h1>{{ if .HeadingTitle }}{{ .T .HeadingTitle | html }}{{ else }}{{ .T .TitleBar }}{{ end }}</h1>
 					</div>

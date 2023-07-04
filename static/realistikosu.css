@@ -801,24 +801,24 @@ a.camouflaged:hover {
 }
 
 /* SO, of course: https://stackoverflow.com/a/8612047/5328069 */
+
 img.achievement {
-	-webkit-filter: drop-shadow(0 5px 5px #777);
-	filter: drop-shadow(0 5px 5px #777);
+    transition: all 500ms;
 }
+
+img.achievement:hover {
+    scale: 1.2;
+}
+
 img.locked-achievement {
-	-webkit-filter: brightness(0) drop-shadow(0 5px 5px #777);
-	filter: brightness(0) drop-shadow(0 5px 5px #777);
-	-webkit-transition: all 500ms ;
-    -moz-transition: all 500ms ;
-    -ms-transition: all 500ms ;
-    -o-transition: all 500ms ;
+	opacity: .25;
     transition: all 500ms ;
 }
+
 img.locked-achievement:hover {
-	filter: gray; /* IE6-9 */
-	-webkit-filter: brightness(0.5) drop-shadow(0 5px 5px #777);
-	filter: brightness(0.5) drop-shadow(0 5px 5px #777);
+    scale: 1.2;
 }
+
 /*  */
 .footer-title {
 	font-size: 25px; color: white;
@@ -1179,28 +1179,6 @@ td [data-tooltip] {
     border: none !important;
 }
 
-:root {
-    --pulse-color: green;
-}
-
-.pulse-avatar {
-    border-radius: 100%;
-    width: 125px;
-    margin-top: -6rem;
-    -webkit-animation: glow 1s infinite alternate;
-    -moz-animation: glow 1s infinite alternate;
-    animation: glow 1s infinite alternate;
-}
-
-@keyframes glow {
-  from {
-    box-shadow: 0 0 -10px #aef4af;
-  }
-  to {
-    box-shadow: 0 0 25px var(--pulse-color);
-  }
-}
-
 .navbar-image {
     position: absolute;
     left: 0;
@@ -1444,7 +1422,11 @@ td:last-child {
     object-fit: cover;
     overflow: auto;
     width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
     height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
 }
 
 @media only screen and (max-width: 767px) {
@@ -1452,9 +1434,6 @@ td:last-child {
         justify-content: center;
     }
 
-    .clan.icon {
-        margin-right: 7rem;
-    }
 }
 
 .l-player.index-1 {
