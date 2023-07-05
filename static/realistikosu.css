@@ -51,12 +51,12 @@
     padding: 15px 0px 15px 0px;
 }
 
-.link-text:not(.ui.button):not(.item) {
+.link-text:not(.item) {
     color: #FFFFFF !important;
     transition: 0.2s ease !important;
 }
 
-.link-text:not(.ui.button):not(.item):hover {
+.link-text:not(.item):hover {
     text-decoration: none;
     color: #FFFFFF !important;
     opacity: 0.6 !important;
@@ -1771,5 +1771,19 @@ b > time {
 
 .profile-online-status {
     font-size: 16px;
+}
+
+.profile-card-column {
+    transition: all 200ms
+}
+
+.profile-card-column:hover {
+    scale: 1.05;
+}
+
+.profile-card {
+    width: 197px !important;
+    max-width: 197px !important;
+    min-width: 197px !important;
 }
 

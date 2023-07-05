@@ -15,23 +15,26 @@ KyutGrill=friends.jpg
 			{{ $page := or (atoint (.Gin.Query "p")) 1 }}
 			{{ $friends := .Get "friends?p=%d&l=40&sort=username,asc" $page }}
 			{{ with $friends }}
-				<div class="ui four column stackable grid">
+				<div class="ui five column stackable grid">
 					{{ range .friends }}
-						<div class="ui column">
-							<h4 class="ui image header">
-								<img src="{{ config "AvatarURL" }}/{{ .id }}" class="ui mini rounded image"{{ if not (has .privileges 1) }} style="opacity: 0.5"{{ end }}>
-								<div class="content">
-									<a href="/u/{{ .id }}"{{ if not (has .privileges 1) }} style="opacity: 0.5"{{ end }}>{{ .username }}</a>
-									<div class="sub header">
-										<div class="ui compact circular smalltext icon labeled {{ if .is_mutual }}red{{ else }}green{{ end }} button"
-											data-userid="{{ .id }}">
-											<i class="{{ if .is_mutual }}heart{{ else }}minus{{ end }} icon"></i>
-											<span>{{ if .is_mutual }}{{ $.T "Mutual" }}{{ else }}{{ $.T "Remove" }}{{ end }}</span>
-										</div>
-									</div>
+					<div class="column" {{ if not (has .privileges 1) }}style="opacity: 0.5"{{ end }}>
+						<div class="ui fluid card profile-card" style="border-radius: 1rem;text-align: center;">
+							<div class="image" style="border-radius: 1rem !important;display: flex;justify-content: center;">
+								<img src="{{ config "AvatarURL" }}/{{ .id }}" alt="Avatar" style="border-radius: 1rem;width: 197px;height: 197px;object-fit: cover;">
+							</div>
+							<div class="extra content">
+								<a class="header link-text" href="/u/{{ .id }}" style="display: flex;align-items: center;gap: 5px;justify-content: center;margin-bottom: 10px;">
+									{{ country .country false }} {{ .username }}
+								</a>
+
+								<div id="friend-button" class="ui compact labeled button link-text" style="display:flex;justify-content: center;"
+									data-userid="{{ .id }}">
+									<i class="{{ if .is_mutual }}red heart{{ else }}green minus{{ end }} icon"></i>
+									<span>{{ if .is_mutual }}{{ $.T "Mutual" }}{{ else }}{{ $.T "Remove" }}{{ end }}</span>
 								</div>
-							</h4>
+							</div>
 						</div>
+					</div>
 					{{ end }}
 				</div>
 			{{ end }}

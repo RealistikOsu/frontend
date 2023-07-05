@@ -3,31 +3,22 @@ NoCompile=true
 */}}
 {{ define "userGroup" }}
 {{ with . }}
-	<div class="ui five column center aligned stackable grid">
+	<div class="ui five column center aligned stackable grid" id="main-column-grid">
 		{{ $teamJSON := teamJSON }}
 		{{ range .members }}
 			{{/* ignore fokabot */}}
 			{{ if ne (int .id) 999 }}
 				{{ $tj := index $teamJSON (print .id)}}
-				<div class="column">
-					<div class="ui left aligned fluid card">
-						<div class="image">
-							<img src="{{ config "AvatarURL" }}/{{ .id }}" alt="Avatar">
-						</div>
-						<div class="content">
-							<a class="header" href="/u/{{ .id }}">{{ country .country false }}&nbsp;{{ .username }}</a>
-							{{ with $tj.real_name }}
-								<div class="meta">
-									<a>{{ . }}</a>
-								</div>
-							{{ end }}
-							{{ with $tj.role }}
-								<div class="description">
-									{{ . }}
-								</div>
-							{{ end }}
+				<a class="column profile-card-column" href="/u/{{ .id }}">
+					<div class="ui fluid card profile-card" style="border-radius: 1rem;text-align: center;">
+						<div class="image" style="border-radius: 1rem !important;display: flex;justify-content: center;">
+							<img src="{{ config "AvatarURL" }}/{{ .id }}" alt="Avatar" style="border-radius: 1rem;width: 197px;height: 197px;object-fit: cover;">
 						</div>
 						<div class="extra content">
+							<div class="header" style="display: flex;align-items: center;gap: 5px;justify-content: center;margin-bottom: 10px;">
+								{{ country .country false }} {{ .username }}
+							</div>
+
 							<div title="Registered">
 								<i class="sign in icon"></i>
 								{{ time .registered_on }}
@@ -37,23 +28,35 @@ NoCompile=true
 								{{ time .latest_activity }}
 							</div>
 						</div>
-						{{ if or $tj.twitter $tj.mail $tj.github }}
-							<div class="extra content">
-								<div class="center aligned">
-									{{ range $k, $v := $tj }}
-											{{ if and $v (in $k "github" "twitter" "mail") }}
-												<a href="{{ servicePrefix $k }}{{ $v }}" title="{{ capitalise $k }}">
-													<i class="{{ $k }} icon"></i>
-												</a>
-											{{ end }}
-									{{ end }}
-								</div>
-							</div>
-						{{ end }}
 					</div>
-				</div>
+				</a>
 			{{ end }}
 		{{ end }}
 	</div>
+	<script>
+		events = ["load", "resize"];
+		for (var i = 0; i < events.length; i++) {
+			window.addEventListener(events[i], () => {
+				var mainColumnGrids = $("[id=main-column-grid]");
+
+				for (var i = 0; i < mainColumnGrids.length; i++) {
+					var mainColumnGrid = $(mainColumnGrids[i]);
+
+					if (window.innerWidth > 767) {
+						mainColumnGrid.removeAttr("style");
+						mainColumnGrid.addClass("ui five column center aligned stackable grid");
+					} else {
+						mainColumnGrid.removeClass();
+						mainColumnGrid.css({
+							"display": "flex",
+							"flex-direction": "column",
+							"align-items": "center",
+							"gap": "2em"
+						})
+					}
+				}
+			});
+		}
+	</script>
 {{ end }}
 {{ end }}
