@@ -682,7 +682,7 @@ function buildPlays(r, type, mode, table, page, limit) {
 
 	r.scores.forEach(function (v, idx) {
 		// Filter dupes, XXX: temponary fix
-		if (!type == "recent" && idx > 0 && v.beatmap_md5 === r.scores[idx - 1].beatmap_md5) return;
+		if (idx > 0 && v.id == r.scores[idx - 1].id) return;
 
 		scoreStore[v.id] = v;
 		var scoreRank = getRank(mode, v.mods, v.accuracy, v.count_300, v.count_100, v.count_50, v.count_miss);
