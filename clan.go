@@ -36,7 +36,7 @@ func leaveClan(c *gin.Context) {
 		rd.Publish("rosu:clan_update", strconv.Itoa(getContext(c).User.ID))
 		addMessage(c, successMessage{T(c, "You've left the clan.")})
 		getSession(c).Save()
-		c.Redirect(302, "/c/"+i)
+		c.Redirect(302, "/")
 	} else {
 		// เดี๋ยวไอ้เหี้ย มันออกไปยังวะ!!!
 		if db.QueryRow("SELECT 1 FROM user_clans WHERE user = ? AND clan = ?", getContext(c).User.ID, i).
@@ -78,7 +78,7 @@ func leaveClan(c *gin.Context) {
 
 		addMessage(c, successMessage{T(c, "Your clan has been disbanded")})
 		getSession(c).Save()
-		c.Redirect(302, "/clans?mode=0")
+		c.Redirect(302, "/")
 	}
 
 }
@@ -355,7 +355,7 @@ func clanKick(c *gin.Context) {
 	rd.Publish("rosu:clan_update", c.PostForm("member"))
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
-	c.Redirect(302, "/settings/clan")
+	c.Redirect(302, "/clan/manage")
 }
 
 func resolveInvite(c string) int {
