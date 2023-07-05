@@ -399,7 +399,6 @@ function initialiseAchievements() {
 
 				for (var i = 0; i < displayAchis.length; i++) {
 					var ach = displayAchis[i];
-					console.log(ach)
 					if (shown >= limit || (achievedOnly && !ach.achieved)) {
 						continue;
 					}
@@ -632,13 +631,6 @@ const DIFF_MAX_LEN = 32;
 async function loadScoresPage(type, mode) {
 	var table = $("#scores-zone div[data-mode=" + mode + "][data-rx=" + preferRelax + "] div[data-type=" + type + "] .profile-scores-container");
 	var page = ++currentPage[preferRelax][mode][type];
-
-	console.log("loadScoresPage with", {
-		page: page,
-		type: type,
-		mode: mode,
-		rx: preferRelax
-	});
 
 	var limit = type === 'best' ? 10 : 5;
 	params = { mode: mode, p: page, l: limit, rx: preferRelax, id: userID }
@@ -945,9 +937,7 @@ function timeSince(date) {
 }
 
 function viewScoreInfo() {
-	console.log("viewScoreInfo")
 	var scoreid = $(this).data("scoreid");
-	console.log(scoreid)
 	if (!scoreid && scoreid !== 0) return;
 	var s = scoreStore[scoreid];
 	if (s === undefined) return;
