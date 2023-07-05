@@ -268,22 +268,24 @@
 						<div class="profile-metadata-container">
 							<div class="profile-upper-container">
 								<img alt="avatar" class="avatar-canvas" src="https://a.ussr.pl/{{ $user.id }}">
-								<div class="badge-container">
-									{{ if .badges }}
-										{{ range .badges }}
-											<span class data-tooltip="{{ .name }}">
-												<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
-											</span>
+								{{ if _or .badges .custom_badge }}
+									<div class="badge-container">
+										{{ if .badges }}
+											{{ range .badges }}
+												<span class data-tooltip="{{ .name }}">
+													<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+												</span>
+											{{ end }}
 										{{ end }}
-									{{ end }}
-									{{ if .custom_badge  }}
-										{{ with .custom_badge }}
-											<span class data-tooltip="{{ .name }}">
-												<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
-											</span>
+										{{ if .custom_badge  }}
+											{{ with .custom_badge }}
+												<span class data-tooltip="{{ .name }}">
+													<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+												</span>
+											{{ end }}
 										{{ end }}
-									{{ end }}
-								</div>
+									</div>
+								{{ end }}
 							</div>
 							<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
 							At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
