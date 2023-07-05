@@ -92,4 +92,29 @@ KyutGrill=team2.jpg
 			</div>
 	</div>
 </div>
+<script>
+	events = ["load", "resize"];
+	for (var i = 0; i < events.length; i++) {
+		window.addEventListener(events[i], () => {
+			var mainColumnGrids = $("[id=main-column-grid]");
+
+			for (var i = 0; i < mainColumnGrids.length; i++) {
+				var mainColumnGrid = $(mainColumnGrids[i]);
+
+				if (window.innerWidth > 767) {
+					mainColumnGrid.removeAttr("style");
+					mainColumnGrid.addClass("ui five column center aligned stackable grid");
+				} else {
+					mainColumnGrid.removeClass();
+					mainColumnGrid.css({
+						"display": "flex",
+						"flex-direction": "column",
+						"align-items": "center",
+						"gap": "2em"
+					})
+				}
+			}
+		});
+	}
+</script>
 {{ end }}
