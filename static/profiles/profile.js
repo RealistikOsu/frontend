@@ -648,7 +648,7 @@ async function loadScoresPage(type, mode) {
 		params.filter = "recent";
 	}
 
-	fetch("https://ussr.pl" + `/api/v1/users/scores/${type}?mode=${params.mode}&p=${params.p}&l=${params.l}&rx=${params.rx}&id=${params.id}${params.filter ? `&filter=${params.filter}` : ''}`).then(o => o.json()).then(r =>
+	fetch(`/api/v1/users/scores/${type}?mode=${params.mode}&p=${params.p}&l=${params.l}&rx=${params.rx}&id=${params.id}${params.filter ? `&filter=${params.filter}` : ''}`).then(o => o.json()).then(r =>
 		buildPlays(r, type, mode, table, page, limit)
 	);
 }
@@ -808,7 +808,7 @@ function fastloadPinned(mode) {
 	params.p = 1;
 
 
-	fetch("https://ussr.pl" + `/api/v1/users/scores/pinned?mode=${params.mode}&p=${params.p}&l=5&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r =>
+	fetch(`/api/v1/users/scores/pinned?mode=${params.mode}&p=${params.p}&l=5&rx=${params.rx}&id=${params.id}`).then(o => o.json()).then(r =>
 		buildPlays(r, "pinned", mode, table, 1, 5)
 	);
 }
@@ -829,7 +829,7 @@ function pinScore(id, bmapTitle) {
 }
 
 async function postPin(id, bmapTitle) {
-	const score = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned/info?id=${id}`).then(o => o.json());
+	const score = await fetch(`/api/v1/users/scores/pinned/info?id=${id}`).then(o => o.json());
 	const pinned = score.code == 200;
 
 	score.pinned.pinned_at = new Date(score.pinned.pinned_at * 1000).toISOString();
@@ -870,7 +870,7 @@ async function postPin(id, bmapTitle) {
 }
 
 async function Pin(id) {
-	const req = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned?score_id=${id}&rx=${params.rx || 0}`, {
+	const req = await fetch(`/api/v1/users/scores/pinned?score_id=${id}&rx=${params.rx || 0}`, {
 		method: "POST"
 	}).then(o => o.json());
 
@@ -887,7 +887,7 @@ async function Pin(id) {
 }
 
 async function Unpin(id) {
-	const req = await fetch("https://ussr.pl" + `/api/v1/users/scores/pinned/delete?score_id=${id}`, {
+	const req = await fetch(`/api/v1/users/scores/pinned/delete?score_id=${id}`, {
 		method: "POST"
 	}).then(o => o.json());
 
