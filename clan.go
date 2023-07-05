@@ -160,7 +160,7 @@ func randSeq(n int) string {
 
 func createInvite(c *gin.Context) {
 	ctx := getContext(c)
-	if string(c.PostForm("description")) != "" || string(c.PostForm("icon")) != "" || string(c.PostForm("tag")) != "" || string(c.PostForm("bg")) != "" {
+	if string(c.PostForm("description")) != "" || string(c.PostForm("icon")) != "" || string(c.PostForm("tag")) != "" || string(c.PostForm("name")) != "" {
 		// เช็คแปปว่ายศสูงพอมั้ย
 		var perms int
 		db.QueryRow("SELECT perms FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1", ctx.User.ID).Scan(&perms)
@@ -172,11 +172,6 @@ func createInvite(c *gin.Context) {
 			return
 		}
 
-		tag := ""
-		if c.PostForm("tag") != "" {
-			tag = c.PostForm("tag")
-		}
-
 		if db.QueryRow("SELECT 1 FROM clans WHERE tag = ? AND id != ?", c.PostForm("tag"), clan).
 			Scan(new(int)) != sql.ErrNoRows {
 			resp403(c)
@@ -184,26 +179,38 @@ func createInvite(c *gin.Context) {
 			return
 		}
 
-		QUERY := "UPDATE clans SET "
+		var dbName string
+		var dbDescription string
+		var dbIcon string
+		var dbTag string
+		err := db.QueryRow("SELECT name, description, icon, tag FROM clans WHERE id = ?", clan).Scan(&dbName, &dbDescription, &dbIcon, &dbTag)
+		if err != nil {
+			fmt.Println(err)
+			c.Error(err)
+		}
 
+		name := c.PostForm("name")
 		description := c.PostForm("description")
 		icon := c.PostForm("icon")
-		background := c.PostForm("bg")
-		if description != "" {
-			QUERY += fmt.Sprintf("description = '%s'", description)
-		}
-		if icon != "" {
-			QUERY += fmt.Sprintf("icon = '%s'", icon)
-		}
-		if background != "" {
-			QUERY += fmt.Sprintf("background = '%s'", background)
-		}
-		if tag != "" {
-			QUERY += fmt.Sprintf("tag = '%s'", tag)
+		tag := c.PostForm("tag")
+
+		if name == "" {
+			name = dbName
 		}
 
-		db.Exec(QUERY+" WHERE id = ?", clan)
-		//db.Exec("UPDATE clans SET description = ?, icon = ?, tag = ?, background = ? WHERE id = ?", c.PostForm("description"), c.PostForm("icon"), tag, c.PostForm("bg"), clan)
+		if description == "" {
+			description = dbDescription
+		}
+
+		if icon == "" {
+			icon = dbIcon
+		}
+
+		if tag == "" {
+			tag = dbName
+		}
+
+		db.Exec("UPDATE clans SET name = ?, description = ?, icon = ?, tag = ? WHERE id = ?", name, description, icon, tag, clan)
 
 		if tag != "" {
 			var users_list []int
@@ -248,16 +255,11 @@ func createInvite(c *gin.Context) {
 		}
 
 		db.Exec("DELETE FROM clans_invites WHERE clan = ?", clan)
-
-		var s string
-
-		s = randSeq(8)
-
-		db.Exec("INSERT INTO clans_invites(clan, invite) VALUES (?, ?)", clan, s)
+		db.Exec("INSERT INTO clans_invites(clan, invite) VALUES (?, ?)", clan, randSeq(8))
 	}
 	addMessage(c, successMessage{T(c, "Success!")})
 	getSession(c).Save()
-	c.Redirect(302, "/settings/clan")
+	c.Redirect(302, "/clan/manage")
 }
 
 func clanInvite(c *gin.Context) {

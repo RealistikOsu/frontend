@@ -22,15 +22,26 @@ Settings KyutGrill=settings2.jpg
               {{ $tag :=
                 or $c.tag.String ""
               }}
+              {{ $name := or $c.name.String "" }}
               {{ $desc := or $c.description.String "" }}
               {{ $icon := or $c.icon.String "" }}
-              {{ $bg := or $c.background.String "" }}
               <form
                 id="register-form"
                 class="ui form"
                 method="post"
                 enctype="multipart/form-data"
                 action="/settings/clan">
+                <div class="field">
+                  <label>{{ "Clan Name" }}</label>
+                  <input
+                    tabindex="1"
+                    type="text"
+                    name="name"
+                    placeholder="{{ $.T "Clan Name" }}"
+                    value="{{ $name }}"
+                    />
+                </div>
+
                 <div class="field">
                   <label>{{ "Clantag (2 to 6 characters)" }}</label>
                   <input
@@ -50,7 +61,7 @@ Settings KyutGrill=settings2.jpg
                 </div>
 
                 <div class="field">
-                  <label>{{ "Icon (Optional)" }}</label>
+                  <label>{{ "Icon URL (Optional)" }}</label>
                   <input
                     tabindex="1"
                     type="text"
@@ -60,17 +71,6 @@ Settings KyutGrill=settings2.jpg
                     />
                 </div>
 
-                {{ if has .Context.User.Privileges 4 }}
-                  <div class="field">
-                    <label>{{ .T "Background URL (Optional)" }}</label>
-                    <input
-                      tabindex="4"
-                      type="url"
-                      name="bg"
-                      placeholder="{{ $.T "Background URL" }}"
-                      value="{{ $bg }}" />
-                  </div>
-                {{ end }}
                 {{ ieForm .Gin }}
               </form>
               <br />
