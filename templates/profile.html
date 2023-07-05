@@ -385,9 +385,9 @@
 											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
 												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
 													<b>{{ $global.T "Maximum Combo" }}</b>
-													<span class="stats-mobile-view">{{ .max_combo }}</span>
+													<span class="stats-mobile-view">{{ humanize .max_combo }}</span>
 												</td>
-												<td class="right aligned stats-desktop-view">{{ .max_combo }}</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .max_combo }}</td>
 											</tr>
 											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
 												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
