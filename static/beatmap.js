@@ -202,7 +202,7 @@ function FillScores(rx) {
                 `#${(page - 1) * 50 + i}`
               ),
               $("<td />").html(
-                "<a class='link-text' style='display: flex;align-items: center;gap: 0.5rem;' href='/u/" +
+                "<a class='link-text l-player-data' style='display: flex;align-items: center;gap: 0.5rem;' href='/u/" +
                 user.id +
                 "' title='View profile'><img src='/static/images/new-flags/flag-" +
                 user.country.toLowerCase() +
