@@ -346,7 +346,11 @@ func generateEngine() *gin.Engine {
 	r.POST("/c/:cid", leaveClan)
 
 	r.GET("/help", func(c *gin.Context) {
-		c.Redirect(301, "https://discord.gg/8ySdzhyMtt")
+		c.Redirect(301, config.DiscordServer)
+	})
+
+	r.GET("/discord", func(c *gin.Context) {
+		c.Redirect(301, config.DiscordServer)
 	})
 
 	r.POST("/mergers/kurikku", func(c *gin.Context) {
