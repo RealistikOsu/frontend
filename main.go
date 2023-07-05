@@ -312,14 +312,14 @@ func generateEngine() *gin.Engine {
 			return
 		}
 
-		sort.Slice(data, func(i, j int) bool {
-			if data[i].Mode != data[j].Mode {
-				return data[i].Mode < data[j].Mode
+		sort.Slice(data.ChildrenBeatmaps, func(i, j int) bool {
+			if data.ChildrenBeatmaps[i].Mode != data.ChildrenBeatmaps[j].Mode {
+				return data.ChildrenBeatmaps[i].Mode < data.ChildrenBeatmaps[j].Mode
 			}
-			return data[i].DifficultyRating < data[j].DifficultyRating
+			return data.ChildrenBeatmaps[i].DifficultyRating < data.ChildrenBeatmaps[j].DifficultyRating
 		})
 
-		c.Redirect(301, "/beatmaps/"+strconv.Itoa(data[len(data)-1].BeatmapID))
+		c.Redirect(301, "/beatmaps/"+strconv.Itoa(data.ChildrenBeatmaps[len(data.ChildrenBeatmaps)-1].ID))
 	})
 
 	r.GET("/u/:user", userProfile)
