@@ -64,7 +64,7 @@
 				<div class="menu">
 					{{ navbarItem .Path (.T "Beatmap Listing") "/beatmap_listing" }}
 					{{ if .Context.User.Username }}
-						{{ navbarItem .Path (.T "Request Beatmap") "/rank_request" }}
+						{{ navbarItem .Path (.T "Request Beatmap") "/rank-request" }}
 					{{ end }}
 				</div>
 			</div>
@@ -225,7 +225,7 @@
 					<i class="fas fa-angle-right"></i>
 				</a>
 				{{ if .Context.User.Username }}
-					<a class="mobile-navbar-item link-text" href="/rank_request">
+					<a class="mobile-navbar-item link-text" href="/rank-request">
 						<span>{{ .T "Request Beatmap" }}</span>
 						<i class="fas fa-angle-right"></i>
 					</a>

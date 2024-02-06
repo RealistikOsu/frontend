@@ -310,7 +310,7 @@ var singlePageSnippets = {
       });
   },
 
-  "/beatmaps/rank_request" : function() {
+  "/beatmaps/rank-request" : function() {
     function updateRankRequestPage(data) {
       $("#queue-info").html(data.submitted + "/" + data.queue_size);
 

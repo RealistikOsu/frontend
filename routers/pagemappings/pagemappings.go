@@ -43,7 +43,7 @@ var pageMappings = map[int]interface{}{
 	28: "/", // user lookup
 	29: "/2fa_gateway",
 	30: "/settings/2fa",
-	31: "/rank_request",
+	31: "/rank-request",
 	32: "/dev/applications",
 	33: "/dev/applications", // Theorically, this should be something like /dev/applications/<id>, but no-one ever used that page so who gives a fuck.
 	34: "/donate",

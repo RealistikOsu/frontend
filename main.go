@@ -290,6 +290,10 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, "/users/"+user)
 	})
 
+	r.GET("/rank_request", func(c *gin.Context) {
+		c.Redirect(301, "/rank-request")
+	})
+
 	// Redirectors to our old /rx/u /ap/u routes.
 	r.GET("/rx/u/:user", func(c *gin.Context) {
 		user := c.Param("user")
