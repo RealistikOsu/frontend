@@ -7,11 +7,9 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-
-	//"time"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	cheesegull "github.com/osuripple/cheesegull/models"
 )
 
 // type Beatmap struct {
@@ -39,12 +37,49 @@ import (
 // 	Passcount        int     `json:"passcount,string"`
 // }
 
+type Beatmap struct {
+	ID               int `json:"BeatmapID"`
+	ParentSetID      int
+	DiffName         string
+	FileMD5          string
+	Mode             int
+	BPM              float64
+	AR               float32
+	OD               float32
+	CS               float32
+	HP               float32
+	TotalLength      int
+	HitLength        int
+	Playcount        int
+	Passcount        int
+	MaxCombo         int
+	DifficultyRating float64
+}
+
+type BeatmapSet struct {
+	ID               int `json:"SetID"`
+	ChildrenBeatmaps []Beatmap
+	RankedStatus     int
+	ApprovedDate     time.Time
+	LastUpdate       time.Time
+	LastChecked      time.Time
+	Artist           string
+	Title            string
+	Creator          string
+	Source           string
+	Tags             string
+	HasVideo         int // Set this to bool if using a real mirror.
+	Genre            int
+	Language         int
+	Favourites       int
+}
+
 type beatmapPageData struct {
 	baseTemplateData
 
 	Found      bool
-	ReqBeatmap cheesegull.Beatmap
-	Beatmaps   cheesegull.Set
+	ReqBeatmap Beatmap
+	Beatmaps   BeatmapSet
 	SetJSON    string
 }
 
@@ -105,7 +140,7 @@ func beatmapInfo(c *gin.Context) {
 	data.Scripts = append(data.Scripts, "/static/tablesort.js", "/static/beatmap.js")
 }
 
-func getBeatmapData(b string) (beatmap cheesegull.Beatmap, err error) {
+func getBeatmapData(b string) (beatmap Beatmap, err error) {
 	resp, err := http.Get(config.CheesegullAPI + "/b/" + b)
 	if err != nil {
 		return beatmap, err
@@ -124,7 +159,7 @@ func getBeatmapData(b string) (beatmap cheesegull.Beatmap, err error) {
 	return beatmap, nil
 }
 
-func getBeatmapSetData(parentID string) (bset cheesegull.Set, err error) {
+func getBeatmapSetData(parentID string) (bset BeatmapSet, err error) {
 	resp, err := http.Get(config.CheesegullAPI + "/s/" + parentID)
 	if err != nil {
 		return bset, err
