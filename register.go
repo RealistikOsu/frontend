@@ -88,6 +88,12 @@ func registerSubmit(c *gin.Context) {
 		return
 	}
 
+	// Username history. Maybe add some time logic later.
+	if db.QueryRow("SELECT 1 FROM user_name_history WHERE username LIKE ? LIMIT 1").Scan(new(int)) != sql.ErrNoRows {
+		registerResp(c, errorMessage{T(c, "This username has been reserved by another user.")})
+		return
+	}
+
 	// recaptcha verify
 	if config.RecaptchaPrivate != "" && !recaptchaCheck(c) {
 		registerResp(c, errorMessage{T(c, "Captcha check failed, please try again.")})
