@@ -20,6 +20,9 @@ NoCompile=true
 		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
 		{{ navbarItem .Path (printf "%s %s" (.T "Profile Banner") $d) "/settings/profbanner" }}
 
+		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
+		{{ navbarItem .Path (printf "%s %s" (.T "Change Username") $d) "/settings/change-username" }}
+
 		{{/* end */}}
 	</div>
 </div>

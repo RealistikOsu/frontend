@@ -1,0 +1,48 @@
+{{/*###
+Handler=/settings/change-username
+TitleBar=Change Username
+KyutGrill=settings2.jpg
+Include=menu.html
+AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.js
+*/}}
+{{ define "tpl" }}
+{{ $isSupporter := has .Context.User.Privileges 4 }}
+<div class="ui container">
+    <div class="ui stackable grid">
+        {{ template "settingsSidebar" . }}
+        <div class="twelve wide column" {{ if not $isSupporter }}style="align-self: center !important;"{{ end }}>
+            <div class="ui segment">
+                {{ if not $isSupporter }}
+                {{ template "supporter_only" . }}
+                {{ else }}
+                <form class="ui form" method="post">
+                    <h3 class="ui header">{{ .T "Change Username" }}</h3>
+                    <div class="ui warning message black">
+                        <div class="content">
+                            <b>Do not use inappropriate or abusive names.</b> Doing so may result in
+                            a your account's restriction.
+                        </div>
+                    </div>
+
+                    <div class="field">
+						<label><a class="link-text" href="https://ussr.pl/discord"><b>{{ .T "New Username" }}</b></a></label>
+						<input type="text" value="{{ .Context.User.Username }}" disabled>
+					</div>
+
+                    <h3 class="ui header">{{ .T "You can change your username in:" }}</h3>
+                    <div style="height: 10px; border-radius: 1rem; background: #000; display: block; position: relative; width: 100%;">
+                        <div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: 50%"></div>
+                        <div style="right: 0; position: absolute; top: 100%; margin-top: 2px">3 days</div>
+                    </div>
+                    <br>
+                    <div class="ui divider"></div>
+                    <div style="text-align: right">
+						<button type="submit" class="ui inverted yellow button">{{ .T "Change" }}</button>
+					</div>
+                </form>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
