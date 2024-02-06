@@ -24,16 +24,16 @@ func userProfile(c *gin.Context) {
 	)
 
 	ctx := getContext(c)
- 	u, error := url.PathUnescape(c.Param("user")) // Unquote it.
- 	if error != nil {
- 		c.Error(error)
- 	}
-	 
-	err := db.QueryRow("SELECT id, username, privileges, frozen FROM users WHERE username_safe IN (?) OR id IN (?) AND "+ctx.OnlyUserPublic()+" LIMIT 1", common.SafeUsername(u), u).Scan(&userID, &username, &privileges, &frozen)
+	u, error := url.PathUnescape(c.Param("user")) // Unquote it.
+	if error != nil {
+		c.Error(error)
+	}
+
+	err := db.QueryRow("SELECT id, username, privileges, frozen FROM users WHERE (username_safe IN (?) OR id IN (?) OR id in (SELECT user_id FROM user_name_history WHERE username LIKE ?)) AND "+ctx.OnlyUserPublic()+" LIMIT 1", common.SafeUsername(u), u, u).Scan(&userID, &username, &privileges, &frozen)
 	if err != nil && err != sql.ErrNoRows {
 		c.Error(err)
 	}
-	
+
 	data := new(profileData)
 	data.UserID = userID
 	data.Frozen = frozen
