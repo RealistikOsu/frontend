@@ -94,7 +94,7 @@
 						<img id="avatar" class="ui avatar image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
 					</div>
 					<div class="menu">
-						{{ navbarItem .Path (.T "Profile") (printf "/u/%d" .Context.User.ID) }}
+						{{ navbarItem .Path (.T "Profile") (printf "/users/%d" .Context.User.ID) }}
 						{{ navbarItem .Path (.T "Friends") "/friends" }}
 						{{ navbarItem .Path (.T "Settings") "/settings" }}
 						{{ if $isAdmin }}
@@ -113,7 +113,7 @@
 		<div class="mobile-profile-container">
 			<div class="user-content">
 				{{ if .Context.User.Username }}
-				<a href="/u/{{ .Context.User.ID }}" class="link-text">
+				<a href="/users/{{ .Context.User.ID }}" class="link-text">
 					<img id="avatar" class="ui avatar medium image" src="{{ config "AvatarURL" }}/{{ .Context.User.ID }}">
 					<span>{{ .T "Hi" }} <b>{{ .Context.User.Username }}!</b></span>
 				</a>

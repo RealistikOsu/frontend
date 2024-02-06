@@ -4,7 +4,7 @@ $(document).ready(function () {
 	var newPathName = wl.pathname;
 	// userID is defined in profile.html
 	if (newPathName.split("/")[2] != userID) {
-		newPathName = "/u/" + userID;
+		newPathName = "/users/" + userID;
 	}
 	// if there's no mode parameter in the querystring, add it
 	let markBool = wl.search.indexOf("?") !== -1

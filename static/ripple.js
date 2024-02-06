@@ -71,7 +71,7 @@ var singlePageSnippets = {
         data.users.forEach(function(v) {
           tb.append($("<tr />").append(
             $("<td />").text("#" + ((page - 1) * 50 + (++i))),
-            $("<td />").html("<a href='/u/" + v.id +
+            $("<td />").html("<a href='/users/" + v.id +
                                     "' title='View profile'><img src='https://ussr.pl/static/flags/" +
                                     user.country + ".png' class='new-flag'></img>" +
                                     escapeHTML(v.username) + "</a>"),
@@ -460,7 +460,7 @@ $(document)
             $.each(resp.users, function(index, item) {
               r.results.push({
                 title : item.username,
-                url : "/u/" + item.id,
+                url : "/users/" + item.id,
                 image : hanayoConf.avatars + "/" + item.id,
               });
             });
@@ -471,7 +471,7 @@ $(document)
     $("#user-search-input")
       .keypress(function(e) {
         if (e.which == 13) {
-          window.location.pathname = "/u/" + $(this).val();
+          window.location.pathname = "/users/" + $(this).val();
         }
       });
 

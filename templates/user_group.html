@@ -9,7 +9,7 @@ NoCompile=true
 			{{/* ignore fokabot */}}
 			{{ if ne (int .id) 999 }}
 				{{ $tj := index $teamJSON (print .id)}}
-				<a class="column profile-card-column" href="/u/{{ .id }}">
+				<a class="column profile-card-column" href="/users/{{ .id }}">
 					<div class="ui fluid card profile-card" style="border-radius: 1rem;text-align: center;">
 						<div class="image" style="border-radius: 1rem !important;display: flex;justify-content: center;">
 							<img src="{{ config "AvatarURL" }}/{{ .id }}" alt="Avatar" style="border-radius: 1rem;width: 197px;height: 197px;object-fit: cover;">

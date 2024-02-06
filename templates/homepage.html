@@ -66,7 +66,7 @@ KyutGrill=homepage2.jpg
 					{{ if not .Context.User.ID }}
 						<a href="/register" class="ui button blue home-btn">Register Now!</a>
 					{{ else }}
-						<a href="/u/{{ .Context.User.ID }}" class="ui button blue home-btn">Your Profile</a>
+						<a href="/users/{{ .Context.User.ID }}" class="ui button blue home-btn">Your Profile</a>
 					{{ end }}
 					<a href="/connect" class="ui button inverted home-btn">How to connect?</a>
 				</div>
@@ -101,7 +101,7 @@ KyutGrill=homepage2.jpg
 						<div class="twelve wide column">
 							{{ $newest := (qb "SELECT id, username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
 							<p class="status-head" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
-								<a href="/u/{{ $newest.id }}" style="color: inherit;" class="link-text">{{ $newest.username }}</a>
+								<a href="/users/{{ $newest.id }}" style="color: inherit;" class="link-text">{{ $newest.username }}</a>
 							</p>
 							<p class="status-footer">{{ .T "Latest Player" }}</p>
 						</div>
@@ -139,7 +139,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.vn.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/u/{{ .data.vn.user_id }}"><b style="color: inherit;">{{ .data.vn.username }}</b></a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.vn.user_id }}"><b style="color: inherit;">{{ .data.vn.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Score" }}</p>
 							</div>
 						</div>
@@ -153,7 +153,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.rx.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/rx/u/{{ .data.rx.user_id }}"><b style="color: inherit;">{{ .data.rx.username }}</b></a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.rx.user_id }}?rx=1"><b style="color: inherit;">{{ .data.rx.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
 							</div>
 						</div>
@@ -167,7 +167,7 @@ KyutGrill=homepage2.jpg
 							</div>
 							<div class="twelve wide column">
 								<p class="status-head">{{ .data.ap.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/ap/u/{{ .data.ap.user_id }}"><b style="color: inherit;">{{ .data.ap.username }}</b></a></p>
+								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.ap.user_id }}?rx=2"><b style="color: inherit;">{{ .data.ap.username }}</b></a></p>
 								<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
 							</div>
 						</div>

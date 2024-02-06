@@ -136,7 +136,7 @@
 			{{ $user := . }}
 			<meta name="og:image" content="https://a.ussr.pl/{{ $user.id }}"/>
 			<meta property="og:type" content="website" />
-			<meta property="og:url" content="https://ussr.pl/u/{{ $user.id }}" />
+			<meta property="og:url" content="https://ussr.pl/users/{{ $user.id }}" />
 			<meta property="og:title" content={{ $global.T "<b>%s</b>" .username }} />
 			<meta property="og:description" content={{ $global.T "<b>%s</b> is a RealistikOsu! player from <b>%s</b>." .username (country .country true) }} />
 			<meta property="og:image" content="https://ussr.pl/{{ $user.id }}" />
@@ -359,13 +359,13 @@
 						</div>
 					</div>
 					<div class="ui three item bottom attached menu" id="rx-menu" style="margin-bottom: 0;">
-						<a id="clickVanilla" class="item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
-						<a id="clickRelax" class="item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
-						<a id="clickAutopilot" class="item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/u/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
+						<a id="clickVanilla" class="item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
+						<a id="clickRelax" class="item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
+						<a id="clickAutopilot" class="item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
 					</div>
 					<div class="ui four item bottom attached menu" id="mode-menu">
 						{{ range $k, $v := modes }}
-							<a id="click{{ $v }}" class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/u/{{ $user.id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
+							<a id="click{{ $v }}" class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/users/{{ $user.id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
 						{{ end }}
 					</div>
 					<div class="ui segment">

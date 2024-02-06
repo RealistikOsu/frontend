@@ -63,7 +63,7 @@ const updateList = () => {
                         <img src="https://a.ussr.pl/${userid}" />
                     </a>
                     <div class="content">
-                        <a class="author" href="/u/${userid}">
+                        <a class="author" href="/users/${userid}">
                             ${escapeHTML(username)}
                         </a>
                         <div class="metadata">

@@ -124,7 +124,7 @@ function injectScore(elm, data, newScore) {
                         <td><img src="https://a.ussr.pl/${data.user_id}" class="avatar" /></td>
                         <td>
                             <h2 class="username">
-                                <a href="/u/${data.user_id}" target="_blank">${data.username}</a>
+                                <a href="/users/${data.user_id}" target="_blank">${data.username}</a>
                             </h2>
                             <div class="flags">
                                 <div class="user-flags">

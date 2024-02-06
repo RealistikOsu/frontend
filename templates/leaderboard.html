@@ -116,7 +116,7 @@ KyutGrill=score_feed.jpg
 					#<% index + 1 + (50 * (page - 1)) %>
 				</td>
 				<td>
-					<a class="link-text" title='View profile' :href="'/u/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
+					<a class="link-text" title='View profile' :href="'/users/'+user.id+'?m='+modeInt+'&rx='+relaxInt" style="color: #ffffff;">
 						<div class="lb-username">
 							<img class="new-flag nopad" :src="'/static/images/new-flags/flag-'+user.country.toLowerCase()+'.svg'">
 							<% user.username %>
