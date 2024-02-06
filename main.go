@@ -284,9 +284,10 @@ func generateEngine() *gin.Engine {
 	r.GET("/clans/create", ccreate)
 	r.POST("/clans/create", ccreateSubmit)
 
-	r.GET("/users/:user", func(c *gin.Context) {
+	r.GET("/users/:user", userProfile)
+	r.GET("/u/:user", func(c *gin.Context) {
 		user := c.Param("user")
-		c.Redirect(301, "/u/"+user)
+		c.Redirect(301, "/users/"+user)
 	})
 
 	// Redirectors to our old /rx/u /ap/u routes.
@@ -322,7 +323,6 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, "/beatmaps/"+strconv.Itoa(data.ChildrenBeatmaps[len(data.ChildrenBeatmaps)-1].ID))
 	})
 
-	r.GET("/u/:user", userProfile)
 	r.GET("/c/:cid", clanPage)
 	r.GET("/beatmaps/:bid", beatmapInfo)
 
