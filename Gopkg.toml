@@ -78,10 +78,6 @@
   name = "github.com/nfnt/resize"
 
 [[constraint]]
-  name = "github.com/osuripple/cheesegull"
-  branch = "master"
-
-[[constraint]]
   name = "github.com/pariz/gountries"
   version = "0.1.3"
 
