@@ -16,6 +16,7 @@
 				window.favouriteMode = {{ $favouritemode }};
 				window.userID = {{ .id }};
 				window.userProfileName = {{ .username }};
+				window.pastNames = {{ .past_usernames }};
 				window.followers = {{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .allFriended }} {{ end }};
 				window.hasAdmin = {{ hasAdmin $global.Context.User.Privileges }};
 				window.graphType = "rank";
@@ -70,7 +71,13 @@
 						left.innerHTML = RightText;
 					}
 
-
+					// Fill past names.
+					if (window.pastNames != null) {
+						let pastNamesString = "Previously known as: " + window.pastNames.join(" ")
+						let pastNamesIcon = document.getElementById("user-name-history");
+						pastNamesIcon.setAttribute("data-tooltip", pastNamesString)
+						pastNamesIcon.removeAttribute("hidden")
+					}
 				})
 			</script>
 			{{ if after .silence_info.end }}
@@ -301,7 +308,12 @@
 										{{ if ne .clan.name "" }}
 											<a href="/c/{{ .clan.id }}" class="link-text" style="font-size:27px"><b id="clan-span">{{ $global.T "%s" (.clan.tag) }}</b></a>
 										{{ end }}
-										<span id="username-span">{{ .username }}<span>
+										<span id="username-span">
+											{{ .username }}
+											<span id="user-name-history" data-tooltip="They have no previous name history." hidden>
+												<i class="address book small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 0.7em !important;padding: 0 !important;"></i>
+											</span>
+										<span>
 									</div>
 								</h1>
 
