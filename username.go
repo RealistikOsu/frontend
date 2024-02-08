@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -57,13 +59,15 @@ func changeUsername(c *gin.Context) {
 		m = errorMessage{T(c, "You already have this username.")}
 		return
 	}
-	
-	saveNewUsername(c, newUsername)
-	redisData, _ := json.Marshal(map[string]int{
-		"userID": userID,
-		"reason": "Your username has changed."
-	})
-	rd.Publish("peppy:disconnect", string(redisData))
+
+	saveNewUsername(ctx, newUsername)
+	rd.Publish(
+		"peppy:disconnect",
+		fmt.Sprintf(
+			"{'userID': %d, 'reason': 'Your username has changed.'}",
+			ctx.User.ID,
+		),
+	)
 }
 
 func saveNewUsername(ctx context, newUsername string) {
@@ -76,10 +80,10 @@ func saveNewUsername(ctx context, newUsername string) {
 	`, newUsername, ctx.User.ID)
 
 	db.Exec(`UPDATE users SET username = ?, username_safe = ? WHERE id = ?`,
-	newUsername, safeUsername(newUsername), ctx.User.ID)
+		newUsername, safeUsername(newUsername), ctx.User.ID)
 
 	for _, table := range StatsTables {
 		db.Exec(fmt.Sprintf(`UPDATE %s SET username = ? WHERE id = ?`,
-		table), newUsername, ctx.User.ID)
+			table), newUsername, ctx.User.ID)
 	}
 }

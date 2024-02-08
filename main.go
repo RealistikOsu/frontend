@@ -7,10 +7,7 @@ package main
 
 import (
 	"encoding/gob"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sort"
 	"strconv"
 	"time"
