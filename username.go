@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/gin-gonic/gin"
 )
 
