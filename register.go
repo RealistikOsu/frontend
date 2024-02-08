@@ -89,7 +89,7 @@ func registerSubmit(c *gin.Context) {
 	}
 
 	// Username history. Maybe add some time logic later.
-	if db.QueryRow("SELECT 1 FROM user_name_history WHERE username LIKE ? LIMIT 1").Scan(new(int)) != sql.ErrNoRows {
+	if db.QueryRow("SELECT 1 FROM user_name_history WHERE username LIKE ? LIMIT 1", username).Scan(new(int)) != sql.ErrNoRows {
 		registerResp(c, errorMessage{T(c, "This username has been reserved by another user.")})
 		return
 	}

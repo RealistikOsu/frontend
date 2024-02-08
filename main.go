@@ -339,6 +339,7 @@ func generateEngine() *gin.Engine {
 	r.POST("/settings/userpage/parse", parseBBCode)
 	r.POST("/settings/avatar", avatarSubmit)
 	r.POST("/settings/profbanner/:type", profBackground)
+	r.POST("/settings/change-username", changeUsername)
 
 	// Discord integration.
 	r.GET("/settings/discord-integration/unlink", discordUnlink)
@@ -357,40 +358,40 @@ func generateEngine() *gin.Engine {
 		c.Redirect(301, config.DiscordServer)
 	})
 
-	r.POST("/mergers/kurikku", func(c *gin.Context) {
-		ctx := getContext(c)
-		if ctx.User.ID == 0 {
-			resp403(c)
-			return
-		}
+	// r.POST("/mergers/kurikku", func(c *gin.Context) {
+	// 	ctx := getContext(c)
+	// 	if ctx.User.ID == 0 {
+	// 		resp403(c)
+	// 		return
+	// 	}
 
-		username := safeUsername(c.PostForm("username"))
-		passwd := c.PostForm("password")
-		rosuId := ctx.User.ID
+	// 	username := safeUsername(c.PostForm("username"))
+	// 	passwd := c.PostForm("password")
+	// 	rosuId := ctx.User.ID
 
-		resp, err := http.Get(fmt.Sprintf(
-			"http://127.0.0.1:8922/create_link?rosu_id=%d&src_name=%s&src_password=%s",
-			rosuId, username, passwd,
-		))
+	// 	resp, err := http.Get(fmt.Sprintf(
+	// 		"http://127.0.0.1:8922/create_link?rosu_id=%d&src_name=%s&src_password=%s",
+	// 		rosuId, username, passwd,
+	// 	))
 
-		if err != nil {
-			fmt.Println(err)
-			addMessage(c, errorMessage{T(c, "There was issue submitting your request, please report it to developer!")})
-			getSession(c).Save()
-			c.Redirect(302, "/mergers/kurikku")
-		}
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		addMessage(c, errorMessage{T(c, "There was issue submitting your request, please report it to developer!")})
+	// 		getSession(c).Save()
+	// 		c.Redirect(302, "/mergers/kurikku")
+	// 	}
 
-		content := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(resp.Body)
-		json.Unmarshal(data, &content)
+	// 	content := make(map[string]interface{})
+	// 	data, _ := ioutil.ReadAll(resp.Body)
+	// 	json.Unmarshal(data, &content)
 
-		if resp.StatusCode == 400 {
-			addMessage(c, errorMessage{T(c, content["message"].(string))})
-			getSession(c).Save()
-		}
+	// 	if resp.StatusCode == 400 {
+	// 		addMessage(c, errorMessage{T(c, content["message"].(string))})
+	// 		getSession(c).Save()
+	// 	}
 
-		c.Redirect(302, "/mergers/kurikku")
-	})
+	// 	c.Redirect(302, "/mergers/kurikku")
+	// })
 
 	loadSimplePages(r)
 

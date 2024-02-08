@@ -15,24 +15,52 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
                 {{ if not $isSupporter }}
                 {{ template "supporter_only" . }}
                 {{ else }}
+                <script>
+                    document.addEventListener('DOMContentLoaded', (event) => {
+                        // hello there!
+                        let newUsername = document.getElementById("new-username");
+                        let progressBar = document.getElementById("progress-bar");
+                        let changeTimestamp = document.getElementById("change-time");
+                        let submitButton = document.querySelector('.button[type=submit]');
+
+                        if (!progressBar || !changeTimestamp)
+                            return; // ?
+
+                        if (!isNaN(changeTimestamp.textContent)) {
+                            let ts = new Date(Number(changeTimestamp.textContent) + (7 * 60 * 60 * 24) /* 7 days */);
+                            let days = ts.getUTCDay();
+
+                            changeTimestamp.textContent = `${days} day${days > 1 ? "s" : ""}`;
+                            progressBar.style.width = `${Math.floor(days / 7)}%`
+                            submitButton.classList.add("disabled");
+                            newUsername.classList.add("disabled");
+                        }
+                    });
+                </script>
                 <form class="ui form" method="post">
                     <h3 class="ui header">{{ .T "Change Username" }}</h3>
                     <div class="ui warning message black">
                         <div class="content">
                             <b>Do not use inappropriate or abusive names.</b> Doing so may result in
-                            a your account's restriction.
+                            your account's restriction.
                         </div>
                     </div>
 
                     <div class="field">
 						<label><a class="link-text" href="https://ussr.pl/discord"><b>{{ .T "New Username" }}</b></a></label>
-						<input type="text" value="{{ .Context.User.Username }}" disabled>
+						<input id="new-username" name="newuser" type="text" value="{{ .Context.User.Username }}">
 					</div>
 
                     <h3 class="ui header">{{ .T "You can change your username in:" }}</h3>
                     <div style="height: 10px; border-radius: 1rem; background: #000; display: block; position: relative; width: 100%;">
-                        <div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: 50%"></div>
-                        <div style="right: 0; position: absolute; top: 100%; margin-top: 2px">3 days</div>
+                        {{ $last := (qb "SELECT replaced_at FROM user_name_history WHERE user_id = ? AND replaced_at > UNIX_TIMESTAMP() AND replaced_at < (UNIX_TIMESTAMP() - 7 * 60 * 60 * 24) LIMIT 1" .Context.User.ID) }}
+                        {{ if $last }}
+                            <div id="progress-bar" style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: 0%"></div>
+                            <div id="change-time" style="right: 0; position: absolute; top: 100%; margin-top: 2px">{{ $last.replaced_at }}</div>
+                        {{ else }}
+                            <div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: 100%"></div>
+                            <div style="right: 0; position: absolute; top: 100%; margin-top: 2px">Today</div>
+                        {{ endif }}
                     </div>
                     <br>
                     <div class="ui divider"></div>
