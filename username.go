@@ -59,6 +59,11 @@ func changeUsername(c *gin.Context) {
 	}
 	
 	saveNewUsername(c, newUsername)
+	redisData, _ := json.Marshal(map[string]int{
+		"userID": userID,
+		"reason": "Your username has changed."
+	})
+	rd.Publish("peppy:disconnect", string(redisData))
 }
 
 func saveNewUsername(ctx context, newUsername string) {
