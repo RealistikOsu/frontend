@@ -34,7 +34,7 @@ func changeUsername(c *gin.Context) {
 	}
 
 	if db.QueryRow("SELECT replaced_at FROM user_name_history WHERE user_id = ? AND replaced_at > ? AND replaced_at < ? LIMIT 1",
-		c.User.ID, time.Now().Unix(), (time.Now().Unix() + 7 * 60 * 60 * 24 /* 7 days */)) {
+		c.User.ID, time.Now().Unix(), (time.Now().Unix() + 7 * 60 * 60 * 24 /* 7 days */)).Scan(new(int) != sql.ErrNoRows) {
 			m = errorMessage{T(c, "You can't change your username just yet.")}
 			return
 		}
