@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +32,12 @@ func changeUsername(c *gin.Context) {
 		m = errorMessage{T(c, "Your session has expired. Please try redoing what you were trying to do.")}
 		return
 	}
+
+	if db.QueryRow("SELECT replaced_at FROM user_name_history WHERE user_id = ? AND replaced_at > ? AND replaced_at < ? LIMIT 1",
+		c.User.ID, time.Now().Unix(), (time.Now().Unix() + 7 * 60 * 60 * 24 /* 7 days */)) {
+			m = errorMessage{T(c, "You can't change your username just yet.")}
+			return
+		}
 
 	newUsername := strings.TrimSpace(c.Param("newuser"))
 	if !usernameRegex.MatchString(newUsername) {
