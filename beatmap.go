@@ -68,7 +68,7 @@ type BeatmapSet struct {
 	Creator          string
 	Source           string
 	Tags             string
-	HasVideo         bool // Set this to bool if using a real mirror.
+	HasVideo         int // Set this to bool if using a real mirror.
 	//Genre            int
 	//Language   int
 	//Favourites int
