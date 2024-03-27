@@ -67,6 +67,8 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
                     <div style="text-align: right">
 						<button type="submit" class="ui inverted yellow button">{{ .T "Change" }}</button>
 					</div>
+                    {{ csrfGenerate .Context.User.ID }}
+
                 </form>
                 {{ end }}
             </div>
