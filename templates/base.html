@@ -13,10 +13,10 @@
 
 		<script>
 			var hanayoConf = {
-				avatars:   {{ .Conf.AvatarURL }},
-				banchoAPI: {{ .Conf.BanchoAPIPublic }},
-				baseAPI:   {{ .Conf.BaseAPIPublic }},
-				cheesegullAPI: {{ .Conf.CheesegullAPI }},
+				avatars:   {{ .Conf.APP_AVATAR_URL }},
+				banchoAPI: {{ .Conf.APP_BANCHO_URL }},
+				baseAPI:   {{ .Conf.APP_API_URL }},
+				cheesegullAPI: {{ .Conf.BEATMAP_MIRROR_API_URL }},
 				language:  "en",
 			};
 			var currentUserID = {{ .Context.User.ID }};

@@ -12,3 +12,4 @@ static/oauth-apps/*
 !static/oauth-apps/.keep
 *.exe
 static/Ouroborosv2.zip
+.env
