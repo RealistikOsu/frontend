@@ -32,6 +32,8 @@ type Settings struct {
 
 	APP_ENV string
 
+	APP_INTERNAL_AVATARS_PATH string
+
 	APP_BASE_URL   string
 	APP_AVATAR_URL string
 	APP_API_URL    string
@@ -83,6 +85,8 @@ func LoadSettings() Settings {
 	settings.APP_HANAYO_KEY = getEnv("APP_HANAYO_KEY")
 
 	settings.APP_ENV = getEnv("APP_ENV")
+
+	settings.APP_INTERNAL_AVATARS_PATH = getEnv("APP_INTERNAL_AVATARS_PATH")
 
 	settings.APP_BASE_URL = getEnv("APP_BASE_URL")
 	settings.APP_AVATAR_URL = getEnv("APP_AVATAR_URL")
