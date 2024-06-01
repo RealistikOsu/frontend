@@ -355,8 +355,6 @@ var funcMap = template.FuncMap{
 		}
 		return x
 	},
-	// loadChangelog loads the changelog.
-	"loadChangelog": loadChangelog,
 	// teamJSON returns the data of team.json
 	"teamJSON": func() map[string]interface{} {
 		f, err := ioutil.ReadFile("team.json")
