@@ -72,7 +72,6 @@ var funcMap = template.FuncMap{
 		return ""
 	},
 	"string": func(s string) string {
-		fmt.Printf(s)
 		if s == "" {
 			return ""
 		}

@@ -116,7 +116,7 @@ func main() {
 
 	err = r.Run(fmt.Sprintf(":%d", settings.APP_PORT))
 	if err != nil {
-		fmt.Errorf("Failed to start server, error: %s", err.Error())
+		fmt.Printf("Failed to start server, error: %s", err.Error())
 		panic(err)
 	}
 }
@@ -139,7 +139,7 @@ func generateEngine() *gin.Engine {
 	}
 
 	if err != nil {
-		fmt.Errorf("Failed to crreate redis store, error: %s", err.Error())
+		fmt.Printf("Failed to crreate redis store, error: %s", err.Error())
 		panic(err)
 	}
 
@@ -282,7 +282,3 @@ func generateEngine() *gin.Engine {
 
 	return r
 }
-
-const alwaysRespondText = `Ooops! Looks like something went really wrong while trying to process your request.
-Perhaps report this to a RealistikOsu! developer?
-Retrying doing again what you were trying to do might work, too.`

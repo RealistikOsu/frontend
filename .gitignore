@@ -13,3 +13,5 @@ static/oauth-apps/*
 *.exe
 static/Ouroborosv2.zip
 .env
+Gopkg.lock
+Gopkg.toml

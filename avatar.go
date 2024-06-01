@@ -20,9 +20,6 @@ func avatarSubmit(c *gin.Context) {
 		return
 	}
 	var m message
-	defer func() {
-		simpleReply(c, m)
-	}()
 
 	if settings.APP_INTERNAL_AVATARS_PATH == "" {
 		m = errorMessage{T(c, "Changing avatar is currently not possible.")}
@@ -43,6 +40,10 @@ func avatarSubmit(c *gin.Context) {
 
 	img = resize.Thumbnail(256, 256, img, resize.Bilinear)
 	f, err := os.Create(fmt.Sprintf("%s/%d.png", settings.APP_INTERNAL_AVATARS_PATH, ctx.User.ID))
+
+	defer func() {
+		simpleReply(c, m)
+	}()
 
 	defer f.Close()
 	if err != nil {
