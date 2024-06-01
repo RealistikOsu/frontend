@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -47,11 +47,12 @@ func logIP(c *gin.Context, user int) {
 }
 
 func setCountry(c *gin.Context, user int) error {
-	raw, err := http.Get(config.IP_API + "/" + clientIP(c) + "/country")
+	settings := GetSettings()
+	raw, err := http.Get(settings.IP_LOOKUP_URL + "/" + clientIP(c) + "/country")
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadAll(raw.Body)
+	data, err := io.ReadAll(raw.Body)
 	if err != nil {
 		return err
 	}

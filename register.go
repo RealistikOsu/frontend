@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -11,7 +10,6 @@ import (
 	"github.com/RealistikOsu/RealistikAPI/common"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
-	schiavo "zxq.co/ripple/schiavolib"
 )
 
 func register(c *gin.Context) {
@@ -32,6 +30,7 @@ func register(c *gin.Context) {
 }
 
 func registerSubmit(c *gin.Context) {
+	settings := GetSettings()
 	if getContext(c).User.ID != 0 {
 		resp403(c)
 		return
@@ -94,20 +93,20 @@ func registerSubmit(c *gin.Context) {
 	}
 
 	// recaptcha verify
-	if config.RecaptchaPrivate != "" && !recaptchaCheck(c) {
+	if settings.RECAPTCHA_SECRET_KEY != "" && !recaptchaCheck(c) {
 		registerResp(c, errorMessage{T(c, "Captcha check failed, please try again.")})
 		return
 	}
 
-	uMulti, criteria := tryBotnets(c)
-	if criteria != "" {
-		schiavo.CMs.Send(
-			fmt.Sprintf(
-				"User **%s** registered with the same %s as %s (%s/u/%s). **POSSIBLE MULTIACCOUNT!!!**. Waiting for ingame verification...",
-				username, criteria, uMulti, config.BaseURL, url.QueryEscape(uMulti),
-			),
-		)
-	}
+	// uMulti, criteria := tryBotnets(c)
+	// if criteria != "" {
+	// 	schiavo.CMs.Send(
+	// 		fmt.Sprintf(
+	// 			"User **%s** registered with the same %s as %s (%s/u/%s). **POSSIBLE MULTIACCOUNT!!!**. Waiting for ingame verification...",
+	// 			username, criteria, uMulti, config.BaseURL, url.QueryEscape(uMulti),
+	// 		),
+	// 	)
+	// }
 
 	// The actual registration.
 	pass, err := generatePassword(c.PostForm("password"))
@@ -133,7 +132,6 @@ func registerSubmit(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	schiavo.CMs.Send(fmt.Sprintf("User (**%s** | %s) registered from %s", username, c.PostForm("email"), clientIP(c)))
 
 	setYCookie(int(lid), c)
 	logIP(c, int(lid))

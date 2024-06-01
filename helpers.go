@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -48,7 +49,8 @@ func validatePassword(p string) string {
 
 func recaptchaCheck(c *gin.Context) bool {
 	f := make(url.Values)
-	f.Add("secret", config.RecaptchaPrivate)
+	settings := GetSettings()
+	f.Add("secret", settings.RECAPTCHA_SECRET_KEY)
 	f.Add("response", c.PostForm("h-captcha-response"))
 	f.Add("remoteip", clientIP(c))
 
@@ -59,7 +61,7 @@ func recaptchaCheck(c *gin.Context) bool {
 		return false
 	}
 
-	data, err := ioutil.ReadAll(req.Body)
+	data, err := io.ReadAll(req.Body)
 	if err != nil {
 		c.Error(err)
 		return false
@@ -143,8 +145,9 @@ type TokenStuff struct {
 
 func getCodeAccess(code string) (token TokenStuff, err error) {
 	data := url.Values{}
-	data.Set("client_id", "936211493874188349")
-	data.Set("client_secret", "VEYXgaj0dcA8l-Q8T_nsElZUAVXhi1ZO")
+	settings := GetSettings()
+	data.Set("client_id", settings.DISCORD_APP_CLIENT_ID)
+	data.Set("client_secret", settings.DISCORD_APP_CLIENT_SECRET)
 	data.Set("grant_type", "authorization_code")
 	data.Set("code", code)
 	data.Set("redirect_uri", "https://ussr.pl/settings/discord-integration/redirect")
@@ -161,7 +164,7 @@ func getCodeAccess(code string) (token TokenStuff, err error) {
 
 	defer resp.Body.Close()
 	//Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return token, err
 	}
@@ -197,7 +200,7 @@ func getUserData(accessType string, accessToken string) (data DCUser, err error)
 
 	defer resp.Body.Close()
 	//Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return data, err
 	}
@@ -225,14 +228,12 @@ func discordRedirCheck(c *gin.Context) {
 
 	code := c.DefaultQuery("code", "")
 	if code == "" {
-		// No code, prob self inserting :thinking:.
 		m = errorMessage{T(c, "No code specified, linking failed!")}
 		return
 	}
 
 	tokenData, err := getCodeAccess(code)
 	if err != nil {
-		// No code, prob self inserting :thinking:.
 		c.Error(err)
 		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
 		return
@@ -240,7 +241,6 @@ func discordRedirCheck(c *gin.Context) {
 
 	data, err := getUserData(tokenData.TokenType, tokenData.AccessToken)
 	if err != nil {
-		// No code, prob self inserting :thinking:.
 		c.Error(err)
 		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
 		return
@@ -251,7 +251,6 @@ func discordRedirCheck(c *gin.Context) {
 		VALUES (NULL, ?, ?)`, data.DiscordID, ctx.User.ID,
 	)
 	if err != nil {
-		// No code, prob self inserting :thinking:.
 		m = errorMessage{T(c, "An error occurred. Please report this to RealistikOsu developer!")}
 		return
 	}

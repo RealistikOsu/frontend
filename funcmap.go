@@ -421,7 +421,8 @@ var funcMap = template.FuncMap{
 	// bgetv1 makes a request to the legacy bancho api v1
 	// https://docs.ripple.moe/docs/banchoapi/v1
 	"bgetv1": func(ept string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf(config.BanchoAPI+"/api/v1/"+ept, qs...))
+		settings := GetSettings()
+		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL+"/api/v1/"+ept, qs...))
 		if err != nil {
 			return nil
 		}
@@ -431,7 +432,8 @@ var funcMap = template.FuncMap{
 		return x
 	},
 	"isOnline": func(userID int) bool {
-		d, err := http.Get(fmt.Sprintf(config.BanchoAPI + "/api/status/" + strconv.Itoa(userID)))
+		settings := GetSettings()
+		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL + "/api/status/" + strconv.Itoa(userID)))
 		if err != nil {
 			return false
 		}

@@ -39,7 +39,11 @@ type Settings struct {
 
 	BEATMAP_MIRROR_API_URL      string
 	BEATMAP_DOWNLOAD_MIRROR_URL string
-	DISCORD_SERVER_URL          string
+
+	DISCORD_SERVER_URL string
+
+	DISCORD_APP_CLIENT_ID     string
+	DISCORD_APP_CLIENT_SECRET string
 
 	DB_SCHEME string
 	DB_HOST   string
@@ -87,7 +91,11 @@ func LoadSettings() Settings {
 
 	settings.BEATMAP_MIRROR_API_URL = getEnv("BEATMAP_MIRROR_API_URL")
 	settings.BEATMAP_DOWNLOAD_MIRROR_URL = getEnv("BEATMAP_DOWNLOAD_MIRROR_URL")
+
 	settings.DISCORD_SERVER_URL = getEnv("DISCORD_SERVER_URL")
+
+	settings.DISCORD_APP_CLIENT_ID = getEnv("DISCORD_APP_CLIENT_ID")
+	settings.DISCORD_APP_CLIENT_SECRET = getEnv("DISCORD_APP_CLIENT_SECRET")
 
 	settings.DB_SCHEME = getEnv("DB_SCHEME")
 	settings.DB_HOST = getEnv("DB_HOST")
