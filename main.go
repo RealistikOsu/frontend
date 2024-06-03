@@ -47,7 +47,7 @@ func main() {
 	configMap = structs.Map(settings)
 
 	// initialise db
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&allowNativePasswords=true",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		settings.DB_USER,
 		settings.DB_PASS,
 		settings.DB_HOST,
@@ -56,7 +56,8 @@ func main() {
 	)
 
 	// initialise db
-	db, err := sqlx.Open(settings.DB_SCHEME, dsn)
+	var err error
+	db, err = sqlx.Open(settings.DB_SCHEME, dsn)
 	if err != nil {
 		panic(err)
 	}

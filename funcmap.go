@@ -610,11 +610,11 @@ func systemSettings(names ...string) map[string]systemSetting {
 		fmt.Println(err)
 		return nil
 	}
-	_settings := make(map[string]systemSetting, len(names))
+	settings := make(map[string]systemSetting, len(names))
 	for _, s := range settingsRaw {
-		_settings[s.Name] = s
+		settings[s.Name] = s
 	}
-	return _settings
+	return settings
 }
 
 // func getDiscord() *oauth2.Config {
