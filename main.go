@@ -17,6 +17,7 @@ import (
 	"github.com/RealistikOsu/frontend/routers/pagemappings"
 	"github.com/RealistikOsu/frontend/services"
 	"github.com/RealistikOsu/frontend/services/cieca"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,7 @@ var (
 func main() {
 	fmt.Println("hanayo " + version)
 
-	settings := LoadSettings()
+	settings := state.LoadSettings()
 	configMap = structs.Map(settings)
 
 	// initialise db
@@ -123,7 +124,7 @@ func main() {
 
 func generateEngine() *gin.Engine {
 	fmt.Println("Starting session system...")
-	settings := GetSettings()
+	settings := state.GetSettings()
 	var store sessions.Store
 	var err error
 	if settings.REDIS_MAX_CONNECTIONS != 0 {

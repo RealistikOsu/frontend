@@ -15,6 +15,7 @@ import (
 
 	"github.com/RealistikOsu/frontend/modules/bbcode"
 	tp "github.com/RealistikOsu/frontend/modules/top-passwords"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,7 +50,7 @@ func validatePassword(p string) string {
 
 func recaptchaCheck(c *gin.Context) bool {
 	f := make(url.Values)
-	settings := GetSettings()
+	settings := state.GetSettings()
 	f.Add("secret", settings.RECAPTCHA_SECRET_KEY)
 	f.Add("response", c.PostForm("h-captcha-response"))
 	f.Add("remoteip", clientIP(c))
@@ -145,7 +146,7 @@ type TokenStuff struct {
 
 func getCodeAccess(code string) (token TokenStuff, err error) {
 	data := url.Values{}
-	settings := GetSettings()
+	settings := state.GetSettings()
 	data.Set("client_id", settings.DISCORD_APP_CLIENT_ID)
 	data.Set("client_secret", settings.DISCORD_APP_CLIENT_SECRET)
 	data.Set("grant_type", "authorization_code")

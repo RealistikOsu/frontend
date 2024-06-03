@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 )
 
@@ -113,7 +114,7 @@ func beatmapInfo(c *gin.Context) {
 }
 
 func getBeatmapData(b string) (beatmap Beatmap, err error) {
-	settings := GetSettings()
+	settings := state.GetSettings()
 	resp, err := http.Get(settings.BEATMAP_MIRROR_API_URL + "/b/" + b)
 	if err != nil {
 		return beatmap, err
@@ -133,7 +134,7 @@ func getBeatmapData(b string) (beatmap Beatmap, err error) {
 }
 
 func getBeatmapSetData(parentID string) (bset BeatmapSet, err error) {
-	settings := GetSettings()
+	settings := state.GetSettings()
 	resp, err := http.Get(settings.BEATMAP_MIRROR_API_URL + "/s/" + parentID)
 	if err != nil {
 		return bset, err

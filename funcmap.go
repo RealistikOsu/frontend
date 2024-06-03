@@ -19,6 +19,7 @@ import (
 	"github.com/RealistikOsu/frontend/modules/bbcode"
 	"github.com/RealistikOsu/frontend/modules/doc"
 	fasuimappings "github.com/RealistikOsu/frontend/modules/fa-semantic-mappings"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -418,7 +419,7 @@ var funcMap = template.FuncMap{
 	// bgetv1 makes a request to the legacy bancho api v1
 	// https://docs.ripple.moe/docs/banchoapi/v1
 	"bgetv1": func(ept string, qs ...interface{}) map[string]interface{} {
-		settings := GetSettings()
+		settings := state.GetSettings()
 		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL+"/api/v1/"+ept, qs...))
 		if err != nil {
 			return nil
@@ -429,7 +430,7 @@ var funcMap = template.FuncMap{
 		return x
 	},
 	"isOnline": func(userID int) bool {
-		settings := GetSettings()
+		settings := state.GetSettings()
 		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL + "/api/status/" + strconv.Itoa(userID)))
 		if err != nil {
 			return false
@@ -609,11 +610,11 @@ func systemSettings(names ...string) map[string]systemSetting {
 		fmt.Println(err)
 		return nil
 	}
-	settings := make(map[string]systemSetting, len(names))
+	_settings := make(map[string]systemSetting, len(names))
 	for _, s := range settingsRaw {
-		settings[s.Name] = s
+		_settings[s.Name] = s
 	}
-	return settings
+	return _settings
 }
 
 // func getDiscord() *oauth2.Config {

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"zxq.co/x/rs"
@@ -14,7 +15,7 @@ import (
 
 func passwordReset(c *gin.Context) {
 	ctx := getContext(c)
-	settings := GetSettings()
+	settings := state.GetSettings()
 	if ctx.User.ID != 0 {
 		simpleReply(c, errorMessage{T(c, "You're already logged in!")})
 		return

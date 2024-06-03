@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pariz/gountries"
@@ -178,7 +179,7 @@ func (b *baseTemplateData) SetSession(sess sessions.Session) {
 }
 func (b baseTemplateData) Get(s string, params ...interface{}) map[string]interface{} {
 	s = fmt.Sprintf(s, params...)
-	settings := GetSettings()
+	settings := state.GetSettings()
 	req, err := http.NewRequest("GET", settings.APP_API_URL+s, nil)
 	if err != nil {
 		b.Gin.Error(err)
@@ -210,7 +211,7 @@ func (b baseTemplateData) Has(privs uint64) bool {
 	return uint64(b.Context.User.Privileges)&privs == privs
 }
 func (b baseTemplateData) Conf() interface{} {
-	return GetSettings()
+	return state.GetSettings()
 }
 
 // list of client flags

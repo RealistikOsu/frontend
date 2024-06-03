@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 	"zxq.co/x/rs"
 )
@@ -47,7 +48,7 @@ func logIP(c *gin.Context, user int) {
 }
 
 func setCountry(c *gin.Context, user int) error {
-	settings := GetSettings()
+	settings := state.GetSettings()
 	raw, err := http.Get(settings.IP_LOOKUP_URL + "/" + clientIP(c) + "/country")
 	if err != nil {
 		return err

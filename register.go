@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +31,7 @@ func register(c *gin.Context) {
 }
 
 func registerSubmit(c *gin.Context) {
-	settings := GetSettings()
+	settings := state.GetSettings()
 	if getContext(c).User.ID != 0 {
 		resp403(c)
 		return

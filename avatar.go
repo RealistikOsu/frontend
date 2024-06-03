@@ -8,13 +8,14 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
 )
 
 func avatarSubmit(c *gin.Context) {
 	ctx := getContext(c)
-	settings := GetSettings()
+	settings := state.GetSettings()
 	if ctx.User.ID == 0 {
 		resp403(c)
 		return
