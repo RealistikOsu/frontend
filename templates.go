@@ -180,7 +180,7 @@ func (b *baseTemplateData) SetSession(sess sessions.Session) {
 func (b baseTemplateData) Get(s string, params ...interface{}) map[string]interface{} {
 	s = fmt.Sprintf(s, params...)
 	settings := state.GetSettings()
-	req, err := http.NewRequest("GET", settings.APP_API_URL+s, nil)
+	req, err := http.NewRequest("GET", settings.APP_API_URL+"/"+s, nil)
 	if err != nil {
 		b.Gin.Error(err)
 		return nil

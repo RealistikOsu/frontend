@@ -22,7 +22,7 @@ TitleBar=Password Reset
 							<label>{{ .T "Username (or email)" }}</label>
 							<input tabindex="1" type="text" name="username" placeholder="{{ .T "eg. RealistikBot" }}" value="{{ .FormData.username }}" required>
 						</div>
-						{{ with config "RecaptchaSite" }}
+						{{ with config "RECAPTCHA_SITE_KEY" }}
 							<div class="field" style="display: flex;justify-content: center;">
 								<div class="h-captcha" data-sitekey="{{ . }}" data-theme="dark"></div>
 							</div>

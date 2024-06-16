@@ -44,7 +44,7 @@
 							<label>{{ .T "Confirm Password" }}</label>
 							<input tabindex="4" id="password_confirm" required="required" type="password" name="confirm_password" placeholder="{{ .T "**********" }}" value="{{ .FormData.confirm_password }}" required pattern="^.{8,}$" oninput="check(this)">
 						</div>
-						{{ with config "RecaptchaSite" }}
+						{{ with config "RECAPTCHA_SITE_KEY" }}
 							<div class="field" style="display: flex;justify-content: center;">
 								<div class="h-captcha" data-sitekey="{{ . }}" data-theme="dark"></div>
 							</div>
