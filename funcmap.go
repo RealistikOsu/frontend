@@ -156,6 +156,19 @@ var funcMap = template.FuncMap{
 		x := make(map[string]interface{})
 		data, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(data, &x)
+		if x["avatar"] == nil {
+		    user_id, err := strconv.ParseInt(x["id"], 10, 64)
+                    if err != nil {
+			var avatar_id int = (user_id >> 22) % 6 // 6 = new avatar count
+			if x["raw"]["discriminator"] != "0" {
+			    discriminator, err := strconv.Atoi(x["raw"]["discriminator"])
+			    if err != nil {
+			        avatar_id = discriminator % 5 // 5 = old avatar count
+			    }
+			}
+			x["avatar"] = fmt.Sprintf("https://cdn.discordapp.com/embed/avatars/%d.png", avatar_id)
+		    }
+		}
 		return x
 	},
 	// countryReadable converts a country's ISO name to its full name.
