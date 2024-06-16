@@ -147,16 +147,6 @@ var funcMap = template.FuncMap{
 		}
 		return i1
 	},
-	"apiV2": func(ept string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:4535/"+ept, qs...))
-		if err != nil {
-			return nil
-		}
-		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
-		json.Unmarshal(data, &x)
-		return x
-	},
 	"dcAPI": func(discordID string) map[string]interface{} {
 		settings := state.GetSettings()
 		resp, err := http.Get(settings.DISCORD_USER_LOOKUP_URL + "/" + discordID)

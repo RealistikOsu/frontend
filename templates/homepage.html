@@ -135,7 +135,7 @@ KyutGrill=homepage2.jpg
 		<iframe src="https://discord.com/widget?id=820068143866970142&theme=dark" id="ds-widget" allowtransparency="true" frameborder="0" style="width: 100%;height: 100%;"></iframe>
 	</div>
 	{{ $glob := . }}
-	{{ with apiV2 "server/home/top" }}
+	{{ with $glob.Get "statistics/homepage" }}
 		<div class="five wide column">
 			<div class="ui segments" style="height: 100%;">
 				<div class="sixteen wide column" style="margin-bottom: 11px;">
@@ -145,9 +145,11 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up yellow icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .data.vn.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.vn.user_id }}"><b style="color: inherit;">{{ .data.vn.username }}</b></a></p>
-								<p class="status-footer">{{ $glob.T "Top Score" }}</p>
+								{{ with index .data.top_scores 0 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Score" }}</p>
+								{{ end }}
 							</div>
 						</div>
 					</div>
@@ -159,9 +161,11 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up pink icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .data.rx.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.rx.user_id }}?rx=1"><b style="color: inherit;">{{ .data.rx.username }}</b></a></p>
-								<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
+								{{ with index .data.top_scores 4 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
+								{{ end }}
 							</div>
 						</div>
 					</div>
@@ -173,22 +177,24 @@ KyutGrill=homepage2.jpg
 								<i class="thumbs up purple icon status-icon"></i>
 							</div>
 							<div class="twelve wide column">
-								<p class="status-head">{{ .data.ap.pp }}pp</p>
-								<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .data.ap.user_id }}?rx=2"><b style="color: inherit;">{{ .data.ap.username }}</b></a></p>
-								<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
+								{{ with index .data.top_scores 7 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
+								{{ end }}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	{{ end }}
 	</div> {{/* Global Stats end past this /div */}}
+	{{ end }}
 	</div>
 	</div>
 <script type="text/javascript" defer="">
 
-	var graphData = {{ with apiV2 "server/home/graph" }}{{ .data }}{{ end }}
+	var graphData = {{ with $glob.Get "statistics/homepage" }}{{ .data.online_history }}{{ end }}
 	var goodList = [];
 	for (var i = 0; i < graphData.length; i++) {
 		goodList.push({y: parseInt(graphData[i]), x: ((i - 1) + 1)});
