@@ -13,12 +13,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pariz/gountries"
 	"github.com/rjeczalik/notify"
 	"github.com/thehowl/conf"
-	"github.com/RealistikOsu/RealistikAPI/common"
 )
 
 var templates = make(map[string]*template.Template)
@@ -178,20 +179,21 @@ func (b *baseTemplateData) SetSession(sess sessions.Session) {
 }
 func (b baseTemplateData) Get(s string, params ...interface{}) map[string]interface{} {
 	s = fmt.Sprintf(s, params...)
-	req, err := http.NewRequest("GET", config.API+s, nil)
+	settings := state.GetSettings()
+	req, err := http.NewRequest("GET", settings.APP_API_URL+"/"+s, nil)
 	if err != nil {
 		b.Gin.Error(err)
 		return nil
 	}
 	req.Header.Set("User-Agent", "hanayo")
-	req.Header.Set("H-Key", config.APISecret)
+	req.Header.Set("H-Key", settings.APP_HANAYO_KEY)
 	req.Header.Set("X-Ripple-Token", b.Context.Token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		b.Gin.Error(err)
 		return nil
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
 		b.Gin.Error(err)
@@ -209,7 +211,7 @@ func (b baseTemplateData) Has(privs uint64) bool {
 	return uint64(b.Context.User.Privileges)&privs == privs
 }
 func (b baseTemplateData) Conf() interface{} {
-	return config
+	return state.GetSettings()
 }
 
 // list of client flags
@@ -244,7 +246,6 @@ func reloader() error {
 			fmt.Println("Change detected! Refreshing templates")
 			simplePages = []templateConfig{}
 			loadTemplates("")
-			l.Close()
 			last = time.Now()
 		}
 		defer notify.Stop(c)

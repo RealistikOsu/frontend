@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,6 +18,7 @@ import (
 	"github.com/RealistikOsu/frontend/modules/bbcode"
 	"github.com/RealistikOsu/frontend/modules/doc"
 	fasuimappings "github.com/RealistikOsu/frontend/modules/fa-semantic-mappings"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -72,7 +72,6 @@ var funcMap = template.FuncMap{
 		return ""
 	},
 	"string": func(s string) string {
-		fmt.Printf(s)
 		if s == "" {
 			return ""
 		}
@@ -148,32 +147,28 @@ var funcMap = template.FuncMap{
 		}
 		return i1
 	},
-	"apiV2": func(ept string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:4535/"+ept, qs...))
+	"dcAPI": func(discordID string) map[string]interface{} {
+		settings := state.GetSettings()
+		resp, err := http.Get(settings.DISCORD_USER_LOOKUP_URL + "/" + discordID)
 		if err != nil {
 			return nil
 		}
 		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
+		data, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(data, &x)
-		return x
-	},
-	"dcAPI": func(ept string) map[string]interface{} {
-		postBody, _ := json.Marshal(map[string]string{
-			"input": ept,
-		})
-		responseBody := bytes.NewBuffer(postBody)
-		d, err := http.Post(
-			"https://lookupguru.herokuapp.com/lookup",
-			"application/json",
-			responseBody,
-		)
-		if err != nil {
-			return nil
+		if x["avatar"] == nil {
+		    user_id, err := strconv.ParseInt(x["id"], 10, 64)
+                    if err != nil {
+			var avatar_id int = (user_id >> 22) % 6 // 6 = new avatar count
+			if x["raw"]["discriminator"] != "0" {
+			    discriminator, err := strconv.Atoi(x["raw"]["discriminator"])
+			    if err != nil {
+			        avatar_id = discriminator % 5 // 5 = old avatar count
+			    }
+			}
+			x["avatar"] = fmt.Sprintf("https://cdn.discordapp.com/embed/avatars/%d.png", avatar_id)
+		    }
 		}
-		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
-		json.Unmarshal(data, &x)
 		return x
 	},
 	// countryReadable converts a country's ISO name to its full name.
@@ -355,8 +350,6 @@ var funcMap = template.FuncMap{
 		}
 		return x
 	},
-	// loadChangelog loads the changelog.
-	"loadChangelog": loadChangelog,
 	// teamJSON returns the data of team.json
 	"teamJSON": func() map[string]interface{} {
 		f, err := ioutil.ReadFile("team.json")
@@ -421,7 +414,8 @@ var funcMap = template.FuncMap{
 	// bgetv1 makes a request to the legacy bancho api v1
 	// https://docs.ripple.moe/docs/banchoapi/v1
 	"bgetv1": func(ept string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf(config.BanchoAPI+"/api/v1/"+ept, qs...))
+		settings := state.GetSettings()
+		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL+"/api/v1/"+ept, qs...))
 		if err != nil {
 			return nil
 		}
@@ -431,7 +425,8 @@ var funcMap = template.FuncMap{
 		return x
 	},
 	"isOnline": func(userID int) bool {
-		d, err := http.Get(fmt.Sprintf(config.BanchoAPI + "/api/status/" + strconv.Itoa(userID)))
+		settings := state.GetSettings()
+		d, err := http.Get(fmt.Sprintf(settings.APP_BANCHO_URL + "/api/status/" + strconv.Itoa(userID)))
 		if err != nil {
 			return false
 		}
@@ -531,16 +526,6 @@ var funcMap = template.FuncMap{
 	"hhmm": func(seconds float64) string {
 		return fmt.Sprintf("%02dh %02dm", int(math.Floor(seconds/3600)), int(math.Floor(seconds/60))%60)
 	},
-	"mergerRequest": func(path string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:8922/"+path, qs...))
-		if err != nil {
-			return nil
-		}
-		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
-		json.Unmarshal(data, &x)
-		return x
-	},
 }
 
 var localeLanguages = []string{"de", "pl", "it", "es", "ru", "fr", "nl", "ro", "fi", "sv", "vi", "th", "ko"}
@@ -616,16 +601,6 @@ func systemSettings(names ...string) map[string]systemSetting {
 	}
 	return settings
 }
-
-// func getDiscord() *oauth2.Config {
-// 	return &oauth2.Config{
-// 		ClientID:     config.DiscordOAuthID,
-// 		ClientSecret: config.DiscordOAuthSecret,
-// 		RedirectURL:  config.BaseURL + "/settings/discord/finish",
-// 		Endpoint:     discordoauth.Endpoint,
-// 		Scopes:       []string{"identify"},
-// 	}
-// }
 
 func getLanguageFromGin(c *gin.Context) string {
 	for _, l := range getLang(c) {

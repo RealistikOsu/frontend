@@ -14,7 +14,7 @@ func (b *baseTemplateData) T(s string, args ...interface{}) string {
 	return T(b.Gin, s, args...)
 }
 
-func getLang(c *gin.Context) []string {
+func getLang(_ *gin.Context) []string {
 	// s, _ := c.Cookie("language")
 	// if s != "" {
 	// 	return []string{s}

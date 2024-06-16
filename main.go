@@ -17,146 +17,61 @@ import (
 	"github.com/RealistikOsu/frontend/routers/pagemappings"
 	"github.com/RealistikOsu/frontend/services"
 	"github.com/RealistikOsu/frontend/services/cieca"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/fatih/structs"
-	"github.com/getsentry/raven-go"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/johnniedoe/contrib/gzip"
-	"github.com/mailgun/mailgun-go/v4"
-	"github.com/thehowl/conf"
 	"github.com/thehowl/qsql"
+	"gopkg.in/mailgun/mailgun-go.v1"
 	"gopkg.in/redis.v5"
-	"zxq.co/ripple/agplwarning"
-	schiavo "zxq.co/ripple/schiavolib"
-	"zxq.co/x/rs"
-)
-
-var startTime = time.Now()
-
-var (
-	config struct {
-		// Essential configuration that must be always checked for every environment.
-		ListenTo        string `description:"ip:port from which to take requests."`
-		Unix            bool   `description:"Whether ListenTo is an unix socket."`
-		DSN             string `description:"MySQL server DSN"`
-		RedisEnable     bool
-		AvatarURL       string
-		BaseURL         string
-		API             string
-		BanchoAPI       string `description:"Bancho base url (without /api) that hanayo will use to contact bancho"`
-		BanchoAPIPublic string `description:"same as above but this will be put in js files and used by clients. Must be publicly accessible. Leave empty to set to BanchoAPI"`
-		CheesegullAPI   string
-		APISecret       string
-		Offline         bool `description:"If this is true, files will be served from the local server instead of the CDN."`
-
-		MainRippleFolder string `description:"Folder where all the non-go projects are contained, such as old-frontend, lets, ci-system. Used for changelog."`
-		AvatarsFolder    string `description:"location folder of avatars, used for placing the avatars from the avatar change page."`
-
-		CookieSecret string
-
-		RedisMaxConnections int
-		RedisNetwork        string
-		RedisAddress        string
-		RedisPassword       string
-
-		DiscordServer string
-
-		BaseAPIPublic string
-
-		Production int `description:"This is a fake configuration value. All of the following from now on should only really be set in a production environment."`
-
-		MailgunDomain        string
-		MailgunPrivateAPIKey string
-		MailgunPublicAPIKey  string
-		MailgunFrom          string
-
-		RecaptchaSite    string
-		RecaptchaPrivate string
-
-		DiscordOAuthID     string
-		DiscordOAuthSecret string
-		DonorBotURL        string
-		DonorBotSecret     string
-
-		CoinbaseAPIKey    string
-		CoinbaseAPISecret string
-
-		SentryDSN string
-
-		IP_API string
-	}
-	configMap map[string]interface{}
-	db        *sqlx.DB
-	qb        *qsql.DB
-	mg        mailgun.Mailgun
-	rd        *redis.Client
 )
 
 // Services etc
 var (
+	configMap map[string]interface{}
+
 	CSRF services.CSRF
+	db   *sqlx.DB
+	qb   *qsql.DB
+	mg   mailgun.Mailgun
+	rd   *redis.Client
 )
 
 func main() {
-	err := agplwarning.Warn("RealistikOsu!", "Hanayo")
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	fmt.Println("hanayo " + version)
 
-	err = conf.Load(&config, "hanayo.conf")
-	switch err {
-	case nil:
-		// carry on
-	case conf.ErrNoFile:
-		conf.Export(config, "hanayo.conf")
-		fmt.Println("The configuration file was not found. We created one for you.")
-		return
-	default:
-		panic(err)
-	}
-
-	var configDefaults = map[*string]string{
-		&config.ListenTo:         ":6969",
-		&config.CookieSecret:     rs.String(46),
-		&config.AvatarURL:        "https://a.ussr.pl",
-		&config.BaseURL:          "https://ussr.pl",
-		&config.BanchoAPI:        "https://c.ussr.pl",
-		&config.CheesegullAPI:    "https://storage.ripple.moe/api",
-		&config.API:              "http://localhost:40001/api/v1/",
-		&config.APISecret:        "Potatowhat",
-		&config.IP_API:           "https://ip.zxq.co",
-		&config.DiscordServer:    "https://discord.gg/8ySdzhyMtt",
-		&config.MainRippleFolder: "/home/RIPPLE/",
-		&config.MailgunFrom:      `"RealistikOsu!" <noreply@ripple.moe>`,
-	}
-	for key, value := range configDefaults {
-		if *key == "" {
-			*key = value
-		}
-	}
+	settings := state.LoadSettings()
+	configMap = structs.Map(settings)
 
 	// initialise db
-	db, err = sqlx.Open("mysql", config.DSN+"?parseTime=true&allowNativePasswords=true")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		settings.DB_USER,
+		settings.DB_PASS,
+		settings.DB_HOST,
+		settings.DB_PORT,
+		settings.DB_NAME,
+	)
+
+	// initialise db
+	var err error
+	db, err = sqlx.Open(settings.DB_SCHEME, dsn)
 	if err != nil {
 		panic(err)
 	}
 	qb = qsql.New(db.DB)
-	if err != nil {
-		panic(err)
-	}
+
 	// set it to random
 	rand.Seed(time.Now().Unix())
 
 	// initialise mailgun
 	mg = mailgun.NewMailgun(
-		config.MailgunDomain,
-		config.MailgunPrivateAPIKey,
+		settings.MAILGUN_DOMAIN,
+		settings.MAILGUN_API_KEY,
+		settings.MAILGUN_PUBLIC_KEY,
 	)
-	mg.SetAPIBase(mailgun.APIBaseEU)
 
 	// initialise CSRF service
 	CSRF = cieca.NewCSRF()
@@ -171,13 +86,10 @@ func main() {
 
 	// initialise redis
 	rd = redis.NewClient(&redis.Options{
-		Addr:     config.RedisAddress,
-		Password: config.RedisPassword,
+		Addr:     fmt.Sprintf("%s:%d", settings.REDIS_HOST, settings.REDIS_PORT),
+		Password: settings.REDIS_PASS,
+		DB:       settings.REDIS_DB,
 	})
-
-	// initialise schiavo
-	schiavo.Prefix = "hanayo"
-	schiavo.Bunker.Send(fmt.Sprintf("STARTUATO, mode: %s", gin.Mode()))
 
 	// even if it's not release, we say that it's release
 	// so that gin doesn't spam
@@ -201,63 +113,39 @@ func main() {
 	fmt.Println("Setting up rate limiter...")
 	setUpLimiter()
 
-	fmt.Println("Exporting configuration...")
+	r := generateEngine()
+	fmt.Printf("Listening on port :%d", settings.APP_PORT)
 
-	conf.Export(config, "hanayo.conf")
-
-	// default BanchoAPIPublic to BanchoAPI if not set
-	// we must do this after exporting the config
-	if config.BanchoAPIPublic == "" {
-		config.BanchoAPIPublic = config.BanchoAPI
-	}
-	configMap = structs.Map(config)
-
-	fmt.Println("Intialisation:", time.Since(startTime))
-
-	httpLoop()
-}
-
-func httpLoop() {
-	for {
-		e := generateEngine()
-		fmt.Println("Listening on", config.ListenTo)
-		if !startuato(e) {
-			break
-		}
+	err = r.Run(fmt.Sprintf(":%d", settings.APP_PORT))
+	if err != nil {
+		fmt.Printf("Failed to start server, error: %s", err.Error())
+		panic(err)
 	}
 }
 
 func generateEngine() *gin.Engine {
 	fmt.Println("Starting session system...")
+	settings := state.GetSettings()
 	var store sessions.Store
-	if config.RedisMaxConnections != 0 {
-		var err error
+	var err error
+	if settings.REDIS_MAX_CONNECTIONS != 0 {
 		store, err = sessions.NewRedisStore(
-			config.RedisMaxConnections,
-			config.RedisNetwork,
-			config.RedisAddress,
-			config.RedisPassword,
-			[]byte(config.CookieSecret),
+			settings.REDIS_MAX_CONNECTIONS,
+			settings.REDIS_NETWORK_TYPE,
+			fmt.Sprintf("%s:%d", settings.REDIS_HOST, settings.REDIS_PORT),
+			settings.REDIS_PASS,
+			[]byte(settings.APP_COOKIE_SECRET),
 		)
-		if err != nil {
-			fmt.Println(err)
-			store = sessions.NewCookieStore([]byte(config.CookieSecret))
-		}
 	} else {
-		store = sessions.NewCookieStore([]byte(config.CookieSecret))
+		store = sessions.NewCookieStore([]byte(settings.APP_COOKIE_SECRET))
+	}
+
+	if err != nil {
+		fmt.Printf("Failed to crreate redis store, error: %s", err.Error())
+		panic(err)
 	}
 
 	r := gin.Default()
-
-	// sentry
-	if config.SentryDSN != "" {
-		ravenClient, err := raven.New(config.SentryDSN)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			r.Use(Recovery(ravenClient, false))
-		}
-	}
 
 	r.Use(
 		gzip.Gzip(gzip.DefaultCompression),
@@ -348,47 +236,12 @@ func generateEngine() *gin.Engine {
 	r.POST("/c/:cid", leaveClan)
 
 	r.GET("/help", func(c *gin.Context) {
-		c.Redirect(301, config.DiscordServer)
+		c.Redirect(301, settings.DISCORD_SERVER_URL)
 	})
 
 	r.GET("/discord", func(c *gin.Context) {
-		c.Redirect(301, config.DiscordServer)
+		c.Redirect(301, settings.DISCORD_SERVER_URL)
 	})
-
-	// r.POST("/mergers/kurikku", func(c *gin.Context) {
-	// 	ctx := getContext(c)
-	// 	if ctx.User.ID == 0 {
-	// 		resp403(c)
-	// 		return
-	// 	}
-
-	// 	username := safeUsername(c.PostForm("username"))
-	// 	passwd := c.PostForm("password")
-	// 	rosuId := ctx.User.ID
-
-	// 	resp, err := http.Get(fmt.Sprintf(
-	// 		"http://127.0.0.1:8922/create_link?rosu_id=%d&src_name=%s&src_password=%s",
-	// 		rosuId, username, passwd,
-	// 	))
-
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 		addMessage(c, errorMessage{T(c, "There was issue submitting your request, please report it to developer!")})
-	// 		getSession(c).Save()
-	// 		c.Redirect(302, "/mergers/kurikku")
-	// 	}
-
-	// 	content := make(map[string]interface{})
-	// 	data, _ := ioutil.ReadAll(resp.Body)
-	// 	json.Unmarshal(data, &content)
-
-	// 	if resp.StatusCode == 400 {
-	// 		addMessage(c, errorMessage{T(c, content["message"].(string))})
-	// 		getSession(c).Save()
-	// 	}
-
-	// 	c.Redirect(302, "/mergers/kurikku")
-	// })
 
 	loadSimplePages(r)
 
@@ -396,7 +249,3 @@ func generateEngine() *gin.Engine {
 
 	return r
 }
-
-const alwaysRespondText = `Ooops! Looks like something went really wrong while trying to process your request.
-Perhaps report this to a RealistikOsu! developer?
-Retrying doing again what you were trying to do might work, too.`

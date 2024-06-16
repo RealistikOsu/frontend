@@ -66,15 +66,6 @@
 			grid-template-columns: auto auto;
 		}
 
-		/* td:first-child {
-		border-top-left-radius: 4px; 
-		border-bottom-left-radius: 4px;
-		}
-		td:last-child {
-		border-bottom-right-radius: 4px; 
-		border-top-right-radius: 4px; 
-		} */
-
 		@media (max-width: 767px) {
 			td:nth-child(2) {
 				text-align: center !important;
@@ -132,6 +123,7 @@
 							<div class="ui vertical buttons">
 								<a href="osu://dl/{{ .Beatmaps.ID }}" class="ui pink labeled icon button"><i class="download icon"></i>{{ $.T "osu!direct" }}</a>
 								<a href="/d/{{ .Beatmaps.ID }}" class="ui green labeled icon button"><i class="download icon"></i>{{ $.T "Download" }}</a>
+								<a href="{{ .Conf.BEATMAP_DOWNLOAD_MIRROR_URL }}/{{ .Beatmaps.ID }}" class="ui red labeled icon button"><i class="download icon"></i>{{ $.T "Mirror" }}</a>
 								<a class="ui purple labeled icon button" onclick="togglePlay()"><i class="play icon" id="imageplay"></i><span id = "PlayState">{{ $.T "Play" }}</span></a>
 							</div>
 						</div>

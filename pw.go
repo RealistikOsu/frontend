@@ -1,14 +1,13 @@
 package main
 
 import (
-	ct "context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/RealistikOsu/RealistikAPI/common"
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"zxq.co/x/rs"
@@ -16,6 +15,7 @@ import (
 
 func passwordReset(c *gin.Context) {
 	ctx := getContext(c)
+	settings := state.GetSettings()
 	if ctx.User.ID != 0 {
 		simpleReply(c, errorMessage{T(c, "You're already logged in!")})
 		return
@@ -49,7 +49,7 @@ func passwordReset(c *gin.Context) {
 	}
 
 	// recaptcha verify
-	if config.RecaptchaPrivate != "" && !recaptchaCheck(c) {
+	if settings.RECAPTCHA_SECRET_KEY != "" && !recaptchaCheck(c) {
 		simpleReply(c, errorMessage{T(c, "Captcha check failed, please try again.")})
 		return
 	}
@@ -69,19 +69,17 @@ func passwordReset(c *gin.Context) {
 	content := fmt.Sprintf(
 		"Hey %s!<br><br>We've heard you forgot your RealistikOsu! account password, it can happen to the best of us. You can change it by <a href='%s'>clicking here</a>!<br><br>If you didn't request a password reset, you don't have to do anything. Just ignore this email.",
 		username,
-		config.BaseURL+"/pwreset/continue?k="+key,
+		settings.APP_BASE_URL+"/pwreset/continue?k="+key,
 	)
 
 	msg := mg.NewMessage(
-		config.MailgunFrom,
+		settings.MAILGUN_FROM,
 		"RealistikOsu! - Password recovery!",
 		content,
 		email,
 	)
 	msg.SetHtml(content)
-	ctxx, cancel := ct.WithTimeout(ct.Background(), time.Second*10)
-	defer cancel()
-	_, _, err = mg.Send(ctxx, msg)
+	_, _, err = mg.Send(msg)
 
 	if err != nil {
 		c.Error(err)

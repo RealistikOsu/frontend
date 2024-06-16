@@ -337,8 +337,8 @@
 									<div>
 										{{ if $isLinked }}
 											{{ with dcAPI $discordID }}
-												{{ if .data.username }}
-													<br>{{ $global.T "Discord: <b>@%s</b>" .data.username | html }}
+												{{ if .raw.username }}
+													<br>{{ $global.T "Discord: <b>@%s</b>" .raw.username | html }}
 												{{ end }}
 											{{ end }}
 										{{ end }}

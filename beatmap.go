@@ -3,39 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sort"
 	"strconv"
 	"time"
 
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 )
-
-// type Beatmap struct {
-// 	BeatmapSetID     int     `json:"beatmapset_id,string"`
-// 	BeatmapID        int     `json:"beatmap_id,string"`
-// 	Approved         int     `json:"approved,string"`
-// 	TotalLength      int     `json:"total_length,string"`
-// 	HitLength        int     `json:"hit_length,string"`
-// 	Version          string  `json:"version"`
-// 	FileMD5          string  `json:"file_md5"`
-// 	CS               float32 `json:"diff_size,string"`
-// 	OD               float32 `json:"diff_overall,string"`
-// 	AR               float32 `json:"diff_approach,string"`
-// 	HP               float32 `json:"diff_drain,string"`
-// 	Mode             int     `json:"mode,string"`
-// 	Artist           string  `json:"artist"`
-// 	Title            string  `json:"title"`
-// 	Creator          string  `json:"creator"`
-// 	CreatorID        int     `json:"creator_id,string"`
-// 	BPM              float64 `json:"bpm,string"`
-// 	Source           string  `json:"source"`
-// 	MaxCombo         int     `json:"max_combo,string"`
-// 	DifficultyRating float64 `json:"difficultyrating,string"`
-// 	Playcount        int     `json:"playcount,string"`
-// 	Passcount        int     `json:"passcount,string"`
-// }
 
 type Beatmap struct {
 	ID               int `json:"BeatmapID"`
@@ -68,10 +44,6 @@ type BeatmapSet struct {
 	Creator          string
 	Source           string
 	Tags             string
-	HasVideo         bool
-	//Genre            int
-	//Language   int
-	//Favourites int
 }
 
 type beatmapPageData struct {
@@ -141,12 +113,13 @@ func beatmapInfo(c *gin.Context) {
 }
 
 func getBeatmapData(b string) (beatmap Beatmap, err error) {
-	resp, err := http.Get(config.CheesegullAPI + "/b/" + b)
+	settings := state.GetSettings()
+	resp, err := http.Get(settings.BEATMAP_MIRROR_API_URL + "/b/" + b)
 	if err != nil {
 		return beatmap, err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return beatmap, err
 	}
@@ -160,12 +133,13 @@ func getBeatmapData(b string) (beatmap Beatmap, err error) {
 }
 
 func getBeatmapSetData(parentID string) (bset BeatmapSet, err error) {
-	resp, err := http.Get(config.CheesegullAPI + "/s/" + parentID)
+	settings := state.GetSettings()
+	resp, err := http.Get(settings.BEATMAP_MIRROR_API_URL + "/s/" + parentID)
 	if err != nil {
 		return bset, err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return bset, err
 	}

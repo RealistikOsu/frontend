@@ -34,9 +34,9 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
 				{{ if $isLinked }}
 					{{ with dcAPI $discordID }}
 						<div class="field discord-logo-center">
-							<img src="{{ .data.avatar.url }}"
+							<img src="{{ .avatar.link }}"
 								id="discord-logo-image"/>
-							<h2 id="discord-login-message">Logged in as <b>@{{ .data.username }}</b></h2>
+							<h2 id="discord-login-message">Logged in as <b>@{{ .raw.username }}</b></h2>
 						</div>
 						
 						<div class="field discord-logo-center" id="discord-login-buttons">
@@ -45,7 +45,7 @@ AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jque
 					{{ end }}
 				{{ else }}
 					<div class="field discord-logo-center">
-						<img src="https://cdn.discordapp.com/attachments/820069753048662097/820069778613075998/newlogo2.png"
+						<img src="/static/image/newlogo2.png"
 							id="discord-logo-image"/>
 						<h2 id="discord-login-message">Link your Discord account</h2>
 					</div>
