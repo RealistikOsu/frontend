@@ -44,7 +44,6 @@ type BeatmapSet struct {
 	Creator          string
 	Source           string
 	Tags             string
-	//HasVideo         bool
 }
 
 type beatmapPageData struct {
