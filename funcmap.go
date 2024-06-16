@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -158,21 +157,14 @@ var funcMap = template.FuncMap{
 		json.Unmarshal(data, &x)
 		return x
 	},
-	"dcAPI": func(ept string) map[string]interface{} {
-		postBody, _ := json.Marshal(map[string]string{
-			"input": ept,
-		})
-		responseBody := bytes.NewBuffer(postBody)
-		d, err := http.Post(
-			"https://lookupguru.herokuapp.com/lookup",
-			"application/json",
-			responseBody,
-		)
+	"dcAPI": func(discordID string) map[string]interface{} {
+		settings := state.GetSettings()
+		resp, err := http.Get(settings.DISCORD_USER_LOOKUP_URL + "/" + discordID)
 		if err != nil {
 			return nil
 		}
 		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
+		data, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(data, &x)
 		return x
 	},

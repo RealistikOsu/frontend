@@ -70,7 +70,8 @@ type Settings struct {
 	RECAPTCHA_SITE_KEY   string
 	RECAPTCHA_SECRET_KEY string
 
-	IP_LOOKUP_URL string
+	IP_LOOKUP_URL           string
+	DISCORD_USER_LOOKUP_URL string
 
 	PAYPAL_EMAIL_ADDRESS string
 }
@@ -125,6 +126,7 @@ func LoadSettings() Settings {
 	settings.RECAPTCHA_SECRET_KEY = getEnv("RECAPTCHA_SECRET_KEY")
 
 	settings.IP_LOOKUP_URL = getEnv("IP_LOOKUP_URL")
+	settings.DISCORD_USER_LOOKUP_URL = getEnv("DISCORD_USER_LOOKUP_URL")
 
 	settings.PAYPAL_EMAIL_ADDRESS = getEnv("PAYPAL_EMAIL_ADDRESS")
 
