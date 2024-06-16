@@ -513,16 +513,6 @@ var funcMap = template.FuncMap{
 	"hhmm": func(seconds float64) string {
 		return fmt.Sprintf("%02dh %02dm", int(math.Floor(seconds/3600)), int(math.Floor(seconds/60))%60)
 	},
-	"mergerRequest": func(path string, qs ...interface{}) map[string]interface{} {
-		d, err := http.Get(fmt.Sprintf("http://127.0.0.1:8922/"+path, qs...))
-		if err != nil {
-			return nil
-		}
-		x := make(map[string]interface{})
-		data, _ := ioutil.ReadAll(d.Body)
-		json.Unmarshal(data, &x)
-		return x
-	},
 }
 
 var localeLanguages = []string{"de", "pl", "it", "es", "ru", "fr", "nl", "ro", "fi", "sv", "vi", "th", "ko"}
@@ -598,16 +588,6 @@ func systemSettings(names ...string) map[string]systemSetting {
 	}
 	return settings
 }
-
-// func getDiscord() *oauth2.Config {
-// 	return &oauth2.Config{
-// 		ClientID:     config.DiscordOAuthID,
-// 		ClientSecret: config.DiscordOAuthSecret,
-// 		RedirectURL:  config.BaseURL + "/settings/discord/finish",
-// 		Endpoint:     discordoauth.Endpoint,
-// 		Scopes:       []string{"identify"},
-// 	}
-// }
 
 func getLanguageFromGin(c *gin.Context) string {
 	for _, l := range getLang(c) {
