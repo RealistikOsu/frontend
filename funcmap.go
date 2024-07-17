@@ -157,11 +157,11 @@ var funcMap = template.FuncMap{
 		data, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(data, &x)
 		if x["avatar"] == nil {
-		    user_id, err := strconv.ParseInt(x["id"], 10, 64)
+		    user_id, err := strconv.ParseInt(fmt.Sprint(x["id"]), 10, 64)
                     if err != nil {
-			var avatar_id int = (user_id >> 22) % 6 // 6 = new avatar count
-			if x["raw"]["discriminator"] != "0" {
-			    discriminator, err := strconv.Atoi(x["raw"]["discriminator"])
+			var avatar_id int = (int(user_id) >> 22) % 6 // 6 = new avatar count
+			if x["raw"].(map[string]string)["discriminator"] != "0" {
+			    discriminator, err := strconv.Atoi(x["raw"].(map[string](string))["discriminator"])
 			    if err != nil {
 			        avatar_id = discriminator % 5 // 5 = old avatar count
 			    }
