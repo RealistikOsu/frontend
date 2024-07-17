@@ -115,7 +115,7 @@ func main() {
 
 	r := generateEngine()
 	fmt.Printf("Listening on port :%d", settings.APP_PORT)
-	
+
 	err = r.Run(fmt.Sprintf(":%d", settings.APP_PORT))
 	if err != nil {
 		fmt.Printf("Failed to start server, error: %s", err.Error())
