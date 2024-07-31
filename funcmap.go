@@ -213,7 +213,7 @@ var funcMap = template.FuncMap{
 		}
 		return strings.Join(classes, " ")
 	},
-	"log": slog.Info,
+	"log": fmt.Println,
 	// has returns whether priv1 has all 1 bits of priv2, aka priv1 & priv2 == priv2
 	"has": func(priv1 interface{}, priv2 float64) bool {
 		var p1 uint64

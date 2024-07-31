@@ -154,6 +154,10 @@ func generateEngine() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(
+		// Use our custom logger
+		services.StructuredLogger(),
+		// Still use the built-in recovery middleware that is called with default
+		gin.Recovery(),
 		gzip.Gzip(gzip.DefaultCompression),
 		pagemappings.CheckRedirect,
 		sessions.Sessions("session", store),
