@@ -4,8 +4,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log/slog"
 
 	"github.com/thehowl/conf"
 )
@@ -24,7 +24,7 @@ var simplePages = [...]simplePage{{"/", "homepage.html", "Home Page", "homepage2
 
 func main() {
 	for _, p := range simplePages {
-		fmt.Print("=> ", p.Handler+" ... ")
+		slog.Info("=> " + p.Handler + " ... ")
 		noTemplateP := noTemplate{
 			Handler:       p.Handler,
 			TitleBar:      p.TitleBar,
@@ -47,6 +47,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("ok.")
+		slog.Info("Generated all configs")
 	}
 }

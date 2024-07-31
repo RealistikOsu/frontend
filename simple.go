@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
@@ -54,7 +54,7 @@ func getSimple(h string) templateConfig {
 			return s
 		}
 	}
-	fmt.Println("oh handler shit not found", h)
+	slog.Error("The handler for simple page could not be found", "simple_page", h)
 	return templateConfig{}
 }
 
@@ -64,7 +64,7 @@ func getSimpleByFilename(f string) templateConfig {
 			return s
 		}
 	}
-	fmt.Println("oh shit not found", f)
+	slog.Error("The handler for simple page could not be found (by file)", "file_name", f)
 	return templateConfig{}
 }
 

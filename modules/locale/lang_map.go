@@ -3,6 +3,7 @@ package locale
 import (
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ var languageMap = make(map[string]*po, 20)
 func loadLanguages() {
 	files, err := ioutil.ReadDir("./data/locales")
 	if err != nil {
-		fmt.Println("loadLanguages", err)
+		slog.Error("Could not read locale files", "error", err)
 		return
 	}
 	for _, file := range files {
@@ -21,11 +22,11 @@ func loadLanguages() {
 
 		p, err := parseFile("./data/locales/" + file.Name())
 		if err != nil {
-			fmt.Println(file.Name(), ":", err)
+			slog.Error("Could not parse locale file", "error", err)
 			continue
 		}
 		if p == nil {
-			fmt.Println(file.Name(), ":", "p is nil")
+			continue
 		}
 
 		langName := strings.TrimPrefix(strings.TrimSuffix(file.Name(), ".po"), "templates-")

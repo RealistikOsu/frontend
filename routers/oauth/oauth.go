@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strconv"
 	"strings"
 
 	"github.com/RangelReale/osin"
-	"github.com/felipeweb/osin-mysql"
+	mysql "github.com/felipeweb/osin-mysql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -101,7 +102,7 @@ func Authorize(c *gin.Context) {
 		osinServer.FinishAuthorizeRequest(resp, c.Request, ar)
 	}
 	if resp.IsError && resp.InternalError != nil {
-		fmt.Println(resp.InternalError)
+		slog.Error("There was an issue while authorising", "error", resp.InternalError)
 	}
 	osin.OutputJSON(resp, c.Writer, c.Request)
 }
@@ -165,7 +166,7 @@ func Token(c *gin.Context) {
 		resp.Output["access_token"] = plainToken
 	}
 	if resp.IsError && resp.InternalError != nil {
-		fmt.Printf("ERROR: %s\n", resp.InternalError)
+		slog.Error("There was an issue while generating a token", "error", resp.InternalError)
 	}
 	delete(resp.Output, "expire_in")
 	osin.OutputJSON(resp, c.Writer, c.Request)
