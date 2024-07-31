@@ -1,0 +1,69 @@
+{{/*###
+Handler=/about
+TitleBar=About
+*/}}
+{{ define "tpl" }}
+<div class="ui container">
+	<div class="ui centered segments">
+		<div class="ui segment">
+			<!--<img src="/static/logos/logo-1.png">-->
+			<h1 class="ui no bottom margin header">
+				{{ .T "Welcome to RealistikOsu!" }}
+			</h1>
+			<div class="about subtitle">{{ .T "RealistikOsu is a custom server for the popular rhythm game osu!" }}<br>
+			{{ .T "It extends upon the core osu! online experience and provides countless fun features!" }}</div>
+		</div>
+		<div class="ui segment">
+			<img src="/static/about/intro.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="list ul icon"></i>{{ .T "Leaderboards" }}</h4>
+			<img src="/static/about/leaderboards.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="globe icon"></i>Online Users</h4>
+			<img src="/static/about/onlineusers.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="download icon"></i>Free Beatmap Downloads</h4>
+			<img src="/static/about/osudirect.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="trophy icon"></i>Global Leaderboards</h4>
+			<img src="/static/about/global_leaderboards.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="question icon"></i>Beatmap Rank Requests</h4>
+			<img src="/static/about/request_beatmaps.jpg">
+		</div>
+		<div class="ui segment">
+			<h1 class="ui header">
+				<h4 class="ui horizontal divider header"><i class="eye icon"></i>Spectator</h4>
+			</h1>
+			<img src="/static/about/spectator.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="users icon"></i>Multiplayer</h4>
+			<img src="/static/about/multi.jpg">
+		</div>
+		<div class="ui segment">
+			<h4 class="ui horizontal divider header"><i class="plane icon"></i>RealistikBot (in-game bot)</h4>
+			<img src="/static/about/relestobot.jpg">
+		</div>
+		<div class="ui segment">
+			<h1 class="ui header">
+				{{ .T "And a lot more!" }}
+			</h1>
+			<p class="about title">
+				{{ .T "RealistikOsu! was first released to the public in early 2020 and ever since we have grown an unbelievable amount!" }}
+			</p>
+			<p class="about title twemoji">
+				{{ .T "We have a long journey ahead of us! Come along and register and witness it unfold!" }}
+			</p>
+			<p class="about subtitle">
+				{{ .T "We are also open source! This means you are free to see the exact code we are currently running and even contribute to it! Check out the <a href=\"https://github.com/RealistikOsu\">source code</a> RealistikOsu! is running on." | html }}
+			</p>
+		</div>
+	</div>
+</div>
+{{ end }}

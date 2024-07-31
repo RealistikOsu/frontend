@@ -1,0 +1,322 @@
+{{/*###
+Handler=/
+TitleBar=Home Page
+KyutGrill=homepage2.jpg
+*/}}
+{{ define "tpl" }}
+{{ $cf := .ClientFlags }}
+{{ $ds := band $cf 1 }}
+{{ $   := . }}
+
+{{/* CSS Zone */}}
+<style>
+	.status {
+		display: flex;
+		font-size: 14px;
+		font-weight: 500;
+		z-index: 3;
+		position: absolute;
+		-webkit-transform: translateY(-100px) translateX(5px);
+		transform: translateY(-100px) translateX(5px);
+		padding: 2px 10px;
+		color: #fff;
+		margin-left: 5px;
+		border-radius: 20px;
+		background: rgba(0,0,0,.6);
+	}
+	.main-content {
+		width: 2000px;
+		padding-right: 165px;
+  		padding-left: 165px;
+	}
+	@media(max-width:576px) {
+	    .main-content {
+	        width: ;
+	    }
+	}
+
+	@media(max-width:767px) {
+	    .main-content {
+			padding-right: 0px;
+  			padding-left: 0px;
+	    }
+	}
+</style>
+{{/* End CSS */}}
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#548ACA">
+	<meta property="og:title" content="RealistikOsu!">
+	<meta property="og:url" content="https://ussr.pl">
+	<meta property="og:site_name" content="RealistikOsu!">  
+	<meta property="og:description" content="RealistikOsu is a private server for the rhythm game osu! It features ranked Relax and Autopilot among countless other unique features!">
+	<meta property="og:image" content="https://ussr.pl/static/image/newlogo2.png">
+</head>
+
+	<div class="ui container">
+		<div class="main-block">
+			<div class="main-content content">
+				<span class="text-lg">
+					RealistikOsu!
+				</span>
+				<span class="text-sm">
+					RealistikOsu! is a custom server for the rhythm game osu!, featuring tons of unique features!
+					We provide an nice, safe, unique place for everyone to enjoy, providing a wide variety of new 
+					experiences and features. We have anything ranging from custom map ranking and clans to dedicated 
+					leaderboards and PP systems for the mods of Relax and Autopilot and our feature set grows daily! 
+					<br />
+					Why hesitate? Join RealistikOsu now!
+				</span>
+				<div class="buttons">
+					{{ if not .Context.User.ID }}
+						<a href="/register" class="ui button blue home-btn">Register Now!</a>
+					{{ else }}
+						<a href="/users/{{ .Context.User.ID }}" class="ui button blue home-btn">Your Profile</a>
+					{{ end }}
+					<a href="/connect" class="ui button inverted home-btn">How to connect?</a>
+				</div>
+				<div class="js-landing-graph" style="left: 0;"></div>
+			</div>
+		</div>
+	{{/* MarginBoi */}}
+	<br> 
+	{{/* Global Statistics */}}
+	<div class="ui stackable column divided grid" id="first-grid">
+		<div class="five wide column">
+			<div class="ui segments" style="height: 100%;">
+				<div class="sixteen wide column" style="margin-bottom: 11px;">
+					<div class="ui blue segment">
+						<div class="ui grid">
+							<div class="four wide column">
+								<i class="user blue icon status-icon"></i>
+							</div>
+							<div class="twelve wide column">
+								<p class="status-head">{{ rediget "ripple:online_users" }} / {{ rediget "ripple:registered_users" }}</p>
+								<p class="status-footer">{{ .T "Online / Registered" }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			<div class="sixteen wide column" style="margin-bottom: 11px;">
+				<div class="ui orange segment">
+					<div class="ui grid">
+						<div class="four wide column">
+							<i class="user plus orange icon status-icon"></i>
+						</div>
+						<div class="twelve wide column">
+							{{ $newest := (qb "SELECT id, username FROM users WHERE privileges & 1 ORDER BY id DESC LIMIT 1") }}
+							<p class="status-head" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
+								<a href="/users/{{ $newest.id }}" style="color: inherit;" class="link-text">{{ $newest.username }}</a>
+							</p>
+							<p class="status-footer">{{ .T "Latest Player" }}</p>
+						</div>
+					</div>
+			  </div>
+			  <div class="sixteen wide column">
+                <div class="ui lblue segment">
+                    <div class="ui grid">
+                        <div class="four wide column">
+                            <i class="angle double up lblue icon status-icon"></i>
+                        </div>
+                        <div class="twelve wide column">
+						{{ $count := (qb "SELECT COUNT(*) AS c FROM beatmaps WHERE ranked_status_freezed = 1") }}
+						<p class="status-head">{{ $count.c }}</p>
+                        <p class="status-footer">{{ .T "Maps Ranked" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+	<div class="six wide column">
+		<iframe src="https://discord.com/widget?id=820068143866970142&theme=dark" id="ds-widget" allowtransparency="true" frameborder="0" style="width: 100%;height: 100%;"></iframe>
+	</div>
+	{{ $glob := . }}
+	{{ with $glob.Get "statistics/homepage" }}
+		<div class="five wide column">
+			<div class="ui segments" style="height: 100%;">
+				<div class="sixteen wide column" style="margin-bottom: 11px;">
+					<div class="ui yellow segment">
+						<div class="ui grid">
+							<div class="four wide column">
+								<i class="thumbs up yellow icon status-icon"></i>
+							</div>
+							<div class="twelve wide column">
+								{{ with index .data.top_scores 0 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Score" }}</p>
+								{{ end }}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="sixteen wide column" style="margin-bottom: 11px;">
+					<div class="ui pink segment">
+						<div class="ui grid">
+							<div class="four wide column">
+								<i class="thumbs up pink icon status-icon"></i>
+							</div>
+							<div class="twelve wide column">
+								{{ with index .data.top_scores 4 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Relax Score" }}</p>
+								{{ end }}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="sixteen wide column">
+					<div class="ui purple segment">
+						<div class="ui grid">
+							<div class="four wide column">
+								<i class="thumbs up purple icon status-icon"></i>
+							</div>
+							<div class="twelve wide column">
+								{{ with index .data.top_scores 7 }}
+									<p class="status-head">{{ .pp_val }}pp</p>
+									<p class="status-head" style="font-size: 11px !important; font-weight: 500;">{{ $glob.T "Done by " }}<a href="/users/{{ .user_id }}"><b style="color: inherit;">{{ .username }}</b></a></p>
+									<p class="status-footer">{{ $glob.T "Top Autopilot Score" }}</p>
+								{{ end }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> {{/* Global Stats end past this /div */}}
+	{{ end }}
+	</div>
+	</div>
+<script type="text/javascript" defer="">
+
+	var graphData = {{ with $glob.Get "statistics/homepage" }}{{ .data.online_history }}{{ end }}
+	var goodList = [];
+	for (var i = 0; i < graphData.length; i++) {
+		goodList.push({y: parseInt(graphData[i]), x: ((i - 1) + 1)});
+	}
+	$(document).ready(function() {
+      let graph = new LandingUserStats();
+      $(window).resize(() => {
+          graph.resize();
+      })
+	})
+
+    class LandingUserStats {
+        constructor() {
+            this.margin = {
+                top: 40,
+                right: 0,
+                bottom: 0,
+                left: 0
+            };
+            this.peakR = 5;
+            this.svgContainerOuter = d3.select('.js-landing-graph');
+            this.svgContainerOuter.selectAll('svg').remove();
+            this.svgContainerInner = this.svgContainerOuter.append('svg').attr('class', 'landing-graph');
+            this.svg = this.svgContainerInner.append('g').attr('transform', "translate(" + this.margin.left + ", " + (this.margin.top + 1) + ")");
+            this.svgArea = this.svg.append('path').attr('class', 'landing-graph__area');
+            this.svgPeakText = this.svg.append('text').attr('class', 'landing-graph__text').attr('y', -this.peakR * 2);
+            this.svgPeakCircle = this.svg.append('circle').attr('class', 'landing-graph__circle').attr('cy', 0).attr('r', this.peakR);
+            this.scaleX = d3.scaleLinear();
+            this.scaleY = d3.scaleTime();
+            this.area = d3.area().curve(d3.curveBasis).x((function(_this) {
+                return function(d) {
+                return _this.scaleX(d.x);
+                };
+            })(this)).y0((function(_this) {
+                return function() {
+                return _this.height;
+                };
+            })(this)).y1((function(_this) {
+                return function(d) {
+                return _this.scaleY(d.y);
+                };
+            })(this));
+            this.loadData();
+            this.resize();
+        }
+
+        loadData() {
+            this.data = window.goodList;
+
+            if (this.data.length < 1) {
+                return;
+            }
+            let maxVal = 0;
+            this.maxElem = {x:0,y:0};
+            for (let el of this.data) {
+                if (el.y > maxVal || el.y == maxVal) {
+                    this.maxElem = el
+                    maxVal = el.y;
+                }
+            }
+            this.scaleX.domain(d3.extent(this.data, function(d) {
+                return d.x;
+            }));
+            this.scaleY.domain([
+                0, d3.max(this.data, function(d) {
+                return d.y;
+                })
+            ]);
+
+            // Calculate amount of hours/minutes in graph data.
+            var time = (this.data.length * 7.2) * 60 * 1000
+
+            this.svgPeakText.text(`Max, ${this.formatNumber(this.maxElem.y)} players in last ${timeSince(new Date(Date.now() - time))}`);
+            return this.peakTextLength = this.svgPeakText.node().getComputedTextLength();
+        }
+
+        resize() {
+            if (this.data.length < 1) {
+                return;
+            }
+            this.width = parseInt(this.svgContainerOuter.style('width')) - this.margin.left - this.margin.right;
+            this.height = parseInt(this.svgContainerOuter.style('height')) - this.margin.top - this.margin.bottom;
+            this.scaleX.range([0, this.width]);
+            this.scaleY.range([this.height, 0]);
+            this.svgContainerInner.attr('width', this.width + this.margin.left + this.margin.right).attr('height', this.height + this.margin.top + this.margin.bottom);
+            this.svgArea.datum(this.data).attr('d', this.area);
+            this.svgPeakCircle.attr('cx', this.scaleX(this.maxElem.x));
+            return this.svgPeakText.attr('x', (function(_this) {
+                return function() {
+                    var rightX;
+                    rightX = _this.scaleX(_this.maxElem.x) + (_this.peakR * 2);
+                    if ((_this.peakTextLength + rightX) > _this.width) {
+                        return _this.scaleX(_this.maxElem.x) - (_this.peakTextLength + (_this.peakR * 2));
+                    } else {
+                        return rightX;
+                    }
+                };
+            })(this));
+            }
+
+        formatNumber(number) {
+            return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ')
+        }
+	}
+
+	function timeSince(date) {
+	  var seconds = Math.floor((new Date() - date) / 1000);
+
+	  var interval = seconds / 31536000 / 2592000 / 86400;
+	  // Hours.
+	  interval = seconds / 3600;
+	  if (interval > 1) {
+	    return Math.round(interval) + "h";
+	  }
+	  // Minutes.
+	  interval = seconds / 60;
+	  if (interval > 1) {
+	    return Math.round(interval) + "m";
+	  }
+
+	}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.7/d3.min.js" type="text/javascript"></script>	
+	{{ end }}
+	

@@ -1,0 +1,65 @@
+{{/*###
+Handler=/settings/discord-integration
+TitleBar=Discord Linking
+KyutGrill=settings2.jpg
+Include=menu.html
+AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.js
+*/}}
+{{ define "tpl" }}
+{{ $isLinked := qb "SELECT discord_id FROM discord_oauth WHERE user_id = ?" .Context.User.ID }}
+{{ $discordID := $isLinked.discord_id.String }}
+<style>
+    #discord-logo-image {
+        width: 150px;
+        height: 150px;
+        display: block;
+        margin: auto;
+        border-radius: 50%;
+        box-shadow: 0px 0px 15px #000000;
+    }
+
+    .discord-logo-center {
+        text-align: center;
+    }
+
+	#discord-login-buttons {
+		margin-top: 10px;
+	}
+</style>
+<div class="ui container">
+	<div class="ui stackable grid">
+		{{ template "settingsSidebar" . }}
+		<div class="twelve wide column">
+			<div class="ui center aligned segment">
+				{{ if $isLinked }}
+					{{ with dcAPI $discordID }}
+						<div class="field discord-logo-center">
+							<img src="{{ .avatar.link }}"
+								id="discord-logo-image"/>
+							<h2 id="discord-login-message">Logged in as <b>@{{ .raw.username }}</b></h2>
+						</div>
+						
+						<div class="field discord-logo-center" id="discord-login-buttons">
+							<a class="ui button inverted pink" href="/settings/discord-integration/unlink">Unlink Account</a>
+						</div>
+					{{ end }}
+				{{ else }}
+					<div class="field discord-logo-center">
+						<img src="/static/image/newlogo2.png"
+							id="discord-logo-image"/>
+						<h2 id="discord-login-message">Link your Discord account</h2>
+					</div>
+					
+					<div class="field discord-logo-center" id="discord-login-buttons">
+						<a class="ui button inverted violet" href="https://discord.gg/8ySdzhyMtt" target="_blank">
+							Join our Discord!
+						</a>
+						<a class="ui button inverted red" href="https://discord.com/api/oauth2/authorize?client_id=936211493874188349&redirect_uri=https%3A%2F%2Fussr.pl%2Fsettings%2Fdiscord-integration%2Fredirect&response_type=code&scope=identify">Link Account</a>
+					</div>
+				{{ end }}
+			</div>
+		</div>
+	</div>
+</div>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.css">
+{{ end }}

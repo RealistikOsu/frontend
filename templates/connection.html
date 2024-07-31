@@ -1,0 +1,44 @@
+{{/*###
+Handler=/connect
+TitleBar=Connecting to RealistikOsu
+*/}}
+{{ define "tpl" }}
+<div class="ui container">
+	<div class ="ui segment">
+		<h2 class="ui header">Connecting</h2>
+		You are one step away from starting your journey on RealistikOsu! One small step from joining a community 
+		of {{ .T "%s" (rediget "ripple:registered_users")}} dedicated players and competing in the leaderboards.
+		The only thing left to do is to connect to the servers and your profile will become public for the entire 
+		world to see! You will be able to set scores, join clans and play to your heart's content! But how do you 
+		do that, you may ask.
+	</div>
+	<h4 class="ui horizontal divider header"><i class="play icon"></i>Connection Methods</h4>
+	<div class="ui grid" style="justify-content: center;">
+		<div class="eight wide column">
+			<div class="ui segment">
+				<h2 class="ui header">The Shortcut Method <i class="mouse pointer icon"></i></h2>
+				Did you know that osu! nowadays offers a somewhat official private server connection method! The
+				only requirements for this connection method are to have a recent version of the osu client
+				(with the minimum version being <b>stable 20210316</b>). This method only requires the editing of 
+				the osu! shortcut on your desktop, and requires no admin privileges.
+				<ol type="1">
+					<li>
+						Open the osu! shortcut properties. This can be an existing osu! shortcut on your desktop or a 
+						newly created one. You should now see a properties window open up with the "Shortcut" tab 
+						selected by default.
+					</li>
+					<li>
+						Click on the box labeled "Target" and add <code>-devserver ussr.pl</code> to the end of it as 
+						shown in this image.
+						<img src="/static/image/devserver-image.png" alt="Shortcut target image">
+					</li>
+					<li>
+						And that's it! You are now connected to RealistikOsu! You may now log into your account and 
+						enjoy all the features RealistikOsu has to offer.
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+{{ end }}

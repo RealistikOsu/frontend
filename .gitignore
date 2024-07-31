@@ -1,0 +1,17 @@
+node_modules
+hanayo
+FrontendPriv
+frontend
+hanayo.conf
+team.json
+static/profbackgrounds/*
+!static/profbackgrounds/.keep
+semantic/gulpfile.tmp.*.js
+/_
+static/oauth-apps/*
+!static/oauth-apps/.keep
+*.exe
+static/Ouroborosv2.zip
+.env
+Gopkg.lock
+Gopkg.toml

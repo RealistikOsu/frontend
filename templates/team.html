@@ -1,0 +1,123 @@
+{{/*###
+Handler=/team
+TitleBar=Team
+Include=user_group.html
+KyutGrill=team2.jpg
+*/}}
+{{ define "tpl" }}
+<div class="ui container">
+	<div class="ui segments">
+		<div class="ui center aligned segment">
+			<h1 class="ui heading">{{ .T "Hall of Fame" }}</h1>
+			<h3>{{ .T "This is a list of the outstanding individuals who keep RealistikOsu! the server and its community operating." }}</h3>
+		</div>
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="code icon"></i>Developer Team</h4>
+			<p>
+				{{ .T "Developers are responsible for all the server side magic. They do all the behind the scene technical things." }}<br>
+				{{ .T "They have full power over the server as they run it. Developers have a blue name in the in-game chat." }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 2) }}
+		</div>
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="tasks icon"></i>Administrator Team</h4>
+			<p>
+				{{ .T "Administrator are all-mighty powerful beings that are here to ensure everything runs smoothly. This can be anything from organising events to hunting hackers. They are cool people ready to help you." }}<br>
+				{{ .T "They have power in numerous sectors such as the discord server." | html }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 1018) }}
+		</div>
+
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="envelope icon"></i>Community Management Team</h4>
+			<p>
+				{{ .T "Community Managers deal with bans, silences, name changes and pretty much everything that has to do with the community." }}<br>
+				{{ .T "They take care of our Discord server and reply to emails sent to the support services (Discord)." | html }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 1020) }}
+		</div>
+		
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="comments icon"></i>Chat Moderation Team</h4>
+			<p>
+				{{ .T "Chat moderators manage the chat to make sure The Law&trade; (the rules) is respected." | html }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 30) }}
+		</div>
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="play circle outline icon"></i>Beatmap Appreciation Team</h4>
+			<p>
+				{{ .T "BATs play beatmaps in the ranking queue and decide whether they are good enough to be ranked or not." }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 5) }}
+		</div>
+		<div class="ui center aligned segment">
+			<h4 class="ui horizontal divider header"><i class="twitter icon"></i>The Social Media Team</h4>
+			<p>
+				{{ .T "The Social Media Team is responsible for anything regarding RealistikOsu's presence on social medias." }}
+			</p>
+			{{ template "userGroup" (.Get "badges/members?id=%d" 1017) }}
+		</div>
+	</div>
+	<div class="ui segments">
+		<div class="ui center aligned segment">
+			<h1 class="ui heading">{{ .T "Special credits" }}</h1>
+			<p>{{ .T "Here's a list of people who helped with RealistikOsu and made everything possible!" }}</p>
+		</div>
+		<div class="ui segment">
+			<ul class="ui list">
+				<li>
+					{{ .T "<b>Franc[e]sco</b> and <b>cmyui</b> for the relax PP calculator!" | html }}<br>
+					The relax calculator (originally created by <a href="https://github.com/Francesco149/oppai-ng">Franc[e]sco</a> and modified by cmyui for relax)
+					is licensed under GPL v3. Their implementation can be found <a href="https://github.com/osuAkatsuki/akatsuki-pp">here</a>.
+				</li>
+				<li>
+					{{ .T "<a href='https://ripple.moe'><strong>Ripple</strong></a>, for providing a solid base for RealistikOsu to work off!" | html }}<br>
+					Without Ripple's generous policy to <a href="https://github.com/osuripple">open source</a>, it is unlikely RealistikOsu would have even been started!
+				</li>
+				<li>
+					{{ .T "<a href='/users/2415'><strong>lyandrxw</strong></a>, for designing the new RealistikOsu logos." | html }}
+				</li>
+				<li>{{ .T "<a id='everyone' class='clickable'><strong>Everyone</strong></a> who has supported RealistikOsu through their generous donations!" | html }}</li>
+			</ul>
+		</div>
+	</div>
+	{{ $ := . }}
+	<div class="ui modal">
+		<div class="header"><h2 class="ui header">{{ .T "Our amazing supporters!" }}</h2></div>
+			<div class="content">
+				{{ template "userGroup" (.Get "badges/members?id=%d" 1002) }}
+				<br>
+				<div class="centered">
+					<b>{{ $.T "Do you want to be in this list?" }}</b><br>
+					<a href="/donate"><b>{{ $.T "Support us with a donation!" }}</b></a>
+				</div>
+			</div>
+	</div>
+</div>
+<script>
+	events = ["load", "resize"];
+	for (var i = 0; i < events.length; i++) {
+		window.addEventListener(events[i], () => {
+			var mainColumnGrids = $("[id=main-column-grid]");
+
+			for (var i = 0; i < mainColumnGrids.length; i++) {
+				var mainColumnGrid = $(mainColumnGrids[i]);
+
+				if (window.innerWidth > 767) {
+					mainColumnGrid.removeAttr("style");
+					mainColumnGrid.addClass("ui five column center aligned stackable grid");
+				} else {
+					mainColumnGrid.removeClass();
+					mainColumnGrid.css({
+						"display": "flex",
+						"flex-direction": "column",
+						"align-items": "center",
+						"gap": "2em"
+					})
+				}
+			}
+		});
+	}
+</script>
+{{ end }}

@@ -1,0 +1,512 @@
+{{ define "tpl" }}
+{{ $isLinked := qb "SELECT discord_id FROM discord_oauth WHERE user_id = ?" .UserID }}
+{{ $discordID := $isLinked.discord_id.String }}
+<link rel="stylesheet" href="/static/profiles/profile.css">
+<link rel="stylesheet" href="/static/profiles/comments.css">
+<div class="ui container">
+	{{ if .UserID }}
+		{{ $realistik := eq .UserID 1000 }}
+		{{ $gqm := atoi (.Gin.Query "mode") }}
+		{{ $relax := _or (atoi (.Gin.Query "rx")) (int 0)}}
+		{{ $global := . }}
+		{{ with (.Get "users/full?id=%d" .UserID) }}
+			{{ $favouritemode := _or $gqm .favourite_mode }}
+			<script>
+				window.preferRelax = {{ $relax }};
+				window.favouriteMode = {{ $favouritemode }};
+				window.userID = {{ .id }};
+				window.userProfileName = {{ .username }};
+				window.pastNames = {{ .past_usernames }};
+				window.followers = {{ with $.Get "users/followers?userid=%d" $.UserID }} {{ .allFriended }} {{ end }};
+				window.hasAdmin = {{ hasAdmin $global.Context.User.Privileges }};
+				window.graphType = "rank";
+
+				// Credits: @lenforiee
+				function resizeUsername() {
+					var username = document.querySelector('#username-span');
+					var container = document.querySelector('#username-container');
+					var clanName = document.querySelector('#clan-span');
+
+					var widthContainer = container.offsetWidth;
+					var widthUsername = username.offsetWidth;
+
+					if (clanName) {
+						widthUsername += clanName.offsetWidth;
+					}
+
+					
+					while (widthUsername >= widthContainer) {
+						console.log(widthUsername, widthContainer)
+
+						var fontSizeUsername = parseInt(window.getComputedStyle(username).fontSize);
+						console.log(fontSizeUsername)
+						username.style.fontSize = (fontSizeUsername - 1) + 'px';
+
+						if (clanName) {
+							var fontSizeClan = parseInt(window.getComputedStyle(clanName).fontSize);
+							console.log(fontSizeClan)
+							clanName.style.fontSize = (fontSizeClan - 1) + 'px';
+						}
+
+						widthUsername = username.offsetWidth;
+						if (clanName) {
+							widthUsername += clanName.offsetWidth;
+						}
+					}
+				}
+
+				events = ["load", "resize"];
+				for (var i = 0; i < events.length; i++) {
+					window.addEventListener(events[i], resizeUsername);
+				}
+
+				//swap them round on mobile so the order isnt weird for them
+				document.addEventListener('DOMContentLoaded', (event) => {
+					if (MobileCheck()) {
+						var left = document.getElementById("left");
+						var right = document.getElementById("right");
+
+						var RightText = right.innerHTML
+						right.innerHTML = left.innerHTML
+						left.innerHTML = RightText;
+					}
+
+					// Fill past names.
+					if (window.pastNames != null) {
+						let pastNamesString = "Previously known as: " + window.pastNames.join(" ")
+						let pastNamesIcon = document.getElementById("user-name-history");
+						pastNamesIcon.setAttribute("data-tooltip", pastNamesString)
+						pastNamesIcon.removeAttribute("hidden")
+					}
+				})
+			</script>
+			{{ if after .silence_info.end }}
+				<div class="ui error centered message black">
+					<div class="content">
+						{{ $global.T "<p>User is <b>silenced</b> for %s, expires %s.</p>" (.silence_info.reason | htmlescaper) (time .silence_info.end) | html }}
+					</div>
+				</div>
+			{{ end }}
+			{{ if hasAdmin $global.Context.User.Privileges }}
+				{{ $restr := not (has .privileges 1) }}
+				{{ $disab := not (has .privileges 2) }}
+				{{ $pend  := has .privileges 1048576 }}
+				{{ if and $disab $restr }}
+					{{ if $pend }}
+						<div class="ui warning centered message black">
+							<div class="content">
+								{{ $global.T "<p>User is <b>pending verification</b></p>" | html }}.
+							</div>
+						</div>
+					{{ else }}
+						<div class="ui error centered message black">
+							<div class="content">
+								{{ $global.T "<p>User is <b>banned</b>.</p>" | html }}
+							</div>
+						</div>
+					{{ end }}
+				{{ else if $restr }}
+					<div class="ui error centered message black">
+						<div class="content">
+							{{ $global.T "<p>User is <b>restricted</b>.</p>" | html }}
+						</div>
+					</div>
+				{{ else if $disab }}
+					<div class="ui error centered message black">
+						<div class="content">
+							{{ $global.T "<p>User is <b>locked</b></p>." | html }}
+						</div>
+					</div>
+				{{ end }}
+			{{ end }}
+			{{ if $global.Frozen }}
+				<div class="ui warning centered message black">
+					<div class="content">
+						{{ $global.T "<p>User is <b>frozen</b>. This means they have to provide a liveplay or else they will be automatically restricted.</p>" | html }}
+					</div>
+				</div>
+			{{ else if has .privileges 1073741824 }}
+				<div class="ui warning centered message black">
+					<div class="content">
+						{{ $global.T "<p>This is a <b>bot account</b>. This means that it does not represent a player, but rather is meant to offer in-game functionality.</p>" | html }}
+					</div>
+				</div>
+			{{ end }}
+			
+			{{ $user := . }}
+			<meta name="og:image" content="https://a.ussr.pl/{{ $user.id }}"/>
+			<meta property="og:type" content="website" />
+			<meta property="og:url" content="https://ussr.pl/users/{{ $user.id }}" />
+			<meta property="og:title" content={{ $global.T "<b>%s</b>" .username }} />
+			<meta property="og:description" content={{ $global.T "<b>%s</b> is a RealistikOsu! player from <b>%s</b>." .username (country .country true) }} />
+			<meta property="og:image" content="https://ussr.pl/{{ $user.id }}" />
+			<div class="ui stackable column grid">
+				<div class="ten wide column" id="left">
+					{{ with $global.Get "users/userpage?id=%.0f" .id }}
+						{{ if .userpage }}
+							{{ with parseUserpage .userpage }}
+								<div class="ui raised segment twemoji" style="padding: 1em 0;">
+									<h4 class="ui horizontal divider header" style="padding: 0 1em;">
+										<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+											<i class="fa-solid fa-address-card"></i>
+											{{ $global.T "me!" }}
+										</div>
+									</h4>
+									<div id="userpage-content">
+										{{ html . }}
+									</div>
+								</div>
+							{{ end }}
+						{{ end }}
+					{{ end }}
+					<div
+						class="ui segment"
+						id="profile-history-content">
+						<h4 class="ui horizontal divider header">
+							<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+								<i class="fa-solid fa-chart-line"></i>
+								{{ $global.T "Profile Graph" }}
+							</div>
+						</h4>
+						<div class="ui small buttons">
+							<button
+							class="ui button black active"
+							id="chart-btn-rank"
+							onclick="changeChart('rank')">
+							{{ $global.T "Rank" }}
+							</button>
+							<button
+							class="ui black button"
+							id="chart-btn-pp"
+							onclick="changeChart('pp')">
+							{{ $global.T "PP" }}
+							</button>
+						</div>
+						<div id="profile-history-graph" style="display: none;"></div>
+						<div id="profile-history-not-found" style="display: none; text-align: center;">
+							<div class="ui icon message" style="background: rgb(34, 33, 33)">
+							<div class="content">
+								<div class="header">
+								{{ $global.T "No graph data found" }}
+								</div>
+								<p>
+								{{ $global.T "No graph data found for this user" }}
+								</p>
+							</div>
+							</div>
+						</div>
+					</div>
+					<div id="scores-zone">
+						{{ range _range 4 }}
+							<div data-mode="{{ . }}" data-rx="0" {{ if _or (ne . (int $favouritemode)) (ne 0 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+							<div data-mode="{{ . }}" data-rx="1" {{ if _or (ne . (int $favouritemode)) (ne 1 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+							<div data-mode="{{ . }}" data-rx="2" {{ if _or (ne . (int $favouritemode)) (ne 2 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+						{{ end }}
+					</div>
+					<div class="ui segment sui">
+						<h4 class="ui horizontal divider header">
+							<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+								<i class="fa-solid fa-gamepad"></i> Achievements
+							</div>
+						</h4>
+						<div id="achievements" class="ui grid achivement-data" style="margin-bottom: 10px"></div>
+						<div class='profile-scores-btn-container'>
+							<div class='ui floated pagination'>
+								<a id="load-more-achievements" class='ui button load-more-button inverted violet disabled'>Load more</a>
+							</div>
+						</div>
+					</div>
+					<div class="ui modal">
+						<i class="close icon"></i>
+						<div class="content">
+							<table class="ui definition table" id="score-data-table">
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="six wide column" id="right">
+					<div style="margin: 0 !important;padding: 0;" class="ui top attached segment auto">
+						<div style="margin: 0;">
+						{{ if $.ProfileBackground }}
+							<div style="background-image: url({{ $.ProfileBackground }});min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
+						{{ else if $.ProfileColour }}
+							<div style="background-color: {{ $.ProfileColour }};min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
+						{{ else }}
+							<div style="background-image: url(/static/image/banner_bg.png);min-height: 200px;width: 100%;background-size: cover;background-position: center;box-shadow: 0px 5px 10px #090909;" class="">
+						{{ end }}
+								<div class="profile-ranks">
+									{{ range $kp, $vp := (slice .stats.vn .stats.rx .stats.ap) }}
+										{{ range $k, $v := (slice $vp.std $vp.taiko $vp.ctb $vp.mania) }}
+											<div id="global-rank-{{ $kp }}-{{ $k }}" data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }} class="profile-global-rank">
+												<span>
+													{{ if eq (int $v.global_leaderboard_rank) (int 1) }}
+														<i class="globe line small icon yellow"></i>
+													{{ else if eq (int $v.global_leaderboard_rank) (int 2)}}
+														<i class="globe line small icon grey"></i>
+													{{ else if eq (int $v.global_leaderboard_rank) (int 3)}}
+														<i class="globe line small icon brown"></i>
+													{{ else }}
+														<i class="globe line small icon"></i>
+													{{ end }}
+												</span>
+												<span>
+													{{ with and $v $v.global_leaderboard_rank }}
+														#{{ . }}
+													{{ else }}
+														{{ $global.T "-" }}
+													{{ end }}
+												</span>
+											</div>
+											<div data-rx="{{ $kp }}" data-mode="{{ $k }}"{{ if _or (ne $k (int $favouritemode)) (ne $kp (int $relax)) }} hidden{{ end }}  class="profile-country-rank">
+												<img class="nopad" src="/static/images/new-flags/flag-{{ stringLower $user.country }}.svg" width="20">
+												<span>
+													{{ with and $v $v.country_leaderboard_rank }}
+														#{{ . }}
+													{{ else }}
+														{{ $global.T "-" }}
+													{{ end }}
+												</span>
+											</div>
+										{{ end }}
+									{{ end }}
+								</div>
+							</div>
+						</div>
+						<div class="profile-metadata-container">
+							<div class="profile-upper-container">
+								<img alt="avatar" class="avatar-canvas" src="https://a.ussr.pl/{{ $user.id }}">
+								{{ if _or .badges .custom_badge }}
+									<div class="badge-container">
+										{{ if .badges }}
+											{{ range .badges }}
+												<span class data-tooltip="{{ .name }}">
+													<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+												</span>
+											{{ end }}
+										{{ end }}
+										{{ if .custom_badge  }}
+											{{ with .custom_badge }}
+												<span class data-tooltip="{{ .name }}">
+													<i class="{{ faIcon .icon }} small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 1em !important;padding: 0 !important;"></i>
+												</span>
+											{{ end }}
+										{{ end }}
+									</div>
+								{{ end }}
+							</div>
+							<!--Hello fellow developers! Please do not steal this like you did with the score beatmap images.
+							At least if you do, please credit me (RealistikDash) in your team changes. I know who did it as
+							I have a very distinct code style.
+							Plus your implementations did not remove the rosu specific theme aspects, meaning they were
+							direct copies without adaptations for your site.
+							-->
+							<!--Bottom part-->
+							<div style="margin-top: 1rem;margin-bottom: 1rem;padding: 1rem;background: #1B1B1C;border-radius: 1rem;">
+
+								<h1 class="ui header" style="font-size: 30px;font-weight:normal;margin-bottom: 0.5rem;">
+									<div style="display:flex;align-items: center;gap:6px;white-space:nowrap;" id="username-container">
+										{{ if ne .clan.name "" }}
+											<a href="/c/{{ .clan.id }}" class="link-text" style="font-size:27px"><b id="clan-span">{{ $global.T "%s" (.clan.tag) }}</b></a>
+										{{ end }}
+										<span id="username-span">
+											{{ .username }}
+											<span id="user-name-history" data-tooltip="They have no previous name history." hidden>
+												<i class="address book small icon circular" style="box-shadow: none;display: inline;margin: 10px;font-size: 0.7em !important;padding: 0 !important;"></i>
+											</span>
+										<span>
+									</div>
+								</h1>
+
+								<div class="profile-country-online">
+									<div class="profile-country-flag">
+										<img class="nopad" src="/static/images/new-flags/flag-{{ stringLower .country }}.svg" width="27">
+										<span>{{ countryReadable .country }}</span>
+									</div>
+									<div class="profile-online-status">
+										{{ if isOnline (int $user.id) }}
+											<i class="green circle icon"></i>
+											<span>{{ $global.T "Online" }}</span>
+										{{ else }}
+											<i class="red circle icon"></i>
+											<span>{{ $global.T "Offline" }}</span>
+										{{ end }}
+									</div>
+								</div>
+								<div class="ui divider" style="margin: 1rem 0.1rem auto auto !important;"></div>
+								<div class="profile-misc-information" style="display: flex;gap: 5px;justify-content: space-between;">
+									<div>
+										{{ if $isLinked }}
+											{{ with dcAPI $discordID }}
+												{{ if .raw.username }}
+													<br>{{ $global.T "Discord: <b>@%s</b>" .raw.username | html }}
+												{{ end }}
+											{{ end }}
+										{{ end }}
+										<br>{{ $global.T "Join Date: <b>%s</b>" (time $user.registered_on) | html }}
+										<br>{{ $global.T "Last Seen: <b>%s</b>" (time $user.latest_activity) | html }}
+										{{ with playstyle $user.play_style $global }}<br>{{ $global.T "Playing with: <b>%s</b>" . | html }}{{ end }}
+									</div>
+									<div style="width: 24%;margin-top: 20px;display: flex;flex-flow: column-reverse;gap:5px">
+										{{ if and (ne $global.Context.User.ID $global.UserID) (ne $global.Context.User.ID 0) }}
+											<a class="ui button inverted loading" id="add-friend-button" style="border-radius: 1rem;display: flex;gap: 5px;justify-content: center;height: 30px;align-items: center;"></a>
+										{{ end }}
+										{{ if hasAdmin $global.Context.User.Privileges }}
+											<a href="https://old.ussr.pl/user/edit/{{ $global.UserID }}" class="ui button red inverted" style="border-radius: 1rem;display: flex;gap: 5px;justify-content: center;height: 30px;align-items: center;" title="Edit user"><i class="fas fa-edit"></i></a>
+										{{ end }}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="ui three item bottom attached menu" id="rx-menu" style="margin-bottom: 0;">
+						<a id="clickVanilla" class="item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=0">Vanilla</a>
+						<a id="clickRelax" class="item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=1">Relax</a>
+						<a id="clickAutopilot" class="item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/users/{{ $user.id }}?mode={{ $favouritemode }}&rx=2">Autopilot</a>
+					</div>
+					<div class="ui four item bottom attached menu" id="mode-menu">
+						{{ range $k, $v := modes }}
+							<a id="click{{ $v }}" class="{{ favMode $favouritemode $k }}item" data-mode="{{ $k }}" href="/users/{{ $user.id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
+						{{ end }}
+					</div>
+					<div class="ui segment">
+						{{ range $rxk, $rxv := (slice .stats.vn .stats.rx .stats.ap) }}
+							{{ range $k, $v := (slice $rxv.std $rxv.taiko $rxv.ctb $rxv.mania) }}
+								<div data-mode="{{ $k }}" data-rx="{{ $rxk }}" {{ if _or (ne $k (int $favouritemode)) (ne $rxk (int $relax)) }} hidden{{ end }}>
+									<h4 class="ui horizontal divider header">
+										<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+											<i class="fa-solid fa-chart-simple"></i>
+											{{ $global.T "Statistics" }}
+										</div>
+									</h4>
+									<table class="ui very basic two column compact table nopad unstackable">
+										<tbody>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "PP" }}</b>
+													<span class="stats-mobile-view">{{ humanize .pp }}</spa>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .pp }}</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Accuracy" }}</b>
+													<span class="stats-mobile-view">{{ printf "%.2f" .accuracy }}%</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ printf "%.2f" .accuracy }}%</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Maximum Combo" }}</b>
+													<span class="stats-mobile-view">{{ humanize .max_combo }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .max_combo }}</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Ranked Score" }}</b>
+													<span class="stats-mobile-view">{{ humanize .ranked_score }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .ranked_score }}</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Total Score" }}</b>
+													<span class="stats-mobile-view">{{ humanize .total_score }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .total_score }}</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Playcount" }}</b>
+													<span class="stats-mobile-view">{{ humanize .playcount }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .playcount }}</td>
+											</tr>
+											{{ with $.Get "users/followers?userid=%d" $.UserID }}
+												<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+													<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+														<b>{{ $global.T "Followers" }}</b>
+														<span class="stats-mobile-view">{{ .subscount }}</span>
+													</td>
+													<td class="right aligned stats-desktop-view">{{ .subscount }}</td>
+												</tr>
+											{{ end }}
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Replay Views" }}</b>
+													<span class="stats-mobile-view">{{ humanize .replays_watched }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .replays_watched }}</td>
+											</tr>
+											<tr style="box-shadow: none !important; border: none !important; white-space: nowrap;">
+												<td style="display: flex !important; justify-content: space-between !important; width: 100%;">
+													<b>{{ $global.T "Total Hits" }}</b>
+													<span class="stats-mobile-view">{{ humanize .total_hits }}</span>
+												</td>
+												<td class="right aligned stats-desktop-view">{{ humanize .total_hits }}</td>
+											</tr>
+										</tbody>
+									</table>
+									<div style="text-align: center;margin-top: 10px;">
+										<div style="height: 10px; border-radius: 1rem; background: #000; display: block; position: relative; width: 100%;">
+											<div style="height: 100%; border-radius: 1rem; background-color: #0f97ff; width: {{ levelPercent .level }}%"></div>
+											<div style="right: 0; position: absolute; top: 100%; margin-top: 2px">{{ levelPercent .level }}%</div>
+										</div>
+										<div style="font-size: 15px;margin-top: 5px;">{{ $global.T "Level" }} {{ level .level }}</div>
+									</div>
+								</div>
+							{{ end }}
+						{{ end }}
+					</div>
+				</div>
+			</div>
+		{{ end }}
+
+		<div id="comments">
+			{{ with (.Get "users/comments/info?id=%d" .UserID) }}
+				<h4 class="ui horizontal divider header">
+					<div style="display: flex; align-items: center; font-weight: 600;">
+						<i class="fa-solid fa-comment" style="margin-right: 0.5em"></i>
+						Comments (<span id="total-comments" style="font-weight: 600;">{{ if .disabled }}0{{ else }}{{ .total }}{{ end }}</span>)
+					</div>
+				</h4>
+
+				{{ if .disabled }}
+					<div class="ui segment comment-login">
+						<div class="ui icon message black ds">
+							<i class="lock icon"></i>
+							<p>This user has disabled comments!</p>
+						</div>
+					</div>
+				{{ else }}
+					{{ if $global.Context.User.Username }}
+						<div style="display: flex;justify-content: center;gap: 20px;color: #fff;">
+							<div><img src="https://a.ussr.pl/{{ $global.Context.User.ID }}" style="  border-radius: 1rem;width: 90px;height: 90px;max-width: none;"></div>	
+							<div style="width: 100%">
+								<textarea id="comment-text" placeholder="Write a comment..." maxlength="380"></textarea>
+								<span id="comment-max">0/380</span>
+								<button id="comment-submit" class="disabled ui button inverted pink" onclick="post()">Comment</button>
+							</div>
+						</div>
+					{{ else }}
+						<div class="ui segment comment-login">
+							<div class="ui icon message black ds">
+								<i class="lock icon"></i>
+								<p>Please login to submit a comment!</p>
+							</div>
+						</div>
+					{{ end }}
+					
+					<div id="user-comments">
+						<div id="comments-list" class="ui comments"></div>
+						<div style="display: flex;justify-content: center;align-content: center;" id="comment-load-container">
+							<button id="comment-load" onclick="moreComments()" class="ui button inverted purple">Load more</button>
+						</div>
+					</div>
+				{{ end }}
+			{{ end }}
+		</div>
+		<script src="/static/profiles/comments.js"></script>
+	{{ end }}
+</div>
+{{ end }}

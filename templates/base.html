@@ -1,0 +1,138 @@
+{{ define "base" }}
+{{ $cf := .ClientFlags }}
+{{ $ds := band $cf 1 }}
+{{ $   := . }}
+{{ $frozen := qb "SELECT frozen FROM users WHERE id = ?" .Context.User.ID }}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>{{ if .TitleBar }}{{ .T .TitleBar }} :: {{ end }}RealistikOsu!</title>
+
+		<script>
+			var hanayoConf = {
+				avatars:   {{ .Conf.APP_AVATAR_URL }},
+				banchoAPI: {{ .Conf.APP_BANCHO_URL }},
+				baseAPI:   {{ .Conf.APP_BASE_URL }},
+				cheesegullAPI: {{ .Conf.BEATMAP_MIRROR_API_URL }},
+				language:  "en",
+			};
+			var currentUserID = {{ .Context.User.ID }};
+		</script>
+
+		<link rel="stylesheet" type="text/css" href="/static/{{ if $ds }}dark/{{ end }}semantic.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<link rel="stylesheet" type="text/css" href="/static/snow/snow.css">
+		<link rel="stylesheet" type="text/css" href="/static/realistikosu.css">
+		<!--LOADING BARZZZ-->
+		<script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+		<link href="/static/css/loadingbar.css" rel="stylesheet" />
+		<script src="/static/dist.min.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+		
+		<meta name="theme-color" content="#548ACA">
+		<meta name="msapplication-navbutton-color" content="#548ACA">
+		<meta name="apple-mobile-web-app-status-bar-style" content="#548ACA">
+	</head>
+	<body {{ if $ds }} class="ds"{{ end }}>
+		<div class="ui full height main wrapper"
+			{{ if and .DisableHH .KyutGrill }}
+				style="background-image: url('{{ if .KyutGrillAbsolute }}{{ .KyutGrill }}{{ else }}/static/headers/{{ .KyutGrill }}{{ end }}');"
+			{{ else if .SolidColour }}
+				style="background-color: {{ .SolidColour }}"
+			{{ end }}>
+			{{ template "navbar" . }}
+			{{ if not .DisableHH }}
+				<div class="huge heading {{ if .HeadingOnRight }}right{{ end }} dropped" style="position: relative; z-index: -1">
+					<div id="snow-container" style="background-image: url('{{ if .KyutGrillAbsolute }}{{ .KyutGrill }}{{ else }}/static/headers/{{ or .KyutGrill "default.jpg" }}{{ end }}'); filter: blur(4px) brightness(0.7); z-index: 0;background-repeat: no-repeat;background-position: center bottom;background-size: cover;"></div>
+					<div class="ui container" style="z-index: 1">
+						<h1>{{ if .HeadingTitle }}{{ .T .HeadingTitle | html }}{{ else }}{{ .T .TitleBar }}{{ end }}</h1>
+					</div>
+				</div>
+			{{ end }}
+
+			<div class="h-container" {{ if .DisableHH }}style="padding-top: calc(61.6px + 1rem);"{{ end }}>
+				<div class="ui margined container" id="messages-container">
+				<noscript>
+					Please enable JavaScript... The modern web fully relies on it, as keeping it disabled makes you miss
+					out on so much amazing content created every day. Our website, like many others, relies on it to provide
+					you the content. From showing scores to allowing you to see the very people that play here. JavaScript
+					allows us to merge our complex network of software into one, easy to use website. We only use JavaScript
+					where it is necessary. We do not track you. So please, do yourself a service and turn it back on.
+				</noscript>
+				{{ if and .Context.User.Username (not (has .Context.User.Privileges 1)) }}
+					<div class="ui icon message black error">
+						<i class="ban icon red"></i>
+						<div class="content">
+						  <div class="header">You have been restricted!</div>
+						  <p>{{ $.T "Your account is currently in restricted mode. You will not be able to do certain actions, and your profile can only be seen by you and by RealistikOsu's staff. If you believe we have mistaken putting you in restricted mode, or a month has passed since you first saw this, then you can send an appeal on the <a href='https://discord.gg/8ySdzhyMtt'>Discord Server</a>." | html }}</p>
+						</div>
+					  </div>
+				{{ end }}
+				{{ if $frozen.frozen.Bool }}
+				<div class="ui icon message black error">
+					<i class="asterisk icon red"></i>
+					<div class="content">
+					  <div class="header">You have been frozen!</div>
+					  <p>Your account has been frozen due to suspicion from the staff team! You have 5 days to provide a valid liveplay or else your account will be automatically restricted! You may provide a liveplay to the RealistikOsu staff team via the <a href="https://discord.gg/8ySdzhyMtt">RealistikOsu Discord Server</a>.</p>
+					</div>
+				  </div>
+                {{ end }}
+				{{ if .Messages }}
+						{{ range $i, $v := .Messages }}
+							<script>showMessage("{{ $v.Type }}", "{{ html $v.Content }}")</script>
+						{{ end }}
+				{{ end }}
+				{{ $settings := systemSettings "website_maintenance" "game_maintenance" "website_global_alert" }}
+				{{ with $settings.website_global_alert.String }}
+					<div class="ui icon message black info">
+						<i class="info circle icon blue"></i>
+						<div class="content">
+					  		<div class="header">Something interesting for you about RealistikOsu...</div>
+					  		<p>{{ . | html }}</p>
+						</div>
+					</div>
+				{{ end }}
+				{{ with $settings.game_maintenance.Int }}
+					<div class="ui icon message black warning">
+						<i class="exclamation circle icon orange"></i>
+						<div class="content">
+					  		<div class="header">We are currently working on our score submission server...</div>
+					  		<p>{{ $.T "RealistikOsu!'s score submission is currently in maintenance mode. You will not be allowed to submit scores for the time being." }}</p>
+						</div>
+					</div>
+				{{ end }}
+				{{ with $settings.website_maintenance.Int }}
+					<div class="ui icon message black warning">
+						<i class="exclamation circle icon orange"></i>
+						<div class="content">
+					  		<div class="header">We are currently working on our website...</div>
+					  		<p>{{ $.T "The RealistikOsu website is currently in maintenance mode. Only staff members are allowed to access the entire website." }}</p>
+						</div>
+					</div>
+				{{ end }}
+				</div>
+				{{ template "tpl" . }}
+			</div>
+
+		</div>
+
+		<div class="footer-bg">
+			<div class="ui container centered">
+				© 2024 RealistikOsu! Not affiliated with "ppy" and "osu!" in any way.
+				<a href="https://github.com/RealistikOsu" class="link-text"><b><i class="fa-brands fa-github"></i> Github</b></a>
+			</div>
+		</div>
+		{{/* If we got some more scripts to print, print'em */}}
+		<script src="/static/timeago-locale/jquery.timeago.en.js"></script>
+		{{ if .Scripts }}
+			{{ range .Scripts }}
+				<script src="{{ . }}?{{ unixNano }}"></script>
+			{{ end }}
+		{{ end }}
+	</body>
+</html>
+{{ end }}

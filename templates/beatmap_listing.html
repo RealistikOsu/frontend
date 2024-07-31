@@ -1,0 +1,53 @@
+{{/*###
+Handler=/beatmap_listing
+TitleBar=Beatmap Listing
+KyutGrill=leaderboard2.jpg
+*/}}
+{{ define "tpl" }}
+<head>
+<link rel="stylesheet" type="text/css" href="/static/beatmaps.css">
+<script src="/static/js/bmap-search.js"></script>
+</head>
+<div class="ui container">
+    <div id="bm-search">
+        <style id="progressCSS"></style>
+        <div>
+            <div class="ui segment">
+                <div class="ui one column stackable center aligned page grid">
+                    <div class="column sixteen wide">
+                        <div class="row">
+                            <div class="ui icon input" style="width: 100%;">
+                                <input type="text" id="searchTerms" placeholder="write here anything you want!" style="border-radius: 1rem;">
+                                <i class="search link icon" style="color: white;"></i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="ui segment wow-links" style="height: 20%;">
+                                <a id="mode-button" data-modeosu="">Any</a>
+                                <a id="mode-button" data-modeosu="0">osu!</a>
+                                <a id="mode-button" data-modeosu="1">Taiko</a>
+                                <a id="mode-button" data-modeosu="2">Catch</a>
+                                <a id="mode-button" data-modeosu="3">Mania</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="ui segment wow-links" style="height: 20%;">
+                                <a id="status-button" data-rankstatus="NaN">Any</a>
+                                <a id="status-button" data-rankstatus="1">Ranked</a>
+                                <a id="status-button" data-rankstatus="3">Qualified</a>
+                                <a id="status-button" data-rankstatus="4">Loved</a>
+                                <a id="status-button" data-rankstatus="0">Pending</a>
+                                <a id="status-button" data-rankstatus="-1">WIP</a>
+                                <a id="status-button" data-rankstatus="-2">Graveyard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bodySearching">
+                <div class="ui stackable two grid" id="maps"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

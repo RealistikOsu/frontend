@@ -1,0 +1,147 @@
+{{/*###
+Handler=/donate
+TitleBar=Support RealistikOsu!
+KyutGrill=ripplechick.png
+AdditionalJS=https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/9.0.0/nouislider.min.js
+*/}}
+{{ define "tpl" }}
+{{ $global := .Context }}
+{{ $ := $ }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/9.0.0/nouislider.min.css" rel="stylesheet" type="text/css">
+<div class="ui container">
+	{{ $ief := ieForm .Gin }}
+	{{ with .Get "users/self/donor_info" }}
+		{{ if .has_donor }}
+			<div class="ui segment">
+				<h1 class="ui center aligned header no bottom margin" style="margin: 0 auto; display: table;">
+					<i class="red heart icon" style="font-size: 90%;"></i> <div class="content">{{ $.T "You are already a supporter!" }}</div>
+				</h1>
+				<div class="ui centered subtitle" style="font-size:1.2rem;">
+					{{ $.T "Your donor expires <b>%s</b>. Thank you for helping us keep RealistikOsu up and alive!" (time .expiration) | html }} &lt;3
+				</div>
+			</div>
+		{{ end }}
+		<div class="ui segments">
+			<div class="ui segment">
+				<h2 class="ui header">
+					{{ $.T "Did you know?" }}
+				</h2>
+			</div>
+			<div class="ui segment">
+				<h3 class="ui header no top margin">
+					<i class="money icon"></i><div class="content">{{ $.T "We don't run it for free." }}</div>
+				</h3>
+				<blockquote>
+					{{ $.T "While this server is free and always will be, it is not the same on our end. We pay from our pockets to provide a good service our users can freely enjoy." }}
+				</blockquote>
+				<h3 class="ui header">
+					<i class="book icon"></i><div class="content">{{ $.T "We are still students." }}</div>
+				</h3>
+				<blockquote>
+					{{ $.T "All of our staff are students. This means we do not have a stable source of income to upkeep and maintain our hobby projects. Even a small donation could help us reach miles further." }}
+				</blockquote>
+				<h3 class="ui header">
+					<i class="mouse pointer icon"></i><div class="content">{{ $.T "We do not try to get money in shady ways." }}</div>
+				</h3>
+				<blockquote>
+					{{ $.T "In fact, we don't even try to get your money other than this optional donation. We will never misuse your data and will never use sketchy ways such as selling data to make profit." }}
+				</blockquote>
+			</div>
+		</div>
+		<div class="ui segment">
+			<h1 class="ui center aligned header">
+				{{ $.T "So what can you do?" }}
+				<div class="sub header">
+					{{ if .has_donor }}{{ $.T "Well, you can increase your donation." }}{{ else }}{{ $.T "Well, you can donate to us." }}{{ end }}
+				</div>
+			</h1>
+			<h4 class="ui horizontal divider header">
+				{{ $.T "Here's what you receive:" }}
+			</h4>
+			<div class="ui internally celled stackable grid">
+				<div class="row">
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "Unlimited username changes" }}</h3>
+						{{ $.T "You can request to have your name changed as many times as you want! Just make sure it follows our rules." | html }}
+					</div>
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "Supporter badge" }}</h3>
+						{{ $.T "You receive an <b>incredibly cool</b> supporter badge to show off your support!" | html }}
+					</div>
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "Profile perks" }}</h3>
+						{{ $.T "Spice up your profile! With supporter, you will gain the ability to set your own profile banner, add a custom badge and an animated username!" | html }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "Discord privileges" }}</h3>
+						{{ $.T "You'll gain a special role in the RealistikOsu discord server! This role will let you stand out from the crowd and give you access to special supporter only channels." | html }}
+					</div>
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "Account wipe" }}</h3>
+						{{ $.T "Do you want to hide your ridiculous play count or your 500 retries on Padoru? With supporter, you can request an account wipe." | html }}
+					</div>
+					<div class="five wide column">
+						<h3 class="ui header">{{ $.T "More to come!" }}</h3>
+						{{ $.T "We have more features planned for supporters, such as animated profile pictures coming soon™️." | html }}
+					</div>
+				</div>
+			</div>
+			{{ if $global.User.ID }}
+				<h4 class="ui horizontal divider header">
+					{{ $.T "And this is how you join" }}
+				</h4>
+				<p>
+					{{ $.T "You may donate via <b>PayPal</b> (or credit/debit card linked to PayPal). Use the slider below to choose the amount of months you'd like to have the donor benefits, and the cost will be instantly calculated. Remember that if, for instance, you choose to donate £3 instead of £2.16, you will only be given one donor month." | html }}
+				</p>
+				<div id="months-slider" style="margin: 0 auto; max-width: 500px"></div>
+				<br>
+				<div id="cost" class="centered"><b>{{ $.T "Loading..." }}</b></div>
+				<br>
+				<div class="ui internally celled two column center aligned stackable grid">
+					<div class="column">
+						<h2 class="ui header">
+							<i class="paypal icon"></i>
+							{{ $.T "PayPal" }}
+						</h2>
+						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_self">
+							<input type="hidden" name="on0" value="Period">
+							<input type="hidden" name="os0"	value="1 month">
+							{{ range _range 24 }}
+								{{ $months := plus (float .) 1 }}
+								<input type="hidden" name="option_select{{ . }}" value="{{ $months }} month{{ if . }}s{{ end }}">
+								<input type="hidden" name="option_amount{{ . }}" value="{{ calculateDonorPrice $months }}">
+							{{ end }}
+							<input type="hidden" name="on1" value="RealistikOsu! user to give donor">
+							<input type="hidden" name="custom" value="username={{ $global.User.Username }}" id="ipn-username">
+							<input type="hidden" name="amount" value="{{ calculateDonorPrice 1 }}" id="paypal-amt">
+							<div class="ui fluid labeled action input">
+								<div class="ui label">
+									{{ $.T "User:" }}
+								</div>
+								<input name="os1" type="text" placeholder="{{ $.T "User" }}" value="{{ $global.User.Username }}" id="username-input">
+								<button type="submit" class="ui button inverted blue">{{ $.T "Buy" }}</button>
+							</div>
+							{{ $ief }}
+							<input type="hidden"
+							name="business" value="realistikdash@gmail.com">
+							<input type="hidden" name="cmd" value="_xclick">
+							<input type="hidden" name="lc" value="GB">
+							<input type="hidden" name="no_note" value="0">
+							<input type="hidden" name="currency_code" value="GBP">
+							<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+						</form>
+				
+				<h4 class="ui horizontal divider header">
+					{{ $.T "I've donated, now what?" }}
+				</h4>
+				{{ $.T "Upon purchase, you will be required to contact the owner or an admin to ensure you gain your benefits as soon as possible. This may be done via the RealistikOsu discord server or direct messages." | html }}
+			{{ else }}
+				<div class="ui divider"></div>
+				<h1 class="ui center aligned header">{{ $.T "Please log in to be able to get supporter" }}</h1>
+			{{ end }}
+		</div>
+	{{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,196 @@
+.pinned-popup {
+    position: absolute;
+    height: 35px;
+    top: calc(100% - (35px * 1.5));
+    width: 80%;
+    left: calc(10%);
+}
+
+.pinnedtbl {
+    margin-bottom: 50px !important;
+}
+
+.profile-scores-container {
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.profile-score-rank {
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.score-row {
+  background: linear-gradient(var(--gradient-colour), var(--gradient-colour)), var(--background-url) no-repeat right !important;
+  background-size: auto, auto;
+  background-size: cover !important;
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 6rem;
+  border-radius: 1rem;
+}
+
+.score-row-most-played {
+  min-height: 5rem !important;
+}
+
+.score-row-rank {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-row-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  justify-content: center;
+  width: 65%;
+  font-weight: 500;
+}
+
+.score-row-info-most-played {
+  width: 80% !important;
+}
+
+.row-info-container {
+  font-weight: 500 !important;
+}
+
+.row-info-container-most-played {
+  font-size: 14px !important;
+  padding: 1rem;
+}
+
+.row-info-container-most-played-mobile {
+  padding: 0.5rem !important;
+}
+
+.row-info-timeago {
+  font-size: 12px;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.8);
+}
+
+.score-row-pp {
+  display: flex;
+  width: 20%;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.row-pp-pp {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.row-pp-acc {
+  font-size: 12px;
+}
+
+.score-row-options {
+  width: 5% !important;
+  justify-content: center !important;
+  align-items: center !important;
+  display: flex !important;
+  font-size: 1.5rem !important;
+}
+
+.rank-ssh.profile-score-rank {
+  font-size: 2.3rem !important;
+}
+
+.profile-scores-btn-container {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  gap: 10px;
+}
+
+@media screen and (max-width: 767px) {
+
+  .score-view-desktop {
+    display: none !important;
+  }
+
+  .score-view-mobile {
+    display: flex !important;
+  }
+
+  .score-row-mobile {
+    background: linear-gradient(var(--gradient-colour), var(--gradient-colour)), var(--background-url) no-repeat right !important;
+    background-size: cover !important;
+    display: flex;
+    width: 100%;
+    border-radius: 1rem;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5em;
+  }
+
+  .score-mobile-top {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  .score-row-rank-mobile {
+    display: flex;
+    justify-content: center;
+    height: auto;
+  }
+
+  .profile-score-rank {
+    font-size: 2.5rem !important;
+  }
+
+  .score-row-info-mobile {
+    display: flex;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .score-mobile-bottom {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: end;
+    width: 100%;
+    margin-right: 1rem;
+  }
+
+  .score-row-pp-mobile {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .row-pp-pp-mobile {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .row-pp-acc-mobile {
+    display: flex;
+    gap: 5px;
+    font-size: 12px;
+  }
+}
+
+.score-view-desktop {
+  display: flex;
+}
+
+.score-view-mobile {
+  display: none;
+}

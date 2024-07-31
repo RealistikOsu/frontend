@@ -1,0 +1,154 @@
+{{/*###
+Include=clan_members.html
+*/}}
+{{ define "tpl" }}
+
+{{ $mode := .Gin.Query "mode" }}
+{{ if eq $mode "" }}
+	{{ $mode = 0 }}
+{{ end }}
+
+{{ $relax := .Gin.Query "rx" }}
+{{ if eq $relax "" }}
+	{{ $relax = 0 }}
+{{ end }}
+<script>
+	window.clanID = {{ .ClanID }}
+	window.mode = {{ $mode }};
+	window.relax = {{ $relax }};
+</script>
+
+<div class="ui container">
+	{{ if .ClanID }}
+		{{ $global := . }}
+		{{ range (.Get "clans?id=%d" .ClanID).clans }}
+		<div class="ui top attached segment overflow auto aligned">
+			<div class="magic table">
+				{{ if .icon }}
+					<div class="table element">
+						<img src="{{ .icon }}" alt="icon" class="clan icon" style="border-radius:5%; height:90px;">
+					</div>
+				{{ end }}
+				<div class="table element">
+					<div class="subtitle">
+						{{ $global.T "[%s]" (.tag | htmlescaper) | html }}
+					</div>
+					<h1 class="ui header">
+						{{ $global.T "%s" .name | html }}
+					</h1>
+					<div class="subtitle">
+						{{ $global.T "%s" (.description | htmlescaper) | html }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui three item bottom attached menu" id="relax-menu" style="margin-bottom: 0;">
+			<a id="clickVanilla" class="item {{ if eq 0 (int $relax) }}active{{ end }}" data-rx="0" href="/c/{{ .id }}?mode={{ $mode }}&rx=0">Vanilla</a>
+			<a id="clickRelax" class="item {{ if eq 1 (int $relax) }}active{{ end }}" data-rx="1" href="/c/{{ .id }}?mode={{ $mode }}&rx=1">Relax</a>
+			<a id="clickAutopilot" class="item {{ if eq 2 (int $relax) }}active{{ end }}" data-rx="2" href="/c/{{ .id }}?mode={{ $mode }}&rx=2">Autopilot</a>
+		</div>
+		<div class="ui four item bottom attached menu" id="mode-menu">
+			{{ $id := .id }}
+			{{ range $k, $v := modes }}
+				<a id="click{{ $v }}" class="item {{ if eq $k (int $mode) }}active{{ end }}" data-mode="{{ $k }}" href="/c/{{ $id }}?mode={{ $k }}&rx={{ $relax }}">{{ $v }}</a>
+			{{ end }}
+		</div>
+		<div class="ui segment">
+				<div class="ui two column divided stackable grid">
+					<div class="row">
+						<div class="column">
+							<h3 class="ui horizontal divider header">
+								<div style="display: flex; align-items: center; gap: 0.5em; font-weight: 600;">
+									<i class="fa-solid fa-chart-line"></i>
+									{{ $global.T "Clan Statistics" }}
+								</div>
+							</h3>
+							
+		{{ end }}
+							<div id="stats-zone">
+								<table class="ui very basic two column compact table nopad">
+									<tbody>
+										{{ range _range 4 }}
+											<div data-mode="{{ . }}" data-rx="0" {{ if _or (ne . (int $mode)) (ne 0 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+											<div data-mode="{{ . }}" data-rx="1" {{ if _or (ne . (int $mode)) (ne 1 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+											<div data-mode="{{ . }}" data-rx="2" {{ if _or (ne . (int $mode)) (ne 2 (int $relax)) }} hidden{{ end }} data-loaded="0"></div>
+										{{ end }}
+									</tbody>
+								</table>
+							</div>
+							<div class="ui modal">
+								<i class="close icon"></i>
+								<div class="content">
+									<table class="ui definition table" id="stats-data-table">
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="column">
+							{{ if $global.Context.User.ID }}
+								{{ $d := qb "SELECT user, clan, perms FROM user_clans WHERE user = ? LIMIT 1" .Context.User.ID }}
+								{{ $p := qb "SELECT user, clan, perms FROM user_clans WHERE user = ? AND perms = 8 LIMIT 1" .Context.User.ID }}
+								{{ $tc := qb "SELECT user, clan, perms FROM user_clans WHERE user = ? AND clan = ? LIMIT 1" .Context.User.ID .ClanID }}
+								{{ $uc := or $d.clan.Int -1 }}
+									{{ if $d }}
+										{{ if $tc }}
+											{{ if $p }}
+												<form id="register-form" class="ui form" method="post" action="/c/{{ .ClanID }}">
+													{{ ieForm .Gin }}
+												</form>
+												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.5); width: 100%;" type="submit" form="register-form">{{ .T "Disband Clan" }}</button></div>
+											{{ else }}
+												<form id="register-form" class="ui form" method="post" action="/c/{{ .ClanID }}">
+													{{ ieForm .Gin }}
+												</form>
+												<div class="ui one item menu"><button tabindex="1" class="ui primary button" style="background-color:rgba(255,0,0,.3); width: 100%;" type="submit" form="register-form">{{ .T "Leave Clan" }}</button></div>
+											{{ end }}
+										{{ else }}
+											<div class="ui one item menu" id="join-menu"><span class="item" style="background-color:rgba(255,0,0,.3); width: 100%;">Already joined a clan</span></div>
+										{{ end }}
+									{{ end }}
+							{{ else }}
+								<div class="ui one item menu" id="join-menu"><a class="item" href="/login" style="background-color:rgba(0,128,255,.3); width: 100%;">Please login to join a clan</a></div>
+							{{ end }}
+								<h1 class="ui heading">{{ .T "Clan Owner" }}</h1>
+								<p>
+									{{ .T "The leader of the clan." }}<br>
+								</p>
+								{{ template "clanGroup" (.Get "clans/members?id=%d&r=%d" .ClanID 8) }}
+						</div>
+					</div>
+				</div>
+				<div class="ui aligned segment">
+					<h1 class="ui heading">{{ .T "Members" }}</h1>
+					{{ template "clanMembers" (.Get "clans/members?id=%d&r=%d" .ClanID 1) }}
+				</div>
+			</div>
+		{{ end }}
+</div>
+<script>
+	events = ["load", "resize"];
+	for (var i = 0; i < events.length; i++) {
+		window.addEventListener(events[i], () => {
+			var mainColumnGrids = $("[id=main-column-grid]");
+
+			for (var i = 0; i < mainColumnGrids.length; i++) {
+				var mainColumnGrid = $(mainColumnGrids[i]);
+
+				if (window.innerWidth > 767) {
+					mainColumnGrid.removeAttr("style");
+					mainColumnGrid.addClass("ui five column center aligned stackable grid");
+				} else {
+					mainColumnGrid.removeClass();
+					mainColumnGrid.css({
+						"display": "flex",
+						"flex-direction": "column",
+						"align-items": "center",
+						"gap": "2em"
+					})
+				}
+			}
+		});
+	}
+</script>
+{{ end }}

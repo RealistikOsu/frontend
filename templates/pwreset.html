@@ -1,0 +1,40 @@
+{{/*###
+Handler=/pwreset
+TitleBar=Password Reset
+*/}}
+{{ define "tpl" }}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<div class="ui container">
+	{{ if .Context.User.ID }}
+		<div class="ui segment">
+			{{ .T "You're already logged in!" }}
+		</div>
+	{{ else }}
+		<!-- TODO: captcha -->
+		<div class="tiny container">
+			<div class="ui raised segments">
+				<div class="ui segment">
+					{{ .T "Forgot your password? Worry not! Here you can reset it. Just tell us your username or email address, and we'll take care of it. You will receive an email at the email address you used to sign up on RealistikOsu!. To continue the password reset procedure, click the link on that email." }}
+				</div>
+				<div class="ui segment">
+					<form id="pw-reset-form" class="ui form" method="post" action="/pwreset">
+						<div class="field">
+							<label>{{ .T "Username (or email)" }}</label>
+							<input tabindex="1" type="text" name="username" placeholder="{{ .T "eg. RealistikBot" }}" value="{{ .FormData.username }}" required>
+						</div>
+						{{ with config "RECAPTCHA_SITE_KEY" }}
+							<div class="field" style="display: flex;justify-content: center;">
+								<div class="h-captcha" data-sitekey="{{ . }}" data-theme="dark"></div>
+							</div>
+						{{ end }}
+						{{ ieForm .Gin }}
+					</form>
+				</div>
+				<div class="ui right aligned segment">
+					<button tabindex="2" class="ui button inverted blue" type="submit" form="pw-reset-form">{{ .T "Submit" }}</button>
+				</div>
+			</div>
+		</div>
+	{{ end }}
+</div>
+{{ end }}

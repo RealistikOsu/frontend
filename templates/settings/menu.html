@@ -1,0 +1,43 @@
+{{/*###
+NoCompile=true
+*/}}
+{{ define "settingsSidebar" }}
+<div class="four wide column">
+	<div class="ui fluid vertical menu">
+		{{ navbarItem .Path (.T "Profile") "/settings" }}
+
+		{{ navbarItem .Path (.T "Userpage") "/settings/userpage" }}
+
+		{{ navbarItem .Path (.T "Avatar") "/settings/avatar" }}
+
+		{{ navbarItem .Path (.T "Password") "/settings/password" }}
+
+		{{ navbarItem .Path (.T "Discord Linking") "/settings/discord-integration" }}
+
+		{{/* Stuff for donators */}}
+		{{/* if has .Context.User.Privileges 4 */}}
+		
+		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
+		{{ navbarItem .Path (printf "%s %s" (.T "Profile Banner") $d) "/settings/profbanner" }}
+
+		{{ $d := printf `<div class="ui yellow horizontal mini label">%s</div>` (.T "Supporter") }}
+		{{ navbarItem .Path (printf "%s %s" (.T "Change Username") $d) "/settings/change-username" }}
+
+		{{/* end */}}
+	</div>
+</div>
+{{ end }}
+
+{{ define "supporter_only" }}
+<div class="ui icon message black ds">
+    <div class="content">
+        <div class="header">
+            {{ .T "This feature is restricted to RealistikOsu supporters only..." }}
+        </div>
+        <p>
+            {{ .T "<a class='link-text' href='/donate'><b>Purchase supporter</b></a> to access this feature along with countless other features!" | html }}
+        </p>
+    </div>
+    <i class="blue lock icon"></i>
+</div>
+{{ end }}

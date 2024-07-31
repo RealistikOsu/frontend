@@ -1,0 +1,62 @@
+{{/*###
+NoCompile=true
+*/}}
+{{ define "userGroup" }}
+{{ with . }}
+	<div class="ui five column center aligned stackable grid" id="main-column-grid">
+		{{ $teamJSON := teamJSON }}
+		{{ range .members }}
+			{{/* ignore fokabot */}}
+			{{ if ne (int .id) 999 }}
+				{{ $tj := index $teamJSON (print .id)}}
+				<a class="column profile-card-column" href="/users/{{ .id }}">
+					<div class="ui fluid card profile-card" style="border-radius: 1rem;text-align: center;">
+						<div class="image" style="border-radius: 1rem !important;display: flex;justify-content: center;">
+							<img src="{{ config "APP_AVATAR_URL" }}/{{ .id }}" alt="Avatar" style="border-radius: 1rem;width: 197px;height: 197px;object-fit: cover;">
+						</div>
+						<div class="extra content">
+							<div class="header" style="display: flex;align-items: center;gap: 5px;justify-content: center;margin-bottom: 10px;">
+								{{ country .country false }} {{ .username }}
+							</div>
+
+							<div title="Registered">
+								<i class="sign in icon"></i>
+								{{ time .registered_on }}
+							</div>
+							<div title="Latest activity">
+								<i class="sign out icon"></i>
+								{{ time .latest_activity }}
+							</div>
+						</div>
+					</div>
+				</a>
+			{{ end }}
+		{{ end }}
+	</div>
+	<script>
+		events = ["load", "resize"];
+		for (var i = 0; i < events.length; i++) {
+			window.addEventListener(events[i], () => {
+				var mainColumnGrids = $("[id=main-column-grid]");
+
+				for (var i = 0; i < mainColumnGrids.length; i++) {
+					var mainColumnGrid = $(mainColumnGrids[i]);
+
+					if (window.innerWidth > 767) {
+						mainColumnGrid.removeAttr("style");
+						mainColumnGrid.addClass("ui five column center aligned stackable grid");
+					} else {
+						mainColumnGrid.removeClass();
+						mainColumnGrid.css({
+							"display": "flex",
+							"flex-direction": "column",
+							"align-items": "center",
+							"gap": "2em"
+						})
+					}
+				}
+			});
+		}
+	</script>
+{{ end }}
+{{ end }}
