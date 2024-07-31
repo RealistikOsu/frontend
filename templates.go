@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -243,7 +244,7 @@ func reloader() error {
 			if !strings.HasSuffix(ev.Path(), ".html") || time.Since(last) < time.Second*3 {
 				continue
 			}
-			fmt.Println("Change detected! Refreshing templates")
+			slog.Info("Change detected! Refreshing templates")
 			simplePages = []templateConfig{}
 			loadTemplates("")
 			last = time.Now()

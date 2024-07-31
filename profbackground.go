@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/gif"
 	"image/jpeg"
+	"log/slog"
 	"os"
 	"regexp"
 	"strings"
@@ -52,7 +53,7 @@ func profBackground(c *gin.Context) {
 		gif_f, err := gif.Decode(file)
 		if err != nil {
 			// Nope, not a gif, log it and continue
-			fmt.Print("Not a gif: " + err.Error() + "\n")
+			slog.Error("There was an issue while parsing gif file", "error", err)
 			f, err := os.Create(fmt.Sprintf("static/profbackgrounds/%d.jpg", ctx.User.ID))
 			defer f.Close()
 			if err != nil {
@@ -60,7 +61,7 @@ func profBackground(c *gin.Context) {
 				c.Error(err)
 				return
 			}
-			fmt.Printf("Saving profile background for %d", ctx.User.ID)
+			slog.Info("Saving profile background (as gif)", "user_id", ctx.User.ID)
 
 			err = jpeg.Encode(f, img, &jpeg.Options{
 				Quality: 88,
@@ -80,7 +81,7 @@ func profBackground(c *gin.Context) {
 				c.Error(err)
 				return
 			}
-			fmt.Printf("Saving profile background for %d", ctx.User.ID)
+			slog.Info("Saving profile background", "user_id", ctx.User.ID)
 			err = gif.Encode(f, gif_f, &gif.Options{
 				NumColors: 256,
 			})

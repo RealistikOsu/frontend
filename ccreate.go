@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
@@ -60,7 +60,7 @@ func ccreateSubmit(c *gin.Context) {
 		name, c.PostForm("description"), c.PostForm("icon"), tag)
 	if err != nil {
 		ccreateResp(c, errorMessage{T(c, "Uh oh... Unexpected error! Clan might be created... I'm not sure though.")})
-		fmt.Println(err)
+		slog.Error("There was an error while registering a user", "error", err)
 		return
 	}
 	lid, _ := res.LastInsertId()

@@ -7,6 +7,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -17,7 +18,7 @@ func init() {
 	// When we start the program, we should load the documentation files.
 	err := loadDocFiles()
 	if err != nil {
-		fmt.Println("error while loading documentation:", err)
+		slog.Error("Error while loading documentation", "error", err)
 	}
 }
 
@@ -88,7 +89,7 @@ func loadHeader(b []byte) rawFile {
 	var f rawFile
 	err := yaml.Unmarshal([]byte(conf), &f)
 	if err != nil {
-		fmt.Println("Error unmarshaling yaml:", err)
+		slog.Error("Error unmarshaling yaml", "error", err)
 		return rawFile{}
 	}
 

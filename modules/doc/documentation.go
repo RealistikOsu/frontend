@@ -1,8 +1,8 @@
 package doc
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"net/http"
 	"regexp"
 	"strings"
@@ -110,14 +110,14 @@ func updateIPs() {
 
 	resp, err := http.Get("https://ip.ripple.moe")
 	if err != nil {
-		fmt.Println("error updating IPs", err)
+		slog.Error("There was an issue getting updated IPs", "error", err)
 		return
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		fmt.Println("error updating IPs", err)
+		slog.Error("There was an issue getting updated IPs", "error", err)
 		return
 	}
 

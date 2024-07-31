@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log/slog"
 	"math"
 	"math/rand"
 	"net/http"
@@ -157,17 +158,17 @@ var funcMap = template.FuncMap{
 		data, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(data, &x)
 		if x["avatar"] == nil {
-		    user_id, err := strconv.ParseInt(fmt.Sprint(x["id"]), 10, 64)
-                    if err != nil {
-			var avatar_id int = (int(user_id) >> 22) % 6 // 6 = new avatar count
-			if x["raw"].(map[string]string)["discriminator"] != "0" {
-			    discriminator, err := strconv.Atoi(x["raw"].(map[string](string))["discriminator"])
-			    if err != nil {
-			        avatar_id = discriminator % 5 // 5 = old avatar count
-			    }
+			user_id, err := strconv.ParseInt(fmt.Sprint(x["id"]), 10, 64)
+			if err != nil {
+				var avatar_id int = (int(user_id) >> 22) % 6 // 6 = new avatar count
+				if x["raw"].(map[string]string)["discriminator"] != "0" {
+					discriminator, err := strconv.Atoi(x["raw"].(map[string](string))["discriminator"])
+					if err != nil {
+						avatar_id = discriminator % 5 // 5 = old avatar count
+					}
+				}
+				x["avatar"] = fmt.Sprintf("https://cdn.discordapp.com/embed/avatars/%d.png", avatar_id)
 			}
-			x["avatar"] = fmt.Sprintf("https://cdn.discordapp.com/embed/avatars/%d.png", avatar_id)
-		    }
 		}
 		return x
 	},
@@ -212,8 +213,7 @@ var funcMap = template.FuncMap{
 		}
 		return strings.Join(classes, " ")
 	},
-	// log fmt.Printf's something
-	"log": fmt.Printf,
+	"log": slog.Info,
 	// has returns whether priv1 has all 1 bits of priv2, aka priv1 & priv2 == priv2
 	"has": func(priv1 interface{}, priv2 float64) bool {
 		var p1 uint64
@@ -389,7 +389,7 @@ var funcMap = template.FuncMap{
 	"qb": func(q string, p ...interface{}) map[string]qsql.String {
 		r, err := qb.QueryRow(q, p...)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("There was an issue while running query inside of the template", "error", err)
 		}
 		if r == nil {
 			return make(map[string]qsql.String, 0)
@@ -399,14 +399,14 @@ var funcMap = template.FuncMap{
 	"qba": func(q string, p ...interface{}) []map[string]qsql.String {
 		r, err := qb.Query(q, p...)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("There was an issue while running query inside of the template", "error", err)
 		}
 		return r
 	},
 	"qbe": func(q string, p ...interface{}) int {
 		i, _, err := qb.Exec(q, p...)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("There was an issue while running query inside of the template", "error", err)
 		}
 		return i
 	},
@@ -488,7 +488,7 @@ var funcMap = template.FuncMap{
 			return ""
 		}
 		if err := x.Err(); err != nil {
-			fmt.Println(err)
+			slog.Error("There was an issue while running redis query inside of the template", "error", err)
 		}
 		return x.Val()
 	},
@@ -592,7 +592,7 @@ func systemSettings(names ...string) map[string]systemSetting {
 	q, p, _ := sqlx.In("SELECT name, value_int as `int`, value_string as `string` FROM system_settings WHERE name IN (?)", names)
 	err := db.Select(&settingsRaw, q, p...)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("There was an issue while getting system settings", "error", err)
 		return nil
 	}
 	settings := make(map[string]systemSetting, len(names))

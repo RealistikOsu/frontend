@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"strconv"
 	"time"
@@ -50,7 +51,7 @@ func leaveClan(c *gin.Context) {
 		var users_list []int
 		rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = '%s'", i))
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("There was an issue while getting clan users", "clan_id", i, "error", err)
 			c.Error(err)
 			return
 		}
@@ -60,7 +61,6 @@ func leaveClan(c *gin.Context) {
 			err := rows.Scan(&user_id)
 
 			if err != nil {
-				fmt.Println(err)
 				continue
 			}
 
@@ -175,7 +175,7 @@ func createInvite(c *gin.Context) {
 		var dbTag string
 		err := db.QueryRow("SELECT name, description, icon, tag FROM clans WHERE id = ?", clan).Scan(&dbName, &dbDescription, &dbIcon, &dbTag)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("Could not get clan data from database", "clan_id", clan, "error", err)
 			c.Error(err)
 		}
 
@@ -206,7 +206,7 @@ func createInvite(c *gin.Context) {
 			var users_list []int
 			rows, err := db.Query(fmt.Sprintf("SELECT user FROM user_clans WHERE clan = %d", clan))
 			if err != nil {
-				fmt.Println(err)
+				slog.Error("There was an issue while getting clan users", "clan_id", clan, "error", err)
 				c.Error(err)
 				return
 			}
@@ -216,7 +216,6 @@ func createInvite(c *gin.Context) {
 				err := rows.Scan(&user_id)
 
 				if err != nil {
-					fmt.Println(err)
 					continue
 				}
 
@@ -326,10 +325,7 @@ func clanKick(c *gin.Context) {
 		return
 	}
 
-	member, err := strconv.ParseInt(c.PostForm("member"), 10, 32)
-	if err != nil {
-		fmt.Println(err)
-	}
+	member, _ := strconv.ParseInt(c.PostForm("member"), 10, 32)
 	if member == 0 {
 		resp403(c)
 		return
@@ -354,8 +350,8 @@ func resolveInvite(c string) int {
 	err := row.Scan(&clanid)
 
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("Could not get clan ID from invite", "invite", c, "error", err)
+		return -1
 	}
-	fmt.Println(clanid)
 	return clanid
 }
