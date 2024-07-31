@@ -108,15 +108,17 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.18.1 // indirect
-	github.com/pborman/uuid v0.0.0-20170612153648-e790cca94e6c // indirect
+	github.com/onsi/gomega v1.34.1 // indirect
+	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 // indirect
-	github.com/smartystreets/goconvey v1.7.2 // indirect
-	github.com/ugorji/go v0.0.0-20180112141927-9831f2c3ac10 // indirect
-	github.com/valyala/fasthttp v1.51.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	github.com/rs/zerolog v1.33.0
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/smartystreets/goconvey v1.8.1 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/ugorji/go v1.2.12 // indirect
+	github.com/valyala/fasthttp v1.55.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/RangelReale/osin"
-	"github.com/felipeweb/osin-mysql"
+	mysql "github.com/felipeweb/osin-mysql"
 )
 
 // storage is a custom type of storage that implements client secrets saved in the dabase as sha256 hashes
@@ -28,6 +28,5 @@ type client struct {
 
 func (c client) ClientSecretMatches(i string) bool {
 	a := c.GetSecret() == fmt.Sprintf("%x", sha256.Sum256([]byte(i)))
-	//fmt.Println("SES", a)
 	return a
 }

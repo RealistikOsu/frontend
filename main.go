@@ -8,6 +8,8 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
+	"log/slog"
+	"os"
 	"sort"
 	"strconv"
 	"time"
@@ -42,7 +44,11 @@ var (
 )
 
 func main() {
-	fmt.Println("hanayo " + version)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	slog.SetDefault(logger)
+
+	slog.Info("frontend service starting up on", "version", version)
 
 	settings := state.LoadSettings()
 	configMap = structs.Map(settings)
@@ -78,10 +84,10 @@ func main() {
 	CSRF = cieca.NewCSRF()
 
 	if gin.Mode() == gin.DebugMode {
-		fmt.Println("Development environment detected. Starting fsnotify on template folder...")
+		slog.Info("Development environment detected. Starting fsnotify on template folder...")
 		err := reloader()
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("Failed to start template reload watcher", "error", err.Error())
 		}
 	}
 
@@ -108,24 +114,24 @@ func main() {
 		gob.Register(el)
 	}
 
-	fmt.Println("Importing templates...")
+	slog.Info("Importing templates...")
 	loadTemplates("")
 
-	fmt.Println("Setting up rate limiter...")
+	slog.Info("Setting up rate limiter...")
 	setUpLimiter()
 
 	r := generateEngine()
-	fmt.Printf("Listening on port :%d", settings.APP_PORT)
+	slog.Info("Listening on port", "port", settings.APP_PORT)
 
 	err = r.Run(fmt.Sprintf(":%d", settings.APP_PORT))
 	if err != nil {
-		fmt.Printf("Failed to start server, error: %s", err.Error())
+		slog.Error("Failed to start server", "error", err.Error())
 		panic(err)
 	}
 }
 
 func generateEngine() *gin.Engine {
-	fmt.Println("Starting session system...")
+	slog.Info("Starting session system...")
 	settings := state.GetSettings()
 	var store sessions.Store
 	var err error
@@ -142,13 +148,17 @@ func generateEngine() *gin.Engine {
 	}
 
 	if err != nil {
-		fmt.Printf("Failed to crreate redis store, error: %s", err.Error())
+		slog.Error("Failed to crreate redis store", "error", err.Error())
 		panic(err)
 	}
 
 	r := gin.Default()
 
 	r.Use(
+		// Use our custom logger
+		services.StructuredLogger(),
+		// Still use the built-in recovery middleware that is called with default
+		gin.Recovery(),
 		gzip.Gzip(gzip.DefaultCompression),
 		pagemappings.CheckRedirect,
 		sessions.Sessions("session", store),
