@@ -27,6 +27,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/johnniedoe/contrib/gzip"
 	"github.com/thehowl/qsql"
+	gintrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gin-gonic/gin"
 	"gopkg.in/mailgun/mailgun-go.v1"
 	"gopkg.in/redis.v5"
 )
@@ -163,6 +164,7 @@ func generateEngine() *gin.Engine {
 		sessions.Sessions("session", store),
 		sessionInitializer(),
 		rateLimiter(false),
+		gintrace.Middleware("frontend"),
 	)
 
 	r.Static("/static", "static")
