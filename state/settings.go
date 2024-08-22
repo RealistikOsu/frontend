@@ -33,6 +33,7 @@ type Settings struct {
 	APP_ENV string
 
 	APP_INTERNAL_AVATARS_PATH string
+	APP_INTERNAL_BANNERS_PATH string
 
 	APP_BASE_URL   string
 	APP_AVATAR_URL string
@@ -88,6 +89,7 @@ func LoadSettings() Settings {
 	settings.APP_ENV = getEnv("APP_ENV")
 
 	settings.APP_INTERNAL_AVATARS_PATH = getEnv("APP_INTERNAL_AVATARS_PATH")
+	settings.APP_INTERNAL_BANNERS_PATH = getEnv("APP_INTERNAL_BANNERS_PATH")
 
 	settings.APP_BASE_URL = getEnv("APP_BASE_URL")
 	settings.APP_AVATAR_URL = getEnv("APP_AVATAR_URL")

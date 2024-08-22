@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RealistikOsu/frontend/state"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,7 @@ var hexColourRegex = regexp.MustCompile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$")
 
 func profBackground(c *gin.Context) {
 	ctx := getContext(c)
+	settings := state.GetSettings()
 	if ctx.User.ID == 0 {
 		resp403(c)
 		return
@@ -54,14 +56,14 @@ func profBackground(c *gin.Context) {
 		if err != nil {
 			// Nope, not a gif, log it and continue
 			slog.Error("There was an issue while parsing gif file", "error", err)
-			f, err := os.Create(fmt.Sprintf("static/profbackgrounds/%d.jpg", ctx.User.ID))
-			defer f.Close()
+			f, err := os.Create(fmt.Sprintf("%s/%d.jpg", settings.APP_INTERNAL_BANNERS_PATH, ctx.User.ID))
 			if err != nil {
 				m = errorMessage{T(c, "An error occurred.")}
 				c.Error(err)
 				return
 			}
-			slog.Info("Saving profile background (as gif)", "user_id", ctx.User.ID)
+			defer f.Close()
+			slog.Info("Saving profile background", "user_id", ctx.User.ID)
 
 			err = jpeg.Encode(f, img, &jpeg.Options{
 				Quality: 88,
@@ -74,14 +76,14 @@ func profBackground(c *gin.Context) {
 			saveProfileBackground(ctx, 1, fmt.Sprintf("%d.jpg?%d", ctx.User.ID, time.Now().Unix()))
 		} else {
 			// It's a gif, save it as a gif
-			f, err := os.Create(fmt.Sprintf("static/profbackgrounds/%d.gif", ctx.User.ID))
-			defer f.Close()
+			f, err := os.Create(fmt.Sprintf("%s/%d.gif", settings.APP_INTERNAL_BANNERS_PATH, ctx.User.ID))
 			if err != nil {
 				m = errorMessage{T(c, "An error occurred.")}
 				c.Error(err)
 				return
 			}
-			slog.Info("Saving profile background", "user_id", ctx.User.ID)
+			defer f.Close()
+			slog.Info("Saving profile background (as gif)", "user_id", ctx.User.ID)
 			err = gif.Encode(f, gif_f, &gif.Options{
 				NumColors: 256,
 			})
