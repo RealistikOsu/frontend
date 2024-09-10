@@ -19,6 +19,7 @@ type sessionUser struct {
 	Flags      uint64
 	Clan       int
 	ClanOwner  int
+	Coins 	int
 }
 
 // OnlyUserPublic returns a string containing "(user.privileges & 1 = 1 OR users.id = <userID>)"
