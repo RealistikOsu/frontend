@@ -57,5 +57,4 @@ Multiaccounting adopts a similar system to cheating. Every single time will resu
 **3rd time:** Permanent but appealable restriction on the main account
 
 **In-game Toxicity**
-
 Each case of toxicity that is seen as going  over the line will be met with an in-game silence (and Discord mute if it occurs here). The silence times will increase exponentially and will begin at 1 hour.
