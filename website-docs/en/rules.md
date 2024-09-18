@@ -33,6 +33,7 @@ If the staff team believes you to be suspicious, you may be requested to produce
 - Show Task Manager after opening osu! and at the end of the liveplay
 - Edited liveplays will automatically be disqualified
 - Everything must be in a single recording
+- You must use [our patcher](https://ussr.pl/patcher)
 
 Note: Failure to meet even a single of the specified requirements will result in your liveplay being automatically invalidated.
 
