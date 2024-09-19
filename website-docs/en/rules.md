@@ -33,6 +33,7 @@ If the staff team believes you to be suspicious, you may be requested to produce
 - Show Task Manager after opening osu! and at the end of the liveplay
 - Edited liveplays will automatically be disqualified
 - Everything must be in a single recording
+- You must use [our patcher](https://ussr.pl/patcher)
 
 Note: Failure to meet even a single of the specified requirements will result in your liveplay being automatically invalidated.
 
@@ -56,5 +57,4 @@ Multiaccounting adopts a similar system to cheating. Every single time will resu
 **3rd time:** Permanent but appealable restriction on the main account
 
 **In-game Toxicity**
-
 Each case of toxicity that is seen as going  over the line will be met with an in-game silence (and Discord mute if it occurs here). The silence times will increase exponentially and will begin at 1 hour.
